@@ -110,6 +110,8 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.SectionId).HasColumnName("section_id");
+
                 entity.Property(e => e.TownId).HasColumnName("town_id");
 
                 entity.Property(e => e.Prefix).HasColumnName("prefix");
@@ -122,7 +124,7 @@ namespace Estimmo.Data
 
                 entity.HasOne(p => p.Section)
                     .WithMany(s => s.Parcels)
-                    .HasForeignKey(p => p.Id);
+                    .HasForeignKey(p => p.SectionId);
             });
         }
     }

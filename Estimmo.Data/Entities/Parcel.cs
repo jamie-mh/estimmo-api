@@ -5,6 +5,7 @@ namespace Estimmo.Data.Entities
     public class Parcel
     {
         public string Id { get; set; }
+        public string SectionId { get; set; }
         public string TownId { get; set; }
         public string Prefix { get; set; }
         public string SectionCode { get; set; }
