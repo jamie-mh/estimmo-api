@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Estimmo.Data.Migrations
 {
     [DbContext(typeof(EstimmoContext))]
-    [Migration("20211021140752_StreetNameSuffix")]
-    partial class StreetNameSuffix
+    [Migration("20211106121721_Init")]
+    partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -47,6 +47,9 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("land_surface_area");
 
+                    b.Property<string>("ParcelId")
+                        .HasColumnType("text");
+
                     b.Property<string>("PostCode")
                         .HasColumnType("text")
                         .HasColumnName("post_code");
@@ -76,6 +79,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Coordinates")
+                        .HasDatabaseName("property_sale_coordinates_idx")
+                        .HasMethod("gist");
 
                     b.ToTable("property_sale");
                 });

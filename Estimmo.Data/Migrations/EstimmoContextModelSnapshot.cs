@@ -45,6 +45,9 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("land_surface_area");
 
+                    b.Property<string>("ParcelId")
+                        .HasColumnType("text");
+
                     b.Property<string>("PostCode")
                         .HasColumnType("text")
                         .HasColumnName("post_code");

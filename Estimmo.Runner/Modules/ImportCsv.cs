@@ -40,14 +40,18 @@ namespace Estimmo.Runner.Modules
             var records = csv.GetRecordsAsync<PropertyMutation>();
 
             var buffer = new List<PropertySale>(BufferSize);
+
             var inserted = 0;
 
             async Task FlushBufferAsync()
             {
                 _context.PropertySales.AddRange(buffer);
                 await _context.SaveChangesAsync();
+                inserted += buffer.Count;
                 _log.Information("Processed {Count} records", inserted);
             }
+
+            var culture = new CultureInfo("FR-fr");
 
             await foreach (var record in records)
             {
@@ -84,17 +88,16 @@ namespace Estimmo.Runner.Modules
                     Date = record.Date,
                     StreetNumber = record.StreetNumber,
                     StreetNumberSuffix = record.StreetNumberSuffix,
-                    StreetName = record.StreetName,
+                    StreetName = culture.TextInfo.ToTitleCase(record.StreetName.ToLowerInvariant()),
                     PostCode = record.PostCode,
                     Type = propertyType,
                     BuildingSurfaceArea = record.BuildingSurfaceArea.Value,
                     LandSurfaceArea = record.LandSurfaceArea ?? 0,
                     RoomCount = record.RoomCount.Value,
                     Value = record.Value.Value,
+                    ParcelId = record.ParcelId,
                     Coordinates = new Point(record.Latitude.Value, record.Longitude.Value)
                 });
-
-                inserted++;
 
                 if (buffer.Count % BufferSize == 0)
                 {

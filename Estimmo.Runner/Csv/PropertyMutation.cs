@@ -29,6 +29,9 @@ namespace Estimmo.Runner.Csv
         [Name("nom_commune")]
         public string Town { get; set; }
 
+        [Name("id_parcelle")]
+        public string ParcelId { get; set; }
+
         [Name("type_local")]
         public string LocalType { get; set; }
 
