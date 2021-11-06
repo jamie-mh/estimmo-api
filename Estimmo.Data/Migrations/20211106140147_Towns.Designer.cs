@@ -3,6 +3,7 @@ using System;
 using Estimmo.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -10,9 +11,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Estimmo.Data.Migrations
 {
     [DbContext(typeof(EstimmoContext))]
-    partial class EstimmoContextModelSnapshot : ModelSnapshot
+    [Migration("20211106140147_Towns")]
+    partial class Towns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -20,40 +22,6 @@ namespace Estimmo.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63)
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<Geometry>("Geometry")
-                        .IsRequired()
-                        .HasColumnType("geography")
-                        .HasColumnName("geometry");
-
-                    b.Property<int>("Number")
-                        .HasColumnType("integer")
-                        .HasColumnName("number");
-
-                    b.Property<string>("Prefix")
-                        .HasColumnType("text")
-                        .HasColumnName("prefix");
-
-                    b.Property<string>("SectionCode")
-                        .HasColumnType("text")
-                        .HasColumnName("section_code");
-
-                    b.Property<string>("TownId")
-                        .HasColumnType("text")
-                        .HasColumnName("town_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TownId");
-
-                    b.ToTable("parcel");
-                });
 
             modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
                 {
@@ -119,36 +87,6 @@ namespace Estimmo.Data.Migrations
                     b.ToTable("property_sale");
                 });
 
-            modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Code")
-                        .HasColumnType("text")
-                        .HasColumnName("code");
-
-                    b.Property<Geometry>("Geometry")
-                        .IsRequired()
-                        .HasColumnType("geography")
-                        .HasColumnName("geometry");
-
-                    b.Property<string>("Prefix")
-                        .HasColumnType("text")
-                        .HasColumnName("prefix");
-
-                    b.Property<string>("TownId")
-                        .HasColumnType("text")
-                        .HasColumnName("town_id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TownId");
-
-                    b.ToTable("section");
-                });
-
             modelBuilder.Entity("Estimmo.Data.Entities.Town", b =>
                 {
                     b.Property<string>("Id")
@@ -168,42 +106,6 @@ namespace Estimmo.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("town");
-                });
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
-                {
-                    b.HasOne("Estimmo.Data.Entities.Section", "Section")
-                        .WithMany("Parcels")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Estimmo.Data.Entities.Town", "Town")
-                        .WithMany()
-                        .HasForeignKey("TownId");
-
-                    b.Navigation("Section");
-
-                    b.Navigation("Town");
-                });
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
-                {
-                    b.HasOne("Estimmo.Data.Entities.Town", "Town")
-                        .WithMany("Sections")
-                        .HasForeignKey("TownId");
-
-                    b.Navigation("Town");
-                });
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
-                {
-                    b.Navigation("Parcels");
-                });
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Town", b =>
-                {
-                    b.Navigation("Sections");
                 });
 #pragma warning restore 612, 618
         }

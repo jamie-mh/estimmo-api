@@ -15,6 +15,9 @@ namespace Estimmo.Data
         }
 
         public virtual DbSet<PropertySale> PropertySales { get; set; }
+        public virtual DbSet<Town> Towns { get; set; }
+        public virtual DbSet<Section> Sections { get; set; }
+        public virtual DbSet<Parcel> Parcels { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -63,6 +66,63 @@ namespace Estimmo.Data
                 entity.Property(e => e.Coordinates).HasColumnName("coodinates").HasColumnType("geography");
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist").HasDatabaseName("property_sale_coordinates_idx");
+            });
+
+            modelBuilder.Entity<Town>(entity =>
+            {
+                entity.ToTable("town");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
+
+                entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+            });
+
+            modelBuilder.Entity<Section>(entity =>
+            {
+                entity.ToTable("section");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.TownId).HasColumnName("town_id");
+
+                entity.Property(e => e.Prefix).HasColumnName("prefix");
+
+                entity.Property(e => e.Code).HasColumnName("code");
+
+                entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+
+                entity.HasOne(s => s.Town)
+                    .WithMany(t => t.Sections)
+                    .HasForeignKey(s => s.TownId);
+            });
+
+            modelBuilder.Entity<Parcel>(entity =>
+            {
+                entity.ToTable("parcel");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.TownId).HasColumnName("town_id");
+
+                entity.Property(e => e.Prefix).HasColumnName("prefix");
+
+                entity.Property(e => e.SectionCode).HasColumnName("section_code");
+
+                entity.Property(e => e.Number).HasColumnName("number");
+
+                entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+
+                entity.HasOne(p => p.Section)
+                    .WithMany(s => s.Parcels)
+                    .HasForeignKey(p => p.Id);
             });
         }
     }
