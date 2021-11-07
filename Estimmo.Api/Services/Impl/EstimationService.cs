@@ -22,7 +22,8 @@ namespace Estimmo.Api.Services.Impl
         public async Task<Estimate> GetEstimateAsync(EstimateRequest request)
         {
             var nearbyPropertySales = await _context.PropertySales
-                .Where(p => p.Type == request.PropertyType && p.Coordinates.IsWithinDistance(request.Coordinates, SearchRadius))
+                .Where(p => p.Type == request.PropertyType &&
+                            p.Coordinates.IsWithinDistance(request.Coordinates, SearchRadius))
                 .OrderBy(p => p.Date)
                 .ToListAsync();
 
@@ -32,7 +33,7 @@ namespace Estimmo.Api.Services.Impl
             }
 
             var now = DateTime.Now;
-            var minDaysSince = (now -  nearbyPropertySales.Last().Date).TotalDays;
+            var minDaysSince = (now - nearbyPropertySales.Last().Date).TotalDays;
 
             var parameters = new double[nearbyPropertySales.Count][];
             var values = new double[nearbyPropertySales.Count];
@@ -59,9 +60,10 @@ namespace Estimmo.Api.Services.Impl
 
             var model = WeightedRegression.Weighted(parameters, values, weights);
             var estimatedValue =
-                model[0] * request.Rooms + model[1] * request.LandSurfaceArea + model[2] * request.BuildingSurfaceArea;
+                (model[0] * request.Rooms) + (model[1] * request.LandSurfaceArea) +
+                (model[2] * request.BuildingSurfaceArea);
 
-            return new Estimate {Value = estimatedValue};
+            return new Estimate { Value = estimatedValue };
         }
     }
 }

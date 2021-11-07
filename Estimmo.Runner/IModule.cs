@@ -2,7 +2,7 @@
 
 namespace Estimmo.Runner
 {
-    interface IModule
+    internal interface IModule
     {
         public Task RunAsync(string[] args);
     }

@@ -9,13 +9,13 @@ namespace Estimmo.Api.Controllers
         [Route("/error/404")]
         public IActionResult NotFoundError()
         {
-            return NotFound(new Error {Code = 404, Message = "Not Found"});
+            return NotFound(new Error { Code = 404, Message = "Not Found" });
         }
 
         [Route("/error/{code:int}")]
         public IActionResult Error(int code)
         {
-            return StatusCode(code, new Error {Code = code, Message = "Error"});
+            return StatusCode(code, new Error { Code = code, Message = "Error" });
         }
     }
 }

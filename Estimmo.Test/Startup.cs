@@ -6,7 +6,6 @@ namespace Estimmo.Test
     {
         public void ConfigureServices(IServiceCollection services)
         {
-
         }
     }
 }

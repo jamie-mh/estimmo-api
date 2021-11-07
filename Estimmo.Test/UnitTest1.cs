@@ -7,7 +7,6 @@ namespace Estimmo.Test
         [Fact]
         public void Test1()
         {
-
         }
     }
 }

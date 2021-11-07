@@ -44,7 +44,7 @@ namespace Estimmo.Api
                     configuration.ReadFrom.Configuration(context.Configuration)
                         .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
                             .WithDefaultDestructurers()
-                            .WithDestructurers(new[] {new DbUpdateExceptionDestructurer()}));
+                            .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() }));
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
