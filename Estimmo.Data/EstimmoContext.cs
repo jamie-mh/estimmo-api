@@ -63,6 +63,8 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Value).HasColumnName("value").HasColumnType("money");
 
+                entity.Property(e => e.ParcelId).HasColumnName("parcel_id");
+
                 entity.Property(e => e.Coordinates).HasColumnName("coodinates").HasColumnType("geography");
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");

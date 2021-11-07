@@ -91,15 +91,15 @@ namespace Estimmo.Data.Migrations
                     land_surface_area = table.Column<int>(type: "integer", nullable: false),
                     room_count = table.Column<short>(type: "smallint", nullable: false),
                     value = table.Column<decimal>(type: "money", nullable: false),
-                    ParcelId = table.Column<string>(type: "text", nullable: true),
+                    parcel_id = table.Column<string>(type: "text", nullable: true),
                     coodinates = table.Column<Point>(type: "geography", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_property_sale", x => x.id);
                     table.ForeignKey(
-                        name: "FK_property_sale_parcel_ParcelId",
-                        column: x => x.ParcelId,
+                        name: "FK_property_sale_parcel_parcel_id",
+                        column: x => x.parcel_id,
                         principalTable: "parcel",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
@@ -128,9 +128,9 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:IndexMethod", "gist");
 
             migrationBuilder.CreateIndex(
-                name: "IX_property_sale_ParcelId",
+                name: "IX_property_sale_parcel_id",
                 table: "property_sale",
-                column: "ParcelId");
+                column: "parcel_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_section_geometry",

@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Estimmo.Data.Migrations
 {
     [DbContext(typeof(EstimmoContext))]
-    [Migration("20211107115503_Init")]
+    [Migration("20211107130431_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -91,7 +91,8 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("land_surface_area");
 
                     b.Property<string>("ParcelId")
-                        .HasColumnType("text");
+                        .HasColumnType("text")
+                        .HasColumnName("parcel_id");
 
                     b.Property<string>("PostCode")
                         .HasColumnType("text")
