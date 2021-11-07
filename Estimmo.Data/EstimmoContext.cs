@@ -65,7 +65,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Coordinates).HasColumnName("coodinates").HasColumnType("geography");
 
-                entity.HasIndex(e => e.Coordinates).HasMethod("gist").HasDatabaseName("property_sale_coordinates_idx");
+                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
             });
 
             modelBuilder.Entity<Town>(entity =>
@@ -79,6 +79,8 @@ namespace Estimmo.Data
                 entity.Property(e => e.Name).HasColumnName("name").IsRequired();
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+
+                entity.HasIndex(e => e.Geometry).HasMethod("gist");
             });
 
             modelBuilder.Entity<Section>(entity =>
@@ -96,6 +98,8 @@ namespace Estimmo.Data
                 entity.Property(e => e.Code).HasColumnName("code");
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+
+                entity.HasIndex(e => e.Geometry).HasMethod("gist");
 
                 entity.HasOne(s => s.Town)
                     .WithMany(t => t.Sections)
@@ -121,6 +125,8 @@ namespace Estimmo.Data
                 entity.Property(e => e.Number).HasColumnName("number");
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
+
+                entity.HasIndex(e => e.Geometry).HasMethod("gist");
 
                 entity.HasOne(p => p.Section)
                     .WithMany(s => s.Parcels)
