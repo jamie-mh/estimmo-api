@@ -125,6 +125,10 @@ namespace Estimmo.Data
                 entity.HasOne(p => p.Section)
                     .WithMany(s => s.Parcels)
                     .HasForeignKey(p => p.SectionId);
+
+                entity.HasOne(p => p.Town)
+                    .WithMany(t => t.Parcels)
+                    .HasForeignKey(p => p.TownId);
             });
         }
     }
