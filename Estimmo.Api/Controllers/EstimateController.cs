@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Estimmo.Api.Controllers
 {
     [ApiController]
-    [Route("/api/estimate")]
+    [Route("/estimate")]
     public class EstimateController : ControllerBase
     {
         private readonly IMapper _mapper;
