@@ -33,7 +33,7 @@ namespace Estimmo.Api.Services.Impl
             }
 
             var now = DateTime.Now;
-            var minDaysSince = (now - nearbyPropertySales.Last().Date).TotalDays;
+            var maxDaysSince = (now - nearbyPropertySales.First().Date).TotalDays;
 
             var parameters = new double[nearbyPropertySales.Count][];
             var values = new double[nearbyPropertySales.Count];
@@ -53,7 +53,7 @@ namespace Estimmo.Api.Services.Impl
                 // Calculate the weight as the distance from the request point and the days since the latest record
                 var daysSince = (now - sale.Date).TotalDays;
                 var normalisedDistance = sale.Coordinates.GreatCircleDistance(request.Coordinates) / SearchRadius;
-                var normalisedDaysSince = daysSince / minDaysSince;
+                var normalisedDaysSince = 1 - daysSince / maxDaysSince;
 
                 weights[i] = (normalisedDistance + normalisedDaysSince) / 2d;
             }
