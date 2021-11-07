@@ -3,7 +3,9 @@ using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
 using Estimmo.Api.Services;
 using Estimmo.Api.Services.Impl;
+using Estimmo.Api.TypeConverters;
 using Estimmo.Data;
+using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -11,8 +13,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
+using System.Collections.Generic;
 
 namespace Estimmo.Api
 {
@@ -42,6 +46,11 @@ namespace Estimmo.Api
 
             // Services
             services.AddScoped<IEstimationService, EstimationService>();
+
+            // Type Converters
+            services.AddSingleton<TownsToFeatureCollectionTypeConverter>();
+            services.AddSingleton<SectionsToFeatureCollectionTypeConverter>();
+            services.AddSingleton<ParcelsToFeatureCollectionTypeConverter>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -74,6 +83,15 @@ namespace Estimmo.Api
             config.CreateMap<EstimateModel, EstimateRequest>()
                 .ForMember(d => d.Coordinates,
                     o => o.MapFrom(v => new Point(v.PropertyCoordinates.Longitude, v.PropertyCoordinates.Latitude)));
+
+            config.CreateMap<IEnumerable<Town>, FeatureCollection>()
+                .ConvertUsing<TownsToFeatureCollectionTypeConverter>();
+
+            config.CreateMap<IEnumerable<Section>, FeatureCollection>()
+                .ConvertUsing<SectionsToFeatureCollectionTypeConverter>();
+
+            config.CreateMap<IEnumerable<Parcel>, FeatureCollection>()
+                .ConvertUsing<ParcelsToFeatureCollectionTypeConverter>();
         }
     }
 }
