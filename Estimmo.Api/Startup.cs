@@ -12,6 +12,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetTopologySuite.Geometries;
+using NetTopologySuite.IO.Converters;
 
 namespace Estimmo.Api
 {
@@ -32,7 +33,11 @@ namespace Estimmo.Api
                 options.UseNpgsql(connectionString);
             });
 
-            services.AddControllers();
+            services.AddControllers().AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+            });
+
             services.AddAutoMapper(ConfigureMappers);
 
             // Services
