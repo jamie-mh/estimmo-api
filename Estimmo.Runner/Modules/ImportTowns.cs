@@ -1,45 +1,30 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
-using NetTopologySuite.IO;
-using Newtonsoft.Json;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportTowns : IModule
+    public class ImportTowns : ImportFeatureCollectionModule
     {
         private const int BufferSize = 10000;
 
         private readonly ILogger _log = Log.ForContext<ImportTowns>();
+        private readonly CultureInfo _cultureInfo;
         private readonly EstimmoContext _context;
 
         public ImportTowns(EstimmoContext context)
         {
             _context = context;
+            _cultureInfo = new CultureInfo("FR-fr");
         }
 
-        public async Task RunAsync(string[] args)
+        protected override async Task ParseFeatureCollection(FeatureCollection collection)
         {
-            if (args.Length < 1)
-            {
-                _log.Error("No GeoJSON file specified");
-                return;
-            }
-
-            var serialiser = GeoJsonSerializer.Create();
-
-            _log.Information("Reading GeoJSON file {Name}", args[0]);
-            using var streamReader = File.OpenText(args[0]);
-            using var jsonReader = new JsonTextReader(streamReader);
-            var collection = serialiser.Deserialize<FeatureCollection>(jsonReader);
-
-            var culture = new CultureInfo("FR-fr");
-
             var buffer = new List<Town>(BufferSize);
             var inserted = 0;
 
@@ -54,7 +39,7 @@ namespace Estimmo.Runner.Modules
             foreach (var feature in collection)
             {
                 var id = feature.Attributes["id"].ToString();
-                var name = culture.TextInfo.ToTitleCase(feature.Attributes["nom"].ToString().ToLowerInvariant());
+                var name = FormatName(feature.Attributes["nom"].ToString().ToLowerInvariant());
 
                 buffer.Add(new Town { Id = id, Name = name, Geometry = feature.Geometry });
 
@@ -65,7 +50,15 @@ namespace Estimmo.Runner.Modules
                 }
             }
 
-            await FlushBufferAsync();
+            if (buffer.Any())
+            {
+                await FlushBufferAsync();
+            }
+        }
+
+        private string FormatName(string name)
+        {
+            return _cultureInfo.TextInfo.ToTitleCase(name.ToLowerInvariant());
         }
     }
 }

@@ -1,17 +1,18 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
-using NetTopologySuite.IO;
-using Newtonsoft.Json;
 using Serilog;
-using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportSections : IModule
+    public class ImportSections : ImportFeatureCollectionModule
     {
+        private const int BufferSize = 10000;
+
         private readonly ILogger _log = Log.ForContext<ImportSections>();
         private readonly EstimmoContext _context;
 
@@ -20,29 +21,35 @@ namespace Estimmo.Runner.Modules
             _context = context;
         }
 
-        public async Task RunAsync(string[] args)
+        protected override async Task ParseFeatureCollection(FeatureCollection collection)
         {
-            if (args.Length < 1)
+            var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
+
+            var buffer = new List<Section>(BufferSize);
+            var inserted = 0;
+
+            async Task FlushBufferAsync()
             {
-                _log.Error("No GeoJSON file specified");
-                return;
+                _context.Sections.AddRange(buffer);
+                await _context.SaveChangesAsync();
+                inserted += buffer.Count;
+                _log.Information("Processed {Count} sections", inserted);
             }
-
-            _log.Information("Reading GeoJSON file {Name}", args[0]);
-
-            var serialiser = GeoJsonSerializer.Create();
-            using var streamReader = File.OpenText(args[0]);
-            using var jsonReader = new JsonTextReader(streamReader);
-            var collection = serialiser.Deserialize<FeatureCollection>(jsonReader);
 
             foreach (var feature in collection)
             {
-                var id = feature.Attributes["id"].ToString();
                 var townId = feature.Attributes["commune"].ToString();
+
+                if (!townIds.Contains(townId))
+                {
+                    continue;
+                }
+
+                var id = feature.Attributes["id"].ToString();
                 var prefix = feature.Attributes["prefixe"].ToString();
                 var code = feature.Attributes["code"].ToString();
 
-                _context.Sections.Add(new Section
+                buffer.Add(new Section
                 {
                     Id = id,
                     TownId = townId,
@@ -51,17 +58,16 @@ namespace Estimmo.Runner.Modules
                     Geometry = feature.Geometry
                 });
 
-                _log.Information("Inserting section {Id}", id);
+                if (buffer.Count % BufferSize == 0)
+                {
+                    await FlushBufferAsync();
+                    buffer.Clear();
+                }
+            }
 
-                try
-                {
-                    await _context.SaveChangesAsync();
-                }
-                catch (Exception e)
-                {
-                    _log.Error(e, "An error occurred during insert");
-                    _context.ChangeTracker.Clear();
-                }
+            if (buffer.Any())
+            {
+                await FlushBufferAsync();
             }
         }
     }

@@ -73,7 +73,7 @@ namespace Estimmo.Api
         {
             config.CreateMap<EstimateModel, EstimateRequest>()
                 .ForMember(d => d.Coordinates,
-                    o => o.MapFrom(v => new Point(v.PropertyCoordinates.Latitude, v.PropertyCoordinates.Longitude)));
+                    o => o.MapFrom(v => new Point(v.PropertyCoordinates.Longitude, v.PropertyCoordinates.Latitude)));
         }
     }
 }

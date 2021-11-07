@@ -18,5 +18,7 @@ namespace Estimmo.Data.Entities
         public decimal Value { get; set; }
         public string ParcelId { get; set; }
         public Point Coordinates { get; set; }
+
+        public virtual Parcel Parcel { get; set; }
     }
 }

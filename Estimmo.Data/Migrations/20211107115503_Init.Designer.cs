@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Estimmo.Data.Migrations
 {
     [DbContext(typeof(EstimmoContext))]
-    [Migration("20211107100541_Init")]
+    [Migration("20211107115503_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -126,6 +126,8 @@ namespace Estimmo.Data.Migrations
                     b.HasIndex("Coordinates")
                         .HasMethod("gist");
 
+                    b.HasIndex("ParcelId");
+
                     b.ToTable("property_sale");
                 });
 
@@ -201,6 +203,15 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("Town");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Parcel", "Parcel")
+                        .WithMany("PropertySales")
+                        .HasForeignKey("ParcelId");
+
+                    b.Navigation("Parcel");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
@@ -208,6 +219,11 @@ namespace Estimmo.Data.Migrations
                         .HasForeignKey("TownId");
 
                     b.Navigation("Town");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
+                {
+                    b.Navigation("PropertySales");
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>

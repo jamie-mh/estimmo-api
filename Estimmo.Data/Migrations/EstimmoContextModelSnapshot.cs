@@ -124,6 +124,8 @@ namespace Estimmo.Data.Migrations
                     b.HasIndex("Coordinates")
                         .HasMethod("gist");
 
+                    b.HasIndex("ParcelId");
+
                     b.ToTable("property_sale");
                 });
 
@@ -199,6 +201,15 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("Town");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Parcel", "Parcel")
+                        .WithMany("PropertySales")
+                        .HasForeignKey("ParcelId");
+
+                    b.Navigation("Parcel");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
@@ -206,6 +217,11 @@ namespace Estimmo.Data.Migrations
                         .HasForeignKey("TownId");
 
                     b.Navigation("Town");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
+                {
+                    b.Navigation("PropertySales");
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>

@@ -7,21 +7,25 @@ namespace Estimmo.Api
     {
         private const double EarthRadius = 6371e3;
 
-        private static double ToRadians(double x)
+        private static double DegreesToRadians(double angle)
         {
-            return x * Math.PI / 180;
+            return angle * Math.PI / 180;
         }
 
+        // https://en.wikipedia.org/wiki/Great-circle_distance#Formulae
         public static double GreatCircleDistance(this Point a, Point b)
         {
-            var sinLatA = Math.Sin(ToRadians(a.X));
-            var sinLatB = Math.Sin(ToRadians(b.X));
-            var cosLatA = Math.Cos(ToRadians(a.X));
-            var cosLatB = Math.Cos(ToRadians(b.X));
-            var cosLon = Math.Cos(ToRadians(a.Y) - ToRadians(b.Y));
+            var lonARad = DegreesToRadians(a.X);
+            var latARad = DegreesToRadians(a.Y);
+            var lonBRad = DegreesToRadians(b.X);
+            var latBRad = DegreesToRadians(b.Y);
 
-            var relDistance = Math.Acos((sinLatA * sinLatB) + (cosLatA * cosLatB * cosLon));
-            return relDistance * EarthRadius;
+            var deltaLon = Math.Abs(lonARad - lonBRad);
+            var centralAngle =
+                Math.Acos(Math.Sin(latARad) * Math.Sin(latBRad) +
+                          Math.Cos(latARad) * Math.Cos(latBRad) * Math.Cos(deltaLon));
+
+            return centralAngle * EarthRadius;
         }
     }
 }

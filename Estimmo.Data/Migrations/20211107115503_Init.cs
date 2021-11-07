@@ -13,30 +13,6 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
             migrationBuilder.CreateTable(
-                name: "property_sale",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    date = table.Column<DateTime>(type: "date", nullable: false),
-                    street_number = table.Column<short>(type: "smallint", nullable: true),
-                    street_number_suffix = table.Column<string>(type: "text", nullable: true),
-                    street_name = table.Column<string>(type: "text", nullable: true),
-                    post_code = table.Column<string>(type: "text", nullable: true),
-                    type = table.Column<int>(type: "smallint", nullable: false),
-                    building_surface_area = table.Column<int>(type: "integer", nullable: false),
-                    land_surface_area = table.Column<int>(type: "integer", nullable: false),
-                    room_count = table.Column<short>(type: "smallint", nullable: false),
-                    value = table.Column<decimal>(type: "money", nullable: false),
-                    ParcelId = table.Column<string>(type: "text", nullable: true),
-                    coodinates = table.Column<Point>(type: "geography", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_property_sale", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "town",
                 columns: table => new
                 {
@@ -99,6 +75,36 @@ namespace Estimmo.Data.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "property_sale",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    date = table.Column<DateTime>(type: "date", nullable: false),
+                    street_number = table.Column<short>(type: "smallint", nullable: true),
+                    street_number_suffix = table.Column<string>(type: "text", nullable: true),
+                    street_name = table.Column<string>(type: "text", nullable: true),
+                    post_code = table.Column<string>(type: "text", nullable: true),
+                    type = table.Column<int>(type: "smallint", nullable: false),
+                    building_surface_area = table.Column<int>(type: "integer", nullable: false),
+                    land_surface_area = table.Column<int>(type: "integer", nullable: false),
+                    room_count = table.Column<short>(type: "smallint", nullable: false),
+                    value = table.Column<decimal>(type: "money", nullable: false),
+                    ParcelId = table.Column<string>(type: "text", nullable: true),
+                    coodinates = table.Column<Point>(type: "geography", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_property_sale", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_property_sale_parcel_ParcelId",
+                        column: x => x.ParcelId,
+                        principalTable: "parcel",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_parcel_geometry",
                 table: "parcel",
@@ -122,6 +128,11 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:IndexMethod", "gist");
 
             migrationBuilder.CreateIndex(
+                name: "IX_property_sale_ParcelId",
+                table: "property_sale",
+                column: "ParcelId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_section_geometry",
                 table: "section",
                 column: "geometry")
@@ -142,10 +153,10 @@ namespace Estimmo.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "parcel");
+                name: "property_sale");
 
             migrationBuilder.DropTable(
-                name: "property_sale");
+                name: "parcel");
 
             migrationBuilder.DropTable(
                 name: "section");

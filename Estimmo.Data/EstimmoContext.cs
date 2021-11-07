@@ -66,6 +66,10 @@ namespace Estimmo.Data
                 entity.Property(e => e.Coordinates).HasColumnName("coodinates").HasColumnType("geography");
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");
+
+                entity.HasOne(p => p.Parcel)
+                    .WithMany(p => p.PropertySales)
+                    .HasForeignKey(p => p.ParcelId);
             });
 
             modelBuilder.Entity<Town>(entity =>
