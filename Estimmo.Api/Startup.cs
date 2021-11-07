@@ -51,6 +51,7 @@ namespace Estimmo.Api
             services.AddSingleton<TownsToFeatureCollectionTypeConverter>();
             services.AddSingleton<SectionsToFeatureCollectionTypeConverter>();
             services.AddSingleton<ParcelsToFeatureCollectionTypeConverter>();
+            services.AddSingleton<PropertySalesToFeatureCollectionTypeConverter>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -92,6 +93,9 @@ namespace Estimmo.Api
 
             config.CreateMap<IEnumerable<Parcel>, FeatureCollection>()
                 .ConvertUsing<ParcelsToFeatureCollectionTypeConverter>();
+
+            config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
+                .ConvertUsing<PropertySalesToFeatureCollectionTypeConverter>();
         }
     }
 }

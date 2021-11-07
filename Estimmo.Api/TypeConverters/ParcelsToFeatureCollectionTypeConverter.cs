@@ -11,14 +11,14 @@ namespace Estimmo.Api.TypeConverters
         {
             var collection = new FeatureCollection();
 
-            foreach (var town in source)
+            foreach (var parcel in source)
             {
                 var attributes = new AttributesTable
                 {
-                    { "id", town.Id }
+                    { "id", parcel.Id }
                 };
 
-                collection.Add(new Feature(town.Geometry, attributes));
+                collection.Add(new Feature(parcel.Geometry, attributes));
             }
 
             return collection;
