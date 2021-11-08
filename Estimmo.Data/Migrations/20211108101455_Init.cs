@@ -50,7 +50,7 @@ namespace Estimmo.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
-                    department_name = table.Column<string>(type: "text", nullable: false),
+                    department_id = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     geometry = table.Column<Geometry>(type: "geography", nullable: false)
                 },
@@ -58,8 +58,8 @@ namespace Estimmo.Data.Migrations
                 {
                     table.PrimaryKey("PK_town", x => x.id);
                     table.ForeignKey(
-                        name: "FK_town_department_department_name",
-                        column: x => x.department_name,
+                        name: "FK_town_department_department_id",
+                        column: x => x.department_id,
                         principalTable: "department",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
@@ -201,9 +201,9 @@ namespace Estimmo.Data.Migrations
                 column: "town_id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_town_department_name",
+                name: "IX_town_department_id",
                 table: "town",
-                column: "department_name");
+                column: "department_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_town_geometry",

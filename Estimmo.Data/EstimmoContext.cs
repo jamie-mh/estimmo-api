@@ -78,7 +78,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.DepartmentId).HasColumnName("department_name").IsRequired();
+                entity.Property(e => e.DepartmentId).HasColumnName("department_id").IsRequired();
 
                 entity.Property(e => e.Name).HasColumnName("name").IsRequired();
 

@@ -234,7 +234,7 @@ namespace Estimmo.Data.Migrations
                     b.Property<string>("DepartmentId")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("department_name");
+                        .HasColumnName("department_id");
 
                     b.Property<Geometry>("Geometry")
                         .IsRequired()
