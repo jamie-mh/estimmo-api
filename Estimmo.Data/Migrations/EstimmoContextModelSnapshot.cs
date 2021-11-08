@@ -62,8 +62,8 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("geography")
                         .HasColumnName("geometry");
 
-                    b.Property<int>("Number")
-                        .HasColumnType("integer")
+                    b.Property<string>("Number")
+                        .HasColumnType("text")
                         .HasColumnName("number");
 
                     b.Property<string>("Prefix")

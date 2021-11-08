@@ -95,7 +95,7 @@ namespace Estimmo.Data.Migrations
                     town_id = table.Column<string>(type: "text", nullable: false),
                     prefix = table.Column<string>(type: "text", nullable: false),
                     section_code = table.Column<string>(type: "text", nullable: false),
-                    number = table.Column<int>(type: "integer", nullable: false),
+                    number = table.Column<string>(type: "text", nullable: true),
                     geometry = table.Column<Geometry>(type: "geography", nullable: false)
                 },
                 constraints: table =>

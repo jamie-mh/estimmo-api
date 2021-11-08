@@ -42,12 +42,7 @@ namespace Estimmo.Runner.Modules
                 var townId = feature.Attributes["commune"].ToString();
                 var prefix = feature.Attributes["prefixe"].ToString();
                 var sectionCode = feature.Attributes["section"].ToString();
-
-                if (!int.TryParse(feature.Attributes["numero"].ToString(), out var number))
-                {
-                    _log.Error("Failed to parse number : {@Number}", feature.Attributes["numero"]);
-                    continue;
-                }
+                var number = feature.Attributes["numero"].ToString();
 
                 var sectionId = $"{townId}{prefix}{sectionCode.PadLeft(2, '0')}";
 

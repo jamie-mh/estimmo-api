@@ -15,7 +15,7 @@ namespace Estimmo.Data.Entities
         public string TownId { get; set; }
         public string Prefix { get; set; }
         public string SectionCode { get; set; }
-        public int Number { get; set; }
+        public string Number { get; set; }
         public Geometry Geometry { get; set; }
 
         public virtual Town Town { get; set; }
