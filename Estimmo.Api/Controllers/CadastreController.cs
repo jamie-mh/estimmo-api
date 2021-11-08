@@ -1,10 +1,8 @@
 using AutoMapper;
-using Estimmo.Api.Models;
 using Estimmo.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
-using NetTopologySuite.Geometries;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,15 +21,26 @@ namespace Estimmo.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/towns")]
-        public async Task<FeatureCollection> GetTowns([FromQuery] NearbyModel model)
+        [Route("/regions")]
+        public async Task<FeatureCollection> GetRegions()
         {
-            var centerPoint = new Point(model.Longitude, model.Latitude);
+            var regions = await _context.Regions.ToListAsync();
+            return _mapper.Map<FeatureCollection>(regions);
+        }
 
-            var towns = await _context.Towns
-                .Where(t => t.Geometry.IsWithinDistance(centerPoint, model.Radius))
-                .ToListAsync();
+        [HttpGet]
+        [Route("/regions/{regionId}/departments")]
+        public async Task<FeatureCollection> GetDepartments(string regionId)
+        {
+            var departments = await _context.Departments.Where(d => d.RegionId == regionId).ToListAsync();
+            return _mapper.Map<FeatureCollection>(departments);
+        }
 
+        [HttpGet]
+        [Route("/departments/{departmentId}/towns")]
+        public async Task<FeatureCollection> GetTowns(string departmentId)
+        {
+            var towns = await _context.Towns.Where(t => t.DepartmentId == departmentId).ToListAsync();
             return _mapper.Map<FeatureCollection>(towns);
         }
 

@@ -3,7 +3,7 @@ using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
 using Estimmo.Api.Services;
 using Estimmo.Api.Services.Impl;
-using Estimmo.Api.TypeConverters;
+using Estimmo.Api.TypeConverters.FeatureCollection;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Builder;
@@ -48,10 +48,12 @@ namespace Estimmo.Api
             services.AddScoped<IEstimationService, EstimationService>();
 
             // Type Converters
-            services.AddSingleton<TownsToFeatureCollectionTypeConverter>();
-            services.AddSingleton<SectionsToFeatureCollectionTypeConverter>();
-            services.AddSingleton<ParcelsToFeatureCollectionTypeConverter>();
-            services.AddSingleton<PropertySalesToFeatureCollectionTypeConverter>();
+            services.AddSingleton<RegionsTypeConverter>();
+            services.AddSingleton<DepartmentsTypeConverter>();
+            services.AddSingleton<TownsTypeConverter>();
+            services.AddSingleton<SectionsTypeConverter>();
+            services.AddSingleton<ParcelsTypeConverter>();
+            services.AddSingleton<PropertySalesTypeConverter>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -85,17 +87,23 @@ namespace Estimmo.Api
                 .ForMember(d => d.Coordinates,
                     o => o.MapFrom(v => new Point(v.PropertyCoordinates.Longitude, v.PropertyCoordinates.Latitude)));
 
+            config.CreateMap<IEnumerable<Region>, FeatureCollection>()
+                .ConvertUsing<RegionsTypeConverter>();
+
+            config.CreateMap<IEnumerable<Department>, FeatureCollection>()
+                .ConvertUsing<DepartmentsTypeConverter>();
+
             config.CreateMap<IEnumerable<Town>, FeatureCollection>()
-                .ConvertUsing<TownsToFeatureCollectionTypeConverter>();
+                .ConvertUsing<TownsTypeConverter>();
 
             config.CreateMap<IEnumerable<Section>, FeatureCollection>()
-                .ConvertUsing<SectionsToFeatureCollectionTypeConverter>();
+                .ConvertUsing<SectionsTypeConverter>();
 
             config.CreateMap<IEnumerable<Parcel>, FeatureCollection>()
-                .ConvertUsing<ParcelsToFeatureCollectionTypeConverter>();
+                .ConvertUsing<ParcelsTypeConverter>();
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
-                .ConvertUsing<PropertySalesToFeatureCollectionTypeConverter>();
+                .ConvertUsing<PropertySalesTypeConverter>();
         }
     }
 }

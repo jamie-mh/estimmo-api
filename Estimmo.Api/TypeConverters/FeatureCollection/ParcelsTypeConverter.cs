@@ -3,13 +3,13 @@ using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
 
-namespace Estimmo.Api.TypeConverters
+namespace Estimmo.Api.TypeConverters.FeatureCollection
 {
-    public class ParcelsToFeatureCollectionTypeConverter : ITypeConverter<IEnumerable<Parcel>, FeatureCollection>
+    public class ParcelsTypeConverter : ITypeConverter<IEnumerable<Parcel>, NetTopologySuite.Features.FeatureCollection>
     {
-        public FeatureCollection Convert(IEnumerable<Parcel> source, FeatureCollection destination, ResolutionContext context)
+        public NetTopologySuite.Features.FeatureCollection Convert(IEnumerable<Parcel> source, NetTopologySuite.Features.FeatureCollection destination, ResolutionContext context)
         {
-            var collection = new FeatureCollection();
+            var collection = new NetTopologySuite.Features.FeatureCollection();
 
             foreach (var parcel in source)
             {
