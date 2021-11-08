@@ -13,7 +13,7 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,");
 
             migrationBuilder.CreateTable(
-                name: "town",
+                name: "region",
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
@@ -22,7 +22,47 @@ namespace Estimmo.Data.Migrations
                 },
                 constraints: table =>
                 {
+                    table.PrimaryKey("PK_region", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "department",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    region_id = table.Column<string>(type: "text", nullable: true),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    geometry = table.Column<Geometry>(type: "geography", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_department", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_department_region_region_id",
+                        column: x => x.region_id,
+                        principalTable: "region",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "town",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    department_name = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    geometry = table.Column<Geometry>(type: "geography", nullable: false)
+                },
+                constraints: table =>
+                {
                     table.PrimaryKey("PK_town", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_town_department_department_name",
+                        column: x => x.department_name,
+                        principalTable: "department",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -31,8 +71,8 @@ namespace Estimmo.Data.Migrations
                 {
                     id = table.Column<string>(type: "text", nullable: false),
                     town_id = table.Column<string>(type: "text", nullable: true),
-                    prefix = table.Column<string>(type: "text", nullable: true),
-                    code = table.Column<string>(type: "text", nullable: true),
+                    prefix = table.Column<string>(type: "text", nullable: false),
+                    code = table.Column<string>(type: "text", nullable: false),
                     geometry = table.Column<Geometry>(type: "geography", nullable: false)
                 },
                 constraints: table =>
@@ -51,10 +91,10 @@ namespace Estimmo.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<string>(type: "text", nullable: false),
-                    section_id = table.Column<string>(type: "text", nullable: true),
-                    town_id = table.Column<string>(type: "text", nullable: true),
-                    prefix = table.Column<string>(type: "text", nullable: true),
-                    section_code = table.Column<string>(type: "text", nullable: true),
+                    section_id = table.Column<string>(type: "text", nullable: false),
+                    town_id = table.Column<string>(type: "text", nullable: false),
+                    prefix = table.Column<string>(type: "text", nullable: false),
+                    section_code = table.Column<string>(type: "text", nullable: false),
                     number = table.Column<int>(type: "integer", nullable: false),
                     geometry = table.Column<Geometry>(type: "geography", nullable: false)
                 },
@@ -66,13 +106,13 @@ namespace Estimmo.Data.Migrations
                         column: x => x.section_id,
                         principalTable: "section",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_parcel_town_town_id",
                         column: x => x.town_id,
                         principalTable: "town",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -84,7 +124,7 @@ namespace Estimmo.Data.Migrations
                     date = table.Column<DateTime>(type: "date", nullable: false),
                     street_number = table.Column<short>(type: "smallint", nullable: true),
                     street_number_suffix = table.Column<string>(type: "text", nullable: true),
-                    street_name = table.Column<string>(type: "text", nullable: true),
+                    street_name = table.Column<string>(type: "text", nullable: false),
                     post_code = table.Column<string>(type: "text", nullable: true),
                     type = table.Column<int>(type: "smallint", nullable: false),
                     building_surface_area = table.Column<int>(type: "integer", nullable: false),
@@ -92,7 +132,7 @@ namespace Estimmo.Data.Migrations
                     room_count = table.Column<short>(type: "smallint", nullable: false),
                     value = table.Column<decimal>(type: "money", nullable: false),
                     parcel_id = table.Column<string>(type: "text", nullable: true),
-                    coodinates = table.Column<Point>(type: "geography", nullable: true)
+                    coodinates = table.Column<Point>(type: "geography", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -104,6 +144,17 @@ namespace Estimmo.Data.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_department_geometry",
+                table: "department",
+                column: "geometry")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_department_region_id",
+                table: "department",
+                column: "region_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_parcel_geometry",
@@ -133,6 +184,12 @@ namespace Estimmo.Data.Migrations
                 column: "parcel_id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_region_geometry",
+                table: "region",
+                column: "geometry")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_section_geometry",
                 table: "section",
                 column: "geometry")
@@ -142,6 +199,11 @@ namespace Estimmo.Data.Migrations
                 name: "IX_section_town_id",
                 table: "section",
                 column: "town_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_town_department_name",
+                table: "town",
+                column: "department_name");
 
             migrationBuilder.CreateIndex(
                 name: "IX_town_geometry",
@@ -163,6 +225,12 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "town");
+
+            migrationBuilder.DropTable(
+                name: "department");
+
+            migrationBuilder.DropTable(
+                name: "region");
         }
     }
 }

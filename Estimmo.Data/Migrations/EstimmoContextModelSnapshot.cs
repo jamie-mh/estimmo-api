@@ -21,6 +21,36 @@ namespace Estimmo.Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.11")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Department", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<Geometry>("Geometry")
+                        .IsRequired()
+                        .HasColumnType("geography")
+                        .HasColumnName("geometry");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("RegionId")
+                        .HasColumnType("text")
+                        .HasColumnName("region_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Geometry")
+                        .HasMethod("gist");
+
+                    b.HasIndex("RegionId");
+
+                    b.ToTable("department");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
                 {
                     b.Property<string>("Id")
@@ -37,18 +67,22 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("number");
 
                     b.Property<string>("Prefix")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("prefix");
 
                     b.Property<string>("SectionCode")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("section_code");
 
                     b.Property<string>("SectionId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("section_id");
 
                     b.Property<string>("TownId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("town_id");
 
@@ -77,6 +111,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("building_surface_area");
 
                     b.Property<Point>("Coordinates")
+                        .IsRequired()
                         .HasColumnType("geography")
                         .HasColumnName("coodinates");
 
@@ -101,6 +136,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("room_count");
 
                     b.Property<string>("StreetName")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("street_name");
 
@@ -130,6 +166,30 @@ namespace Estimmo.Data.Migrations
                     b.ToTable("property_sale");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Region", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<Geometry>("Geometry")
+                        .IsRequired()
+                        .HasColumnType("geography")
+                        .HasColumnName("geometry");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Geometry")
+                        .HasMethod("gist");
+
+                    b.ToTable("region");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
                 {
                     b.Property<string>("Id")
@@ -137,6 +197,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("id");
 
                     b.Property<string>("Code")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("code");
 
@@ -146,6 +207,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("geometry");
 
                     b.Property<string>("Prefix")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("prefix");
 
@@ -169,6 +231,11 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("id");
 
+                    b.Property<string>("DepartmentId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("department_name");
+
                     b.Property<Geometry>("Geometry")
                         .IsRequired()
                         .HasColumnType("geography")
@@ -181,21 +248,36 @@ namespace Estimmo.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("DepartmentId");
+
                     b.HasIndex("Geometry")
                         .HasMethod("gist");
 
                     b.ToTable("town");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Department", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Region", "Region")
+                        .WithMany("Departments")
+                        .HasForeignKey("RegionId");
+
+                    b.Navigation("Region");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Section", "Section")
                         .WithMany("Parcels")
-                        .HasForeignKey("SectionId");
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
                         .WithMany("Parcels")
-                        .HasForeignKey("TownId");
+                        .HasForeignKey("TownId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Section");
 
@@ -220,9 +302,30 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("Town");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Town", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Department", "Department")
+                        .WithMany("Towns")
+                        .HasForeignKey("DepartmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Department", b =>
+                {
+                    b.Navigation("Towns");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Parcel", b =>
                 {
                     b.Navigation("PropertySales");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Region", b =>
+                {
+                    b.Navigation("Departments");
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
