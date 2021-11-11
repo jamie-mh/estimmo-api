@@ -64,11 +64,11 @@ namespace Estimmo.Api.Controllers
         }
 
         [HttpGet]
-        [Route("/towns/{townId}/sections/{sectionId}/parcels")]
-        public async Task<FeatureCollection> GetParcels(string townId, string sectionId)
+        [Route("/sections/{sectionId}/parcels")]
+        public async Task<FeatureCollection> GetParcels(string sectionId)
         {
             var parcels = await _context.Parcels
-                .Where(p => p.TownId == townId && p.SectionId == sectionId)
+                .Where(p => p.SectionId == sectionId)
                 .ToListAsync();
 
             return _mapper.Map<FeatureCollection>(parcels);
