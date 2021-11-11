@@ -20,6 +20,10 @@ namespace Estimmo.Data
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<Parcel> Parcels { get; set; }
         public virtual DbSet<PropertySale> PropertySales { get; set; }
+        public virtual DbSet<RegionAverageValue> RegionAverageValues { get; set; }
+        public virtual DbSet<DepartmentAverageValue> DepartmentAverageValues { get; set; }
+        public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
+        public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -189,6 +193,76 @@ namespace Estimmo.Data
                 entity.HasOne(p => p.Parcel)
                     .WithMany(p => p.PropertySales)
                     .HasForeignKey(p => p.ParcelId);
+            });
+
+            modelBuilder.Entity<RegionAverageValue>(entity =>
+            {
+                entity.ToView("region_avg_value");
+
+                entity.HasKey(e => new { e.Id, e.Type });
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.Value).HasColumnName("value");
+            });
+
+            modelBuilder.Entity<DepartmentAverageValue>(entity =>
+            {
+                entity.ToView("department_avg_value");
+
+                entity.HasKey(e => new { e.Id, e.Type });
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.RegionId).HasColumnName("region_id");
+
+                entity.Property(e => e.Value).HasColumnName("value");
+
+                entity.HasOne(d => d.Region)
+                    .WithMany(r => r.DepartmentAverageValues)
+                    .HasForeignKey(d => d.RegionId);
+            });
+
+            modelBuilder.Entity<TownAverageValue>(entity =>
+            {
+                entity.ToView("town_avg_value");
+
+                entity.HasKey(e => new { e.Id, e.Type });
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.DepartmentId).HasColumnName("department_id");
+
+                entity.Property(e => e.Value).HasColumnName("value");
+
+                entity.HasOne(t => t.Department)
+                    .WithMany(d => d.TownAverageValues)
+                    .HasForeignKey(t => t.DepartmentId);
+            });
+
+            modelBuilder.Entity<SectionAverageValue>(entity =>
+            {
+                entity.ToView("section_avg_value");
+
+                entity.HasKey(e => new { e.Id, e.Type });
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.TownId).HasColumnName("town_id");
+
+                entity.Property(e => e.Value).HasColumnName("value");
+
+                entity.HasOne(s => s.Town)
+                    .WithMany(t => t.SectionAverageValues)
+                    .HasForeignKey(s => s.TownId);
             });
         }
     }

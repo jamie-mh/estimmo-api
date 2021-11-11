@@ -8,6 +8,7 @@ namespace Estimmo.Data.Entities
         public Region()
         {
             Departments = new HashSet<Department>();
+            DepartmentAverageValues = new HashSet<DepartmentAverageValue>();
         }
 
         public string Id { get; set; }
@@ -15,5 +16,6 @@ namespace Estimmo.Data.Entities
         public Geometry Geometry { get; set; }
 
         public ICollection<Department> Departments { get; set; }
+        public ICollection<DepartmentAverageValue> DepartmentAverageValues { get; set; }
     }
 }
