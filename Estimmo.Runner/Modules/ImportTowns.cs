@@ -42,7 +42,14 @@ namespace Estimmo.Runner.Modules
                 var departmentId = id[..2];
                 var name = FormatName(feature.Attributes["nom"].ToString().ToLowerInvariant());
 
-                buffer.Add(new Town { Id = id, DepartmentId = departmentId, Name = name, Geometry = feature.Geometry });
+                buffer.Add(new Town
+                {
+                    Id = id,
+                    DepartmentId = departmentId,
+                    Name = name,
+                    Geometry = feature.Geometry,
+                    Point = feature.Geometry.Centroid
+                });
 
                 if (buffer.Count % BufferSize == 0)
                 {

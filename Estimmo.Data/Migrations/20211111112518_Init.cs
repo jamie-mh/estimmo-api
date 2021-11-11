@@ -52,7 +52,8 @@ namespace Estimmo.Data.Migrations
                     id = table.Column<string>(type: "text", nullable: false),
                     department_id = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
-                    geometry = table.Column<Geometry>(type: "geography", nullable: false)
+                    geometry = table.Column<Geometry>(type: "geography", nullable: false),
+                    point = table.Column<Geometry>(type: "geography", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -209,6 +210,12 @@ namespace Estimmo.Data.Migrations
                 name: "IX_town_geometry",
                 table: "town",
                 column: "geometry")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_town_point",
+                table: "town",
+                column: "point")
                 .Annotation("Npgsql:IndexMethod", "gist");
         }
 
