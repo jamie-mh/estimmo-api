@@ -45,6 +45,14 @@ namespace Estimmo.Api.Controllers
         }
 
         [HttpGet]
+        [Route("/towns/{townId}")]
+        public async Task<Feature> GetTown(string townId)
+        {
+            var town = await _context.Towns.SingleOrDefaultAsync(t => t.Id == townId);
+            return new Feature(town.Geometry, new AttributesTable { { "id", town.Id }, { "name", town.Name } });
+        }
+
+        [HttpGet]
         [Route("/towns/{townId}/sections")]
         public async Task<FeatureCollection> GetSections(string townId)
         {
