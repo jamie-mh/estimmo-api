@@ -1,4 +1,5 @@
 using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using Serilog;
@@ -31,6 +32,13 @@ namespace Estimmo.Runner.Modules
                 collection = serialiser.Deserialize<FeatureCollection>(jsonReader);
             });
 
+            _log.Information("Calculating bounding boxes");
+            foreach (var feature in collection)
+            {
+                feature.BoundingBox ??= feature.Geometry.EnvelopeInternal;
+            }
+
+            _log.Information("Parsing collection");
             await ParseFeatureCollection(collection);
         }
 
