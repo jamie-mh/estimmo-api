@@ -17,6 +17,8 @@ namespace Estimmo.Runner.Modules
     public class ImportPropertySales : IModule
     {
         private const int BufferSize = 10000;
+        private const int MinValue = 10000;
+        private const int MaxValue = 2000000;
 
         private static readonly Dictionary<string, string> NameSubtitutions = new()
         {
@@ -80,6 +82,11 @@ namespace Estimmo.Runner.Modules
                     mutation.Value == null || mutation.BuildingSurfaceArea == null ||
                     mutation.RoomCount == null || mutation.Latitude == null || mutation.Longitude == null ||
                     !parcelIds.Contains(mutation.ParcelId))
+                {
+                    continue;
+                }
+
+                if (mutation.Value < MinValue || mutation.Value > MaxValue)
                 {
                     continue;
                 }
