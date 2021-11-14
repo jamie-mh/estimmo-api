@@ -87,11 +87,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
 
-                entity.Property(e => e.Point).HasColumnName("point").HasColumnType("geography").IsRequired();
-
                 entity.HasIndex(e => e.Geometry).HasMethod("gist");
-
-                entity.HasIndex(e => e.Point).HasMethod("gist");
 
                 entity.HasOne(t => t.Department)
                     .WithMany(d => d.Towns)

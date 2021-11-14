@@ -268,19 +268,11 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name");
 
-                    b.Property<Geometry>("Point")
-                        .IsRequired()
-                        .HasColumnType("geography")
-                        .HasColumnName("point");
-
                     b.HasKey("Id");
 
                     b.HasIndex("DepartmentId");
 
                     b.HasIndex("Geometry")
-                        .HasMethod("gist");
-
-                    b.HasIndex("Point")
                         .HasMethod("gist");
 
                     b.ToTable("town");

@@ -19,7 +19,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                     { "name", town.Name }
                 };
 
-                collection.Add(new Feature(town.Point, attributes));
+                collection.Add(new Feature(town.Geometry, attributes));
             }
 
             return collection;

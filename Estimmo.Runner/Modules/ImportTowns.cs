@@ -47,8 +47,7 @@ namespace Estimmo.Runner.Modules
                     Id = id,
                     DepartmentId = departmentId,
                     Name = name,
-                    Geometry = feature.Geometry,
-                    Point = feature.Geometry.Centroid
+                    Geometry = feature.Geometry
                 });
 
                 if (buffer.Count % BufferSize == 0)
