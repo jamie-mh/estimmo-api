@@ -25,8 +25,8 @@ namespace Estimmo.Api.Controllers
         public async Task<FeatureCollection> GetPropertySales(string townId, string sectionId)
         {
             var sales = await _context.PropertySales
-                .Include(p => p.Parcel)
-                .Where(p => p.Parcel.TownId == townId && p.Parcel.SectionId == sectionId)
+                .Include(p => p.Section)
+                .Where(p => p.Section.TownId == townId && p.SectionId == sectionId)
                 .ToListAsync();
 
             return _mapper.Map<FeatureCollection>(sales);

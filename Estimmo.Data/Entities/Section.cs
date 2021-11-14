@@ -7,7 +7,7 @@ namespace Estimmo.Data.Entities
     {
         public Section()
         {
-            Parcels = new HashSet<Parcel>();
+            PropertySales = new HashSet<PropertySale>();
         }
 
         public string Id { get; set; }
@@ -17,6 +17,6 @@ namespace Estimmo.Data.Entities
         public Geometry Geometry { get; set; }
 
         public virtual Town Town { get; set; }
-        public ICollection<Parcel> Parcels { get; set; }
+        public ICollection<PropertySale> PropertySales { get; set; }
     }
 }

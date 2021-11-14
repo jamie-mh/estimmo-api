@@ -62,8 +62,8 @@ namespace Estimmo.Runner.Modules
 
         private async Task ParsePropertyMutationsAsync(IAsyncEnumerable<PropertyMutation> mutations)
         {
-            _log.Information("Fetching parcel ids");
-            var parcelIds = new HashSet<string>(await _context.Parcels.Select(p => p.Id).ToListAsync());
+            _log.Information("Fetching section ids");
+            var sectionIds = new HashSet<string>(await _context.Sections.Select(p => p.Id).ToListAsync());
 
             var buffer = new List<PropertySale>(BufferSize);
             var inserted = 0;
@@ -81,12 +81,19 @@ namespace Estimmo.Runner.Modules
                 if (mutation.LocalType == null || mutation.MutationType != "Vente" ||
                     mutation.Value == null || mutation.BuildingSurfaceArea == null ||
                     mutation.RoomCount == null || mutation.Latitude == null || mutation.Longitude == null ||
-                    !parcelIds.Contains(mutation.ParcelId))
+                    mutation.ParcelId == null)
                 {
                     continue;
                 }
 
                 if (mutation.Value < MinValue || mutation.Value > MaxValue)
+                {
+                    continue;
+                }
+
+                var sectionId = mutation.ParcelId[..^4];
+
+                if (!sectionIds.Contains(sectionId))
                 {
                     continue;
                 }
@@ -123,7 +130,7 @@ namespace Estimmo.Runner.Modules
                     LandSurfaceArea = mutation.LandSurfaceArea ?? 0,
                     RoomCount = mutation.RoomCount.Value,
                     Value = mutation.Value.Value,
-                    ParcelId = mutation.ParcelId,
+                    SectionId = sectionId,
                     Coordinates = new Point(mutation.Longitude.Value, mutation.Latitude.Value)
                 });
 

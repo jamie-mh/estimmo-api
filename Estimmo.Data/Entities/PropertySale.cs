@@ -16,9 +16,9 @@ namespace Estimmo.Data.Entities
         public int LandSurfaceArea { get; set; }
         public short RoomCount { get; set; }
         public decimal Value { get; set; }
-        public string ParcelId { get; set; }
+        public string SectionId { get; set; }
         public Point Coordinates { get; set; }
 
-        public virtual Parcel Parcel { get; set; }
+        public virtual Section Section { get; set; }
     }
 }

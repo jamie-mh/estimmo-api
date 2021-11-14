@@ -52,7 +52,6 @@ namespace Estimmo.Api
             services.AddSingleton<DepartmentsTypeConverter>();
             services.AddSingleton<TownsTypeConverter>();
             services.AddSingleton<SectionsTypeConverter>();
-            services.AddSingleton<ParcelsTypeConverter>();
             services.AddSingleton<PropertySalesTypeConverter>();
         }
 
@@ -104,9 +103,6 @@ namespace Estimmo.Api
 
             config.CreateMap<IEnumerable<Section>, FeatureCollection>()
                 .ConvertUsing<SectionsTypeConverter>();
-
-            config.CreateMap<IEnumerable<Parcel>, FeatureCollection>()
-                .ConvertUsing<ParcelsTypeConverter>();
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
                 .ConvertUsing<PropertySalesTypeConverter>();

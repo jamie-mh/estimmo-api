@@ -8,7 +8,6 @@ namespace Estimmo.Data.Entities
         public Town()
         {
             Sections = new HashSet<Section>();
-            Parcels = new HashSet<Parcel>();
             SectionAverageValues = new HashSet<SectionAverageValue>();
         }
 
@@ -20,7 +19,6 @@ namespace Estimmo.Data.Entities
 
         public virtual Department Department { get; set; }
         public virtual ICollection<Section> Sections { get; set; }
-        public virtual ICollection<Parcel> Parcels { get; set; }
         public ICollection<SectionAverageValue> SectionAverageValues { get; set; }
     }
 }

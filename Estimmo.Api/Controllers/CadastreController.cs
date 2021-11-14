@@ -62,16 +62,5 @@ namespace Estimmo.Api.Controllers
 
             return _mapper.Map<FeatureCollection>(sections);
         }
-
-        [HttpGet]
-        [Route("/sections/{sectionId}/parcels")]
-        public async Task<FeatureCollection> GetParcels(string sectionId)
-        {
-            var parcels = await _context.Parcels
-                .Where(p => p.SectionId == sectionId)
-                .ToListAsync();
-
-            return _mapper.Map<FeatureCollection>(parcels);
-        }
     }
 }
