@@ -1,5 +1,6 @@
 using Estimmo.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -13,7 +14,7 @@ namespace Estimmo.Runner.Modules
             _context = context;
         }
 
-        public async Task RunAsync(string[] args)
+        public async Task RunAsync(List<string> args)
         {
             await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW region_avg_value");
             await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW department_avg_value");

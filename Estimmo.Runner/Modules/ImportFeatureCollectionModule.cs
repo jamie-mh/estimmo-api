@@ -3,7 +3,10 @@ using NetTopologySuite.Geometries;
 using NetTopologySuite.IO;
 using Newtonsoft.Json;
 using Serilog;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -12,9 +15,9 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportFeatureCollectionModule>();
 
-        public async Task RunAsync(string[] args)
+        public async Task RunAsync(List<string> args)
         {
-            if (args.Length < 1)
+            if (!args.Any())
             {
                 _log.Error("No GeoJSON file specified");
                 return;

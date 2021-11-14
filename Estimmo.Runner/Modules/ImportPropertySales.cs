@@ -43,9 +43,9 @@ namespace Estimmo.Runner.Modules
             _cultureInfo = new CultureInfo("FR-fr");
         }
 
-        public async Task RunAsync(string[] args)
+        public async Task RunAsync(List<string> args)
         {
-            if (args.Length < 1)
+            if (!args.Any())
             {
                 _log.Error("No CSV file specified");
                 return;

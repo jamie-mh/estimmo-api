@@ -34,34 +34,34 @@ namespace Estimmo.Runner
 
             RegisterServices(services, configuration);
             var provider = services.BuildServiceProvider();
+            List<ModuleArg> moduleArgs;
 
-            if (args.Length == 0)
+            try
             {
-                Log.Error("No module specified");
+                moduleArgs = ParseCommandLine(args);
+            }
+            catch (ArgumentException e)
+            {
+                Log.Error("{Message}", e.Message);
                 PrintAvailableModules();
                 return 2;
             }
 
-            var name = args[0];
-            var moduleArgs = args.Skip(1).ToArray();
+            var tasks = new List<Task>();
 
-            var moduleType = GetModuleTypes().FirstOrDefault(m => m.Name == name);
-
-            if (moduleType == null)
+            foreach (var arg in moduleArgs)
             {
-                Log.Error("Invalid module '{Name}'", name);
-                PrintAvailableModules();
-                return 1;
+                var module = (IModule) ActivatorUtilities.CreateInstance(provider, arg.Type);
+                tasks.Add(module.RunAsync(arg.Args));
             }
 
             try
             {
-                var module = (IModule) ActivatorUtilities.CreateInstance(provider, moduleType);
-                await module.RunAsync(moduleArgs);
+                await Task.WhenAll(tasks);
             }
             catch (Exception e)
             {
-                Log.Error(e, "An error occurred when executing the module");
+                Log.Error(e, "An error occurred when executing a module");
                 return 1;
             }
 
@@ -75,6 +75,50 @@ namespace Estimmo.Runner
                 var connectionString = configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
             });
+        }
+
+        private static List<ModuleArg> ParseCommandLine(string[] args)
+        {
+            if (args.Length == 0)
+            {
+                throw new ArgumentException("No arguments provided");
+            }
+
+            var moduleTypes = GetModuleTypes().ToList();
+            var result = new List<ModuleArg>();
+            ModuleArg moduleArg = null;
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                var arg = args[i];
+                var type = moduleTypes.FirstOrDefault(t => t.Name == arg);
+
+                if (type != null)
+                {
+                    if (i > 0)
+                    {
+                        result.Add(moduleArg);
+                    }
+
+                    moduleArg = new ModuleArg { Type = type };
+                }
+                else
+                {
+                    if (i == 0)
+                    {
+                        throw new ArgumentException("No module specified");
+                    }
+
+                    moduleArg.Args.Add(arg);
+                }
+
+                if (i == args.Length - 1)
+                {
+                    result.Add(moduleArg);
+                }
+            }
+
+            return result;
         }
 
         private static IEnumerable<Type> GetModuleTypes()
