@@ -17,6 +17,8 @@ namespace Estimmo.Runner.Modules
         private readonly CultureInfo _cultureInfo;
         private readonly EstimmoContext _context;
 
+        protected override double SimplificationDistanceTolerance => 0.005d;
+
         public ImportTowns(EstimmoContext context)
         {
             _context = context;
