@@ -1,10 +1,10 @@
 using AutoMapper;
-using Estimmo.Api.Models;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,62 +22,45 @@ namespace Estimmo.Api.Controllers
             _mapper = mapper;
         }
 
-        private static PropertyValuesByType GetPropertyValuesByType(IEnumerable<IAverageValue> averageValues)
-        {
-            var result = new PropertyValuesByType();
-
-            foreach (var value in averageValues)
-            {
-                if (!result.ContainsKey(value.Id))
-                {
-                    result.Add(value.Id, new Dictionary<int, double>());
-                }
-
-                result[value.Id].Add((int) value.Type, value.Value);
-            }
-
-            return result;
-        }
-
         [HttpGet]
         [Route("/region-property-values")]
-        public async Task<PropertyValuesByType> GetRegions()
+        public async Task<Dictionary<string, int>> GetRegions([Required] PropertyType type)
         {
-            var averageValues = await _context.RegionAverageValues.ToListAsync();
-            return GetPropertyValuesByType(averageValues);
+            var averageValues = await _context.RegionAverageValues.Where(v => v.Type == type).ToListAsync();
+            return _mapper.Map<Dictionary<string, int>>(averageValues);
         }
 
         [HttpGet]
         [Route("/regions/{regionId}/department-property-values")]
-        public async Task<PropertyValuesByType> GetRegion(string regionId)
+        public async Task<Dictionary<string, int>> GetRegion(string regionId, [Required] PropertyType type)
         {
             var averageValues = await _context.DepartmentAverageValues
-                .Where(d => d.RegionId == regionId)
+                .Where(d => d.Type == type && d.RegionId == regionId)
                 .ToListAsync();
 
-            return GetPropertyValuesByType(averageValues);
+            return _mapper.Map<Dictionary<string, int>>(averageValues);
         }
 
         [HttpGet]
         [Route("/departments/{departmentId}/town-property-values")]
-        public async Task<PropertyValuesByType> GetDepartment(string departmentId)
+        public async Task<Dictionary<string, int>> GetDepartment(string departmentId, [Required] PropertyType type)
         {
             var averageValues = await _context.TownAverageValues
-                .Where(t => t.DepartmentId == departmentId)
+                .Where(t => t.Type == type && t.DepartmentId == departmentId)
                 .ToListAsync();
 
-            return GetPropertyValuesByType(averageValues);
+            return _mapper.Map<Dictionary<string, int>>(averageValues);
         }
 
         [HttpGet]
         [Route("/towns/{townId}/section-property-values")]
-        public async Task<PropertyValuesByType> GetTown(string townId)
+        public async Task<Dictionary<string, int>> GetTown(string townId, [Required] PropertyType type)
         {
             var averageValues = await _context.SectionAverageValues
-                .Where(s => s.TownId == townId)
+                .Where(s => s.Type == type && s.TownId == townId)
                 .ToListAsync();
 
-            return GetPropertyValuesByType(averageValues);
+            return _mapper.Map<Dictionary<string, int>>(averageValues);
         }
     }
 }
