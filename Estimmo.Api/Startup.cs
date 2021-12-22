@@ -75,6 +75,13 @@ namespace Estimmo.Api
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
                 });
 
+                app.UseCors(options =>
+                {
+                    options.WithOrigins("http://localhost:3000", "https://estimmo.jmh.me")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+
                 app.UseExceptionHandler("/error/500");
                 app.UseStatusCodePagesWithReExecute("/error/{0}");
             }
