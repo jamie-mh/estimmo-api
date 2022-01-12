@@ -1,6 +1,7 @@
 using AutoMapper;
 using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
+using Estimmo.Api.Models.Features;
 using Estimmo.Api.Services;
 using Estimmo.Api.Services.Impl;
 using Estimmo.Api.TypeConverters.FeatureCollection;
@@ -97,16 +98,16 @@ namespace Estimmo.Api
                 .ConstructUsing(av =>
                     new KeyValuePair<string, int>(av.Id, (int) Math.Round(av.Value)));
 
-            config.CreateMap<IEnumerable<Region>, FeatureCollection>()
+            config.CreateMap<IEnumerable<RegionFeature>, FeatureCollection>()
                 .ConvertUsing<RegionsTypeConverter>();
 
-            config.CreateMap<IEnumerable<Department>, FeatureCollection>()
+            config.CreateMap<IEnumerable<DepartmentFeature>, FeatureCollection>()
                 .ConvertUsing<DepartmentsTypeConverter>();
 
-            config.CreateMap<IEnumerable<Town>, FeatureCollection>()
+            config.CreateMap<IEnumerable<TownFeature>, FeatureCollection>()
                 .ConvertUsing<TownsTypeConverter>();
 
-            config.CreateMap<IEnumerable<Section>, FeatureCollection>()
+            config.CreateMap<IEnumerable<SectionFeature>, FeatureCollection>()
                 .ConvertUsing<SectionsTypeConverter>();
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()

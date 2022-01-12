@@ -1,25 +1,26 @@
 using AutoMapper;
-using Estimmo.Data.Entities;
+using Estimmo.Api.Models.Features;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
 
 namespace Estimmo.Api.TypeConverters.FeatureCollection
 {
-    public class TownsTypeConverter : ITypeConverter<IEnumerable<Town>, NetTopologySuite.Features.FeatureCollection>
+    public class TownsTypeConverter : ITypeConverter<IEnumerable<TownFeature>, NetTopologySuite.Features.FeatureCollection>
     {
-        public NetTopologySuite.Features.FeatureCollection Convert(IEnumerable<Town> source, NetTopologySuite.Features.FeatureCollection destination, ResolutionContext context)
+        public NetTopologySuite.Features.FeatureCollection Convert(IEnumerable<TownFeature> source, NetTopologySuite.Features.FeatureCollection destination, ResolutionContext context)
         {
             var collection = new NetTopologySuite.Features.FeatureCollection();
 
-            foreach (var town in source)
+            foreach (var feature in source)
             {
                 var attributes = new AttributesTable
                 {
-                    { "id", town.Id },
-                    { "name", town.Name }
+                    { "id", feature.Town.Id },
+                    { "name", feature.Town.Name },
+                    { "averageValue", feature.AverageValue?.Value }
                 };
 
-                collection.Add(new Feature(town.Geometry, attributes));
+                collection.Add(new Feature(feature.Town.Geometry, attributes));
             }
 
             return collection;
