@@ -2,9 +2,9 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities.Json;
 using Estimmo.Data;
+using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SimMetrics.Net.Metric;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,11 +35,10 @@ namespace Estimmo.Api.Controllers
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            var levenstein = new Levenstein();
-            var nameLower = name.ToLowerInvariant();
+            var levenshtein = new Levenshtein(name.ToLowerInvariant());
 
             return places
-                .OrderByDescending(p => levenstein.GetSimilarity(nameLower, p.Name.ToLowerInvariant()))
+                .OrderBy(p => levenshtein.DistanceFrom(p.Name.ToLowerInvariant()))
                 .ToList();
         }
     }
