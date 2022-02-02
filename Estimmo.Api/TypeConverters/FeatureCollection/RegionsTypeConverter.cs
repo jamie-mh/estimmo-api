@@ -3,6 +3,7 @@ using Estimmo.Api.Entities.Json;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Estimmo.Api.TypeConverters.FeatureCollection
 {
@@ -18,7 +19,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                 {
                     { "id", region.Id },
                     { "name", region.Name },
-                    { "averageValues", context.Mapper.Map<IEnumerable<JsonAverageValue>>(region.AverageValues) }
+                    { "averageValues", region.AverageValues.ToDictionary(r => (int) r.Type, r => r.Value) }
                 };
 
                 collection.Add(new Feature(region.Geometry, attributes));

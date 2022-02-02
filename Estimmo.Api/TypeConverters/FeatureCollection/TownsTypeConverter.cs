@@ -3,6 +3,7 @@ using Estimmo.Api.Entities.Json;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Estimmo.Api.TypeConverters.FeatureCollection
 {
@@ -12,16 +13,16 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
         {
             var collection = new NetTopologySuite.Features.FeatureCollection();
 
-            foreach (var feature in source)
+            foreach (var town in source)
             {
                 var attributes = new AttributesTable
                 {
-                    { "id", feature.Id },
-                    { "name", feature.Name },
-                    { "averageValues", context.Mapper.Map<IEnumerable<JsonAverageValue>>(feature.AverageValues) }
+                    { "id", town.Id },
+                    { "name", town.Name },
+                    { "averageValues", town.AverageValues.ToDictionary(r => (int) r.Type, r => r.Value) }
                 };
 
-                collection.Add(new Feature(feature.Geometry, attributes));
+                collection.Add(new Feature(town.Geometry, attributes));
             }
 
             return collection;
