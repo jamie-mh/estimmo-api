@@ -6,6 +6,7 @@ using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -27,7 +28,7 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/places")]
-        public async Task<List<JsonPlace>> GetPlaces([FromQuery] string name)
+        public async Task<List<JsonPlace>> GetPlaces([Required] [FromQuery] string name)
         {
             var places = await _context.Places
                 .Where(p => EF.Functions.ILike(p.SearchName, $"%{name}%"))
