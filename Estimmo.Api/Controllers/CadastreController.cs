@@ -1,7 +1,5 @@
 using AutoMapper;
-using Estimmo.Api.Models.Features;
 using Estimmo.Data;
-using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
@@ -22,62 +20,51 @@ namespace Estimmo.Api.Controllers
             _mapper = mapper;
         }
 
-        private async Task<FeatureCollection> QueryableToFeatureCollection<T>(IQueryable<T> queryable)
-        {
-            var features = await queryable.ToListAsync();
-            return _mapper.Map<FeatureCollection>(features);
-        }
-
         [HttpGet]
         [Route("/regions")]
-        public async Task<FeatureCollection> GetRegions(PropertyType propertyType = PropertyType.House)
+        public async Task<FeatureCollection> GetRegions()
         {
-            var query = from region in _context.Regions
-                join avgValue in _context.RegionAverageValues on region.Id equals avgValue.Id into grouping
-                from avgValue in grouping.DefaultIfEmpty()
-                where avgValue.Type == propertyType
-                select new RegionFeature { Region = region, AverageValue = avgValue };
+            var regions = await _context.Regions
+                .Include(r => r.AverageValues)
+                .ToListAsync();
 
-            return await QueryableToFeatureCollection(query);
+            return _mapper.Map<FeatureCollection>(regions);
         }
 
         [HttpGet]
         [Route("/regions/{regionId}/departments")]
-        public async Task<FeatureCollection> GetDepartments(string regionId, PropertyType propertyType = PropertyType.House)
+        public async Task<FeatureCollection> GetDepartments(string regionId)
         {
-            var query = from department in _context.Departments
-                join avgValue in _context.DepartmentAverageValues on department.Id equals avgValue.Id into grouping
-                from avgValue in grouping.DefaultIfEmpty()
-                where department.RegionId == regionId && avgValue.Type == propertyType
-                select new DepartmentFeature { Department = department, AverageValue = avgValue };
+            var departments = await _context.Departments
+                .Where(d => d.RegionId == regionId)
+                .Include(d => d.AverageValues)
+                .ToListAsync();
 
-            return await QueryableToFeatureCollection(query);
+            return _mapper.Map<FeatureCollection>(departments);
         }
 
         [HttpGet]
         [Route("/departments/{departmentId}/towns")]
-        public async Task<FeatureCollection> GetTowns(string departmentId, PropertyType propertyType = PropertyType.House)
+        public async Task<FeatureCollection> GetTowns(string departmentId)
         {
-            var query = from town in _context.Towns
-                join avgValue in _context.TownAverageValues on town.Id equals avgValue.Id into grouping
-                from avgValue in grouping.DefaultIfEmpty()
-                where town.DepartmentId == departmentId && avgValue.Type == propertyType
-                select new TownFeature { Town = town, AverageValue = avgValue };
+            var towns = await _context.Towns
+                .Where(t => t.DepartmentId == departmentId)
+                .Include(t => t.AverageValues)
+                .ToListAsync();
 
-            return await QueryableToFeatureCollection(query);
+            return _mapper.Map<FeatureCollection>(towns);
         }
 
         [HttpGet]
         [Route("/towns/{townId}/sections")]
-        public async Task<FeatureCollection> GetSections(string townId, PropertyType propertyType = PropertyType.House)
+        public async Task<FeatureCollection> GetSections(string townId)
         {
-            var query = from section in _context.Sections
-                join avgValue in _context.SectionAverageValues on section.Id equals avgValue.Id into grouping
-                from avgValue in grouping.DefaultIfEmpty()
-                where section.TownId == townId && avgValue.Type == propertyType
-                select new SectionFeature { Section = section, AverageValue = avgValue };
+            var sections = await _context.Sections
+                .Where(s => s.TownId == townId)
+                .Include(s => s.AverageValues)
+                .ToListAsync();
 
-            return await QueryableToFeatureCollection(query);
+            return _mapper.Map<FeatureCollection>(sections);
         }
     }
 }

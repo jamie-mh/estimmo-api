@@ -9,6 +9,7 @@ namespace Estimmo.Data.Entities
         {
             Towns = new HashSet<Town>();
             TownAverageValues = new HashSet<TownAverageValue>();
+            AverageValues = new HashSet<DepartmentAverageValue>();
         }
 
         public string Id { get; set; }
@@ -18,6 +19,7 @@ namespace Estimmo.Data.Entities
 
         public virtual Region Region { get; set; }
         public virtual ICollection<Town> Towns { get; set; }
-        public ICollection<TownAverageValue> TownAverageValues { get; set; }
+        public virtual ICollection<TownAverageValue> TownAverageValues { get; set; }
+        public virtual ICollection<DepartmentAverageValue> AverageValues { get; set; }
     }
 }

@@ -52,6 +52,10 @@ namespace Estimmo.Data
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
 
                 entity.HasIndex(e => e.Geometry).HasMethod("gist");
+
+                entity.HasMany(e => e.AverageValues)
+                    .WithOne()
+                    .HasForeignKey(e => e.Id);
             });
 
             modelBuilder.Entity<Department>(entity =>
@@ -73,6 +77,10 @@ namespace Estimmo.Data
                 entity.HasOne(d => d.Region)
                     .WithMany(r => r.Departments)
                     .HasForeignKey(d => d.RegionId);
+
+                entity.HasMany(e => e.AverageValues)
+                    .WithOne()
+                    .HasForeignKey(e => e.Id);
             });
 
             modelBuilder.Entity<Town>(entity =>
@@ -94,6 +102,10 @@ namespace Estimmo.Data
                 entity.HasOne(t => t.Department)
                     .WithMany(d => d.Towns)
                     .HasForeignKey(t => t.DepartmentId);
+
+                entity.HasMany(e => e.AverageValues)
+                    .WithOne()
+                    .HasForeignKey(e => e.Id);
             });
 
             modelBuilder.Entity<Section>(entity =>
@@ -117,6 +129,10 @@ namespace Estimmo.Data
                 entity.HasOne(s => s.Town)
                     .WithMany(t => t.Sections)
                     .HasForeignKey(s => s.TownId);
+
+                entity.HasMany(e => e.AverageValues)
+                    .WithOne()
+                    .HasForeignKey(e => e.Id);
             });
 
             modelBuilder.Entity<PropertySale>(entity =>

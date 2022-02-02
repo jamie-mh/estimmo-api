@@ -7,6 +7,6 @@ namespace Estimmo.Data.Entities
         public string TownId { get; set; }
         public double Value { get; set; }
 
-        public Town Town { get; set; }
+        public virtual Town Town { get; set; }
     }
 }

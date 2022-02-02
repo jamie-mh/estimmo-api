@@ -7,6 +7,6 @@ namespace Estimmo.Data.Entities
         public string RegionId { get; set; }
         public double Value { get; set; }
 
-        public Region Region { get; set; }
+        public virtual Region Region { get; set; }
     }
 }

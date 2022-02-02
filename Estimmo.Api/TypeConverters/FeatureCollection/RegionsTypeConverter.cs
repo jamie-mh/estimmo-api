@@ -1,26 +1,27 @@
 using AutoMapper;
-using Estimmo.Api.Models.Features;
+using Estimmo.Api.Entities.Json;
+using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
 
 namespace Estimmo.Api.TypeConverters.FeatureCollection
 {
-    public class RegionsTypeConverter : ITypeConverter<IEnumerable<RegionFeature>, NetTopologySuite.Features.FeatureCollection>
+    public class RegionsTypeConverter : ITypeConverter<IEnumerable<Region>, NetTopologySuite.Features.FeatureCollection>
     {
-        public NetTopologySuite.Features.FeatureCollection Convert(IEnumerable<RegionFeature> source, NetTopologySuite.Features.FeatureCollection destination, ResolutionContext context)
+        public NetTopologySuite.Features.FeatureCollection Convert(IEnumerable<Region> source, NetTopologySuite.Features.FeatureCollection destination, ResolutionContext context)
         {
             var collection = new NetTopologySuite.Features.FeatureCollection();
 
-            foreach (var feature in source)
+            foreach (var region in source)
             {
                 var attributes = new AttributesTable
                 {
-                    { "id", feature.Region.Id },
-                    { "name", feature.Region.Name },
-                    { "averageValue", feature.AverageValue?.Value }
+                    { "id", region.Id },
+                    { "name", region.Name },
+                    { "averageValues", context.Mapper.Map<IEnumerable<JsonAverageValue>>(region.AverageValues) }
                 };
 
-                collection.Add(new Feature(feature.Region.Geometry, attributes));
+                collection.Add(new Feature(region.Geometry, attributes));
             }
 
             return collection;

@@ -2,7 +2,6 @@ using AutoMapper;
 using Estimmo.Api.Entities;
 using Estimmo.Api.Entities.Json;
 using Estimmo.Api.Models;
-using Estimmo.Api.Models.Features;
 using Estimmo.Api.Services;
 using Estimmo.Api.Services.Impl;
 using Estimmo.Api.TypeConverters.FeatureCollection;
@@ -101,22 +100,23 @@ namespace Estimmo.Api
                 .ConstructUsing(av =>
                     new KeyValuePair<string, int>(av.Id, (int) Math.Round(av.Value)));
 
-            config.CreateMap<IEnumerable<RegionFeature>, FeatureCollection>()
+            config.CreateMap<IEnumerable<Region>, FeatureCollection>()
                 .ConvertUsing<RegionsTypeConverter>();
 
-            config.CreateMap<IEnumerable<DepartmentFeature>, FeatureCollection>()
+            config.CreateMap<IEnumerable<Department>, FeatureCollection>()
                 .ConvertUsing<DepartmentsTypeConverter>();
 
-            config.CreateMap<IEnumerable<TownFeature>, FeatureCollection>()
+            config.CreateMap<IEnumerable<Town>, FeatureCollection>()
                 .ConvertUsing<TownsTypeConverter>();
 
-            config.CreateMap<IEnumerable<SectionFeature>, FeatureCollection>()
+            config.CreateMap<IEnumerable<Section>, FeatureCollection>()
                 .ConvertUsing<SectionsTypeConverter>();
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
                 .ConvertUsing<PropertySalesTypeConverter>();
 
             config.CreateMap<Place, JsonPlace>();
+            config.CreateMap<IAverageValue, JsonAverageValue>();
         }
     }
 }
