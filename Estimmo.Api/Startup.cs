@@ -58,7 +58,7 @@ namespace Estimmo.Api
             services.AddSingleton<PropertySalesTypeConverter>();
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EstimmoContext context)
         {
             if (env.IsDevelopment())
             {
@@ -72,6 +72,8 @@ namespace Estimmo.Api
             }
             else
             {
+                context.Database.Migrate();
+
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
