@@ -23,6 +23,7 @@ namespace Estimmo.Data
         public virtual DbSet<DepartmentAverageValue> DepartmentAverageValues { get; set; }
         public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
         public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
+        public virtual DbSet<Place> Places { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -36,6 +37,7 @@ namespace Estimmo.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.HasPostgresExtension("postgis");
+            modelBuilder.HasPostgresExtension("unaccent");
 
             modelBuilder.Entity<Region>(entity =>
             {
@@ -227,6 +229,21 @@ namespace Estimmo.Data
                 entity.HasOne(s => s.Town)
                     .WithMany(t => t.SectionAverageValues)
                     .HasForeignKey(s => s.TownId);
+            });
+
+            modelBuilder.Entity<Place>(entity =>
+            {
+                entity.ToView("place");
+
+                entity.HasKey(e => new { e.Type, e.Id });
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name).HasColumnName("name");
+
+                entity.Property(e => e.SearchName).HasColumnName("search_name");
             });
         }
     }

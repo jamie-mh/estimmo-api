@@ -1,5 +1,6 @@
 using AutoMapper;
 using Estimmo.Api.Entities;
+using Estimmo.Api.Entities.Json;
 using Estimmo.Api.Models;
 using Estimmo.Api.Models.Features;
 using Estimmo.Api.Services;
@@ -112,6 +113,8 @@ namespace Estimmo.Api
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
                 .ConvertUsing<PropertySalesTypeConverter>();
+
+            config.CreateMap<Place, JsonPlace>();
         }
     }
 }
