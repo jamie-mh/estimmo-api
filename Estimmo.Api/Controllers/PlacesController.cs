@@ -31,7 +31,7 @@ namespace Estimmo.Api.Controllers
         public async Task<List<JsonPlace>> GetPlaces([Required] [FromQuery] string name)
         {
             var places = await _context.Places
-                .Where(p => EF.Functions.ILike(p.SearchName, $"%{name}%"))
+                .Where(p => EF.Functions.Like(p.SearchName, $"%{name}%"))
                 .Take(MaxResults)
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
