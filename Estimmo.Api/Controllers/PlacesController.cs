@@ -30,16 +30,18 @@ namespace Estimmo.Api.Controllers
         [Route("/places")]
         public async Task<List<JsonPlace>> GetPlaces([Required] [FromQuery] string name)
         {
-            name = name.Replace("-", " ");
+            name = name
+                .ToLowerInvariant()
+                .Replace("-", " ");
 
             var places = await _context.Places
-                .Where(p => EF.Functions.ILike(p.SearchName, EF.Functions.Unaccent($"%{name}%")))
+                .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{name}%")))
                 .OrderBy(p => p.Name)
                 .Take(MaxResults)
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            var levenshtein = new Levenshtein(name.ToLowerInvariant());
+            var levenshtein = new Levenshtein(name);
 
             return places
                 .OrderBy(p => levenshtein.DistanceFrom(p.Name.ToLowerInvariant()))
