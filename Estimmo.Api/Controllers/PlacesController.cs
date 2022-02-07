@@ -33,7 +33,8 @@ namespace Estimmo.Api.Controllers
             name = name.Replace("-", " ");
 
             var places = await _context.Places
-                .Where(p => EF.Functions.ILike(p.SearchName, $"%{name}%"))
+                .Where(p => EF.Functions.ILike(p.SearchName, EF.Functions.Unaccent($"%{name}%")))
+                .OrderBy(p => p.Name)
                 .Take(MaxResults)
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
