@@ -97,6 +97,8 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry").HasColumnType("geography").IsRequired();
 
+                entity.Property(e => e.PostCode).HasColumnName("post_code");
+
                 entity.HasIndex(e => e.Geometry).HasMethod("gist");
 
                 entity.HasOne(t => t.Department)

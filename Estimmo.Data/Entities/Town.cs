@@ -15,6 +15,7 @@ namespace Estimmo.Data.Entities
         public string Id { get; set; }
         public string DepartmentId { get; set; }
         public string Name { get; set; }
+        public string PostCode { get; set; }
         public Geometry Geometry { get; set; }
 
         public virtual Department Department { get; set; }
