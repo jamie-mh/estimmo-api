@@ -2,11 +2,11 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities.Json;
 using Estimmo.Data;
+using Estimmo.Data.Entities;
 using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using NetTopologySuite.Geometries;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -28,24 +28,50 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/places")]
-        public async Task<List<JsonPlace>> GetPlaces([Required] [FromQuery] string name)
+        public async Task<ActionResult> GetPlaces(string name, double? latitude, double? longitude)
         {
-            name = name
-                .ToLowerInvariant()
-                .Replace("-", " ");
+            if (name == null && (latitude == null || longitude == null))
+            {
+                return BadRequest("Name or coordinates must be specified");
+            }
 
-            var places = await _context.Places
-                .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{name}%")))
+            IQueryable<Place> queryable;
+
+            if (name != null)
+            {
+                var lowerName = name
+                    .ToLowerInvariant()
+                    .Replace("-", " ");
+
+                queryable = _context.Places
+                    .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")));
+            }
+            else
+            {
+                var point = new Point(latitude.Value, longitude.Value);
+
+                queryable = _context.Places
+                    .Where(p => p.Geometry.Covers(point));
+            }
+
+            var places = await queryable
                 .OrderBy(p => p.Name)
                 .Take(MaxResults)
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
-            var levenshtein = new Levenshtein(name);
+            if (name == null)
+            {
+                return Ok(places);
+            }
 
-            return places
+            var levenshtein = new Levenshtein(name.ToLowerInvariant());
+
+            places = places
                 .OrderBy(p => levenshtein.DistanceFrom(p.Name.ToLowerInvariant()))
                 .ToList();
+
+            return Ok(places);
         }
     }
 }
