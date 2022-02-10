@@ -24,6 +24,8 @@ namespace Estimmo.Api
 {
     public class Startup
     {
+        private const string CorsPolicyName = "CorsPolicy";
+
         private readonly IConfiguration _configuration;
 
         public Startup(IConfiguration configuration)
@@ -37,6 +39,16 @@ namespace Estimmo.Api
             {
                 var connectionString = _configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
+            });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(CorsPolicyName, builder =>
+                {
+                    builder.AllowAnyOrigin();
+                    builder.AllowAnyHeader();
+                    builder.WithMethods("GET", "POST");
+                });
             });
 
             services.AddControllers().AddJsonOptions(options =>
@@ -62,12 +74,6 @@ namespace Estimmo.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseCors(options =>
-                {
-                    options.AllowAnyOrigin();
-                    options.AllowAnyHeader();
-                    options.AllowAnyMethod();
-                });
             }
             else
             {
@@ -84,9 +90,11 @@ namespace Estimmo.Api
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapControllers().RequireCors(CorsPolicyName);
             });
         }
 
