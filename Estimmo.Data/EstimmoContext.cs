@@ -1,4 +1,4 @@
-﻿using Estimmo.Data.Entities;
+using Estimmo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estimmo.Data
@@ -140,6 +140,8 @@ namespace Estimmo.Data
             modelBuilder.Entity<PropertySale>(entity =>
             {
                 entity.ToTable("property_sale");
+
+                entity.HasKey(e => e.Id);
 
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
