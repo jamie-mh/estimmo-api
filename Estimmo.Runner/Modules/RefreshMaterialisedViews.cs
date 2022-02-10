@@ -20,6 +20,7 @@ namespace Estimmo.Runner.Modules
             await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW department_avg_value");
             await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW town_avg_value");
             await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW section_avg_value");
+            await _context.Database.ExecuteSqlRawAsync("REFRESH MATERIALIZED VIEW place");
         }
     }
 }
