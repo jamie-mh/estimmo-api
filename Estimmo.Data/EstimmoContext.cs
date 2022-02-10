@@ -1,4 +1,4 @@
-using Estimmo.Data.Entities;
+﻿using Estimmo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estimmo.Data
@@ -24,6 +24,7 @@ namespace Estimmo.Data
         public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
         public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
         public virtual DbSet<Place> Places { get; set; }
+        public virtual DbSet<Message> Messages { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -266,6 +267,27 @@ namespace Estimmo.Data
                 entity.Property(e => e.SearchName).HasColumnName("search_name");
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry");
+            });
+
+            modelBuilder.Entity<Message>(entity =>
+            {
+                entity.ToTable("message");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
+
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
+
+                entity.Property(e => e.Email).HasColumnName("email").IsRequired();
+
+                entity.Property(e => e.Subject).HasColumnName("subject").IsRequired();
+
+                entity.Property(e => e.Content).HasColumnName("content").IsRequired();
+
+                entity.Property(e => e.SentOn).HasColumnName("sent_on");
+
+                entity.Property(e => e.IsArchived).HasColumnName("is_archived").HasDefaultValue(false);
             });
         }
     }
