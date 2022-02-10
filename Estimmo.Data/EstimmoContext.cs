@@ -262,6 +262,8 @@ namespace Estimmo.Data
                 entity.Property(e => e.Name).HasColumnName("name");
 
                 entity.Property(e => e.SearchName).HasColumnName("search_name");
+
+                entity.Property(e => e.Geometry).HasColumnName("geometry");
             });
         }
     }

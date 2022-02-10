@@ -1,3 +1,5 @@
+using NetTopologySuite.Geometries;
+
 namespace Estimmo.Data.Entities
 {
     public class Place
@@ -6,5 +8,6 @@ namespace Estimmo.Data.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public string SearchName { get; set; }
+        public Geometry Geometry { get; set; }
     }
 }
