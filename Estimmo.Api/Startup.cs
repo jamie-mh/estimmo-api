@@ -116,6 +116,8 @@ namespace Estimmo.Api
                 .ConvertUsing<PropertySalesTypeConverter>();
 
             config.CreateMap<Place, JsonPlace>();
+
+            config.CreateMap<MessageModel, Message>();
         }
     }
 }
