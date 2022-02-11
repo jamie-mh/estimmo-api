@@ -38,7 +38,10 @@ namespace Estimmo.Runner.Modules
 
             foreach (var feature in collection)
             {
-                var id = feature.Attributes["code"].ToString();
+                var id = feature.Attributes.Exists("id")
+                    ? feature.Attributes["id"].ToString()
+                    : feature.Attributes["code"].ToString();
+
                 var departmentId = id[..2];
                 var name = feature.Attributes["nom"].ToString();
 
