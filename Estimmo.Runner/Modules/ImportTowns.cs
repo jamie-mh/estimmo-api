@@ -1,5 +1,6 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using Serilog;
 using System.Collections.Generic;
@@ -32,8 +33,18 @@ namespace Estimmo.Runner.Modules
 
             async Task FlushBufferAsync()
             {
-                _context.Towns.AddRange(buffer);
-                await _context.SaveChangesAsync();
+                await _context.Towns
+                    .UpsertRange(buffer)
+                    .On(t => new { t.Id })
+                    .WhenMatched((current, next) => new Town
+                    {
+                        DepartmentId = current.DepartmentId,
+                        PostCode = current.PostCode,
+                        Name = next.Name,
+                        Geometry = next.Geometry
+                    })
+                    .RunAsync();
+
                 inserted += buffer.Count;
                 _log.Information("Processed {Count} towns", inserted);
             }

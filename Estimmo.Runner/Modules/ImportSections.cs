@@ -32,8 +32,18 @@ namespace Estimmo.Runner.Modules
 
             async Task FlushBufferAsync()
             {
-                _context.Sections.AddRange(buffer);
-                await _context.SaveChangesAsync();
+                await _context.Sections
+                    .UpsertRange(buffer)
+                    .On(s => new { s.Id })
+                    .WhenMatched((current, next) => new Section
+                    {
+                        Code = current.Code,
+                        Prefix = current.Prefix,
+                        TownId = current.TownId,
+                        Geometry = next.Geometry
+                    })
+                    .RunAsync();
+
                 inserted += buffer.Count;
                 _log.Information("Processed {Count} sections", inserted);
             }
