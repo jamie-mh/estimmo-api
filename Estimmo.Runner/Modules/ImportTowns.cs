@@ -16,7 +16,7 @@ namespace Estimmo.Runner.Modules
         private readonly ILogger _log = Log.ForContext<ImportTowns>();
         private readonly EstimmoContext _context;
 
-        protected override double SimplificationDistanceTolerance => 0.005d;
+        protected override double SimplificationDistanceTolerance => 0.0015d;
 
         public ImportTowns(EstimmoContext context)
         {
