@@ -7,6 +7,7 @@ using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,8 +16,6 @@ namespace Estimmo.Api.Controllers
     [ApiController]
     public class PlacesController : ControllerBase
     {
-        private const int MaxResults = 100;
-
         private readonly EstimmoContext _context;
         private readonly IMapper _mapper;
 
@@ -28,7 +27,8 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/places")]
-        public async Task<ActionResult> GetPlaces(string name, double? latitude, double? longitude)
+        public async Task<ActionResult> GetPlaces(string name, double? latitude, double? longitude,
+            [Range(1, 100)] int limit = 100)
         {
             if (name == null && (latitude == null || longitude == null))
             {
@@ -56,7 +56,7 @@ namespace Estimmo.Api.Controllers
 
             var places = await queryable
                 .OrderBy(p => p.Name)
-                .Take(MaxResults)
+                .Take(limit)
                 .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
