@@ -1,6 +1,7 @@
 using AutoMapper;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
+using System;
 using System.Collections.Generic;
 
 namespace Estimmo.Api.TypeConverters.FeatureCollection
@@ -13,8 +14,11 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
 
             foreach (var sale in source)
             {
+                var id = HashCode.Combine(sale.Date, sale.StreetNumber, sale.StreetNumberSuffix, sale.StreetNumber, sale.Value);
+
                 var attributes = new AttributesTable
                 {
+                    { "featureId", Math.Abs(id) },
                     { "date", sale.Date },
                     { "streetNumber", sale.StreetNumber },
                     { "streetNumberSuffix", sale.StreetNumberSuffix },

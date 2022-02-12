@@ -2,6 +2,7 @@ using AutoMapper;
 using Estimmo.Api.Entities.Json;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +18,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
             {
                 var attributes = new AttributesTable
                 {
-                    { "featureId", town.Id },
+                    { "featureId", Math.Abs(town.Id.GetHashCode()) },
                     { "id", town.Id },
                     { "name", town.Name },
                     { "postCode", town.PostCode },
