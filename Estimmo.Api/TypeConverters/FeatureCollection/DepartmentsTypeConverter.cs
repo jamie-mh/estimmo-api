@@ -1,5 +1,4 @@
 using AutoMapper;
-using Estimmo.Api.Entities.Json;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System.Collections.Generic;
@@ -17,6 +16,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
             {
                 var attributes = new AttributesTable
                 {
+                    { "featureId", department.Id },
                     { "id", department.Id },
                     { "regionId", department.RegionId },
                     { "name", department.Name },

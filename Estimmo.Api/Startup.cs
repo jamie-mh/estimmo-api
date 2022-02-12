@@ -53,7 +53,8 @@ namespace Estimmo.Api
 
             services.AddControllers().AddJsonOptions(options =>
             {
-                options.JsonSerializerOptions.Converters.Add(new GeoJsonConverterFactory());
+                options.JsonSerializerOptions.Converters.Add(
+                    new GeoJsonConverterFactory(GeometryFactory.Default, true, "featureId"));
             });
 
             services.AddAutoMapper(ConfigureMappers);

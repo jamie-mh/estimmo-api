@@ -17,6 +17,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
             {
                 var attributes = new AttributesTable
                 {
+                    { "featureId", section.Id },
                     { "id", section.Id },
                     { "averageValues", section.AverageValues.ToDictionary(r => (int) r.Type, r => r.Value) }
                 };

@@ -17,6 +17,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
             {
                 var attributes = new AttributesTable
                 {
+                    { "featureId", town.Id },
                     { "id", town.Id },
                     { "name", town.Name },
                     { "postCode", town.PostCode },
