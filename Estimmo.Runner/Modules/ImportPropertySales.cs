@@ -19,6 +19,7 @@ namespace Estimmo.Runner.Modules
         private const int BufferSize = 10000;
         private const int MinValue = 10000;
         private const int MaxValue = 2000000;
+        private const int ParisMaxValue = 10000000;
 
         private static readonly Dictionary<string, string> NameSubtitutions = new()
         {
@@ -86,7 +87,9 @@ namespace Estimmo.Runner.Modules
                     continue;
                 }
 
-                if (mutation.Value < MinValue || mutation.Value > MaxValue)
+                var departmentId = mutation.ParcelId[..2];
+
+                if (mutation.Value < MinValue || mutation.Value > (departmentId == "75" ? ParisMaxValue : MaxValue))
                 {
                     continue;
                 }
