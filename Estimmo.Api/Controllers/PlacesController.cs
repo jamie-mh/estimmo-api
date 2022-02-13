@@ -48,7 +48,7 @@ namespace Estimmo.Api.Controllers
             }
             else
             {
-                var point = new Point(latitude.Value, longitude.Value);
+                var point = new Point(longitude.Value, latitude.Value);
 
                 queryable = _context.Places
                     .Where(p => p.Geometry.Covers(point));
