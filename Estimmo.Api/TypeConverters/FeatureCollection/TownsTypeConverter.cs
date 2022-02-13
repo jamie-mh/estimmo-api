@@ -28,6 +28,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                 collection.Add(new Feature(town.Geometry, attributes));
             }
 
+            collection.CalculateBoundingBox();
             return collection;
         }
     }
