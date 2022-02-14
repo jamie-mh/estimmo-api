@@ -17,9 +17,13 @@ namespace Estimmo.Runner.Modules
     public class ImportPropertySales : IModule
     {
         private const int BufferSize = 10000;
+
         private const int MinValue = 10000;
         private const int MaxValue = 2000000;
         private const int ParisMaxValue = 10000000;
+
+        private const int MaxValuePerSquareMeter = 8000;
+        private const int MaxValuePerSquareMeterParis = 25000;
 
         private static readonly Dictionary<string, string> NameSubtitutions = new()
         {
@@ -90,6 +94,13 @@ namespace Estimmo.Runner.Modules
                 var departmentId = mutation.ParcelId[..2];
 
                 if (mutation.Value < MinValue || mutation.Value > (departmentId == "75" ? ParisMaxValue : MaxValue))
+                {
+                    continue;
+                }
+
+                var valuePerSquareMeter = mutation.Value / mutation.BuildingSurfaceArea;
+
+                if (valuePerSquareMeter > (departmentId == "75" ? MaxValuePerSquareMeterParis : MaxValuePerSquareMeter))
                 {
                     continue;
                 }
