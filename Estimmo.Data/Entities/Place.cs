@@ -8,6 +8,7 @@ namespace Estimmo.Data.Entities
         public string Id { get; set; }
         public string Name { get; set; }
         public string SearchName { get; set; }
+        public string PostCode { get; set; }
         public Geometry Geometry { get; set; }
     }
 }
