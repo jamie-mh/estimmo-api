@@ -31,6 +31,7 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                     { "value", sale.Value }
                 };
 
+                collection.CalculateBoundingBox();
                 collection.Add(new Feature(sale.Coordinates, attributes));
             }
 
