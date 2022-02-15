@@ -1,9 +1,9 @@
 using Estimmo.Data.Entities;
 using System.Text.Json.Serialization;
 
-namespace Estimmo.Api.Entities.Json
+namespace Estimmo.Api.Entities
 {
-    public class JsonPlace
+    public class SimplePlace
     {
         [JsonPropertyName("type")]
         public PlaceType Type { get; set; }

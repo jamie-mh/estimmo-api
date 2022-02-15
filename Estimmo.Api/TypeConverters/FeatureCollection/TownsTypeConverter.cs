@@ -1,5 +1,4 @@
 using AutoMapper;
-using Estimmo.Api.Entities.Json;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;
 using System;

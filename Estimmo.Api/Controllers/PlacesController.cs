@@ -1,12 +1,13 @@
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Estimmo.Api.Entities.Json;
+using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -58,7 +59,7 @@ namespace Estimmo.Api.Controllers
             var places = await queryable
                 .OrderBy(p => p.Name)
                 .Take(limit)
-                .ProjectTo<JsonPlace>(_mapper.ConfigurationProvider)
+                .ProjectTo<SimplePlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             if (name == null)
@@ -73,6 +74,58 @@ namespace Estimmo.Api.Controllers
                 .ToList();
 
             return Ok(places);
+        }
+
+        [HttpGet]
+        [Route("/places/{id}")]
+        public async Task<IActionResult> GetPlace(string id, [Required] PlaceType type)
+        {
+            var place = await _context.Places
+                .ProjectTo<DetailedPlace>(_mapper.ConfigurationProvider)
+                .SingleOrDefaultAsync(p => p.Id == id && p.Type == type);
+
+            if (place == null)
+            {
+                return NotFound();
+            }
+
+            place.Hierarchy = new List<SimplePlace>();
+
+            async Task AddPlaceToHierarchy(PlaceType placeType, string placeId)
+            {
+                var p =  await _context.Places
+                    .ProjectTo<SimplePlace>(_mapper.ConfigurationProvider)
+                    .FirstOrDefaultAsync(p => p.Type == placeType && p.Id == placeId);
+
+                if (p != null)
+                {
+                    place.Hierarchy.Add(p);
+                }
+            }
+
+            if (place.Type is PlaceType.Department)
+            {
+                var department = await _context.Departments
+                    .Select(d => new { d.Id, d.RegionId })
+                    .FirstOrDefaultAsync(d => d.Id == id);
+
+                await AddPlaceToHierarchy(PlaceType.Region, department.RegionId);
+            }
+            else if (place.Type == PlaceType.Town)
+            {
+                var town = await _context.Towns
+                    .Select(t => new { t.Id, t.DepartmentId })
+                    .FirstOrDefaultAsync(t => t.Id == place.Id);
+
+                var department = await _context.Departments
+                    .Select(d => new { d.Id, d.RegionId })
+                    .FirstOrDefaultAsync(d => d.Id == town.DepartmentId);
+
+                await AddPlaceToHierarchy(PlaceType.Region, department.RegionId);
+                await AddPlaceToHierarchy(PlaceType.Department, town.DepartmentId);
+            }
+
+            return Ok(place);
         }
     }
 }
