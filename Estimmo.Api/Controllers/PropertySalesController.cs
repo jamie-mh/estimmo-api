@@ -22,14 +22,24 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/sections/{sectionId}/property-sales")]
-        public async Task<FeatureCollection> GetPropertySales(string sectionId)
+        public async Task<IActionResult> GetPropertySales(string sectionId)
         {
+            var section = await _context.Sections.SingleOrDefaultAsync(s => s.Id == sectionId);
+
+            if (section == null)
+            {
+                return NotFound();
+            }
+
             var sales = await _context.PropertySales
                 .Include(p => p.Section)
                 .Where(p => p.SectionId == sectionId)
                 .ToListAsync();
 
-            return _mapper.Map<FeatureCollection>(sales);
+            var collection = _mapper.Map<FeatureCollection>(sales);
+            collection.BoundingBox = section.Geometry.EnvelopeInternal;
+
+            return Ok(collection);
         }
     }
 }
