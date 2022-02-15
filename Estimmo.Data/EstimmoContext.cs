@@ -268,7 +268,15 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.PostCode).HasColumnName("post_code");
 
+                entity.Property(e => e.ParentType).HasColumnName("parent_type");
+
+                entity.Property(e => e.ParentId).HasColumnName("parent_id");
+
                 entity.Property(e => e.Geometry).HasColumnName("geometry");
+
+                entity.HasOne(p => p.Parent)
+                    .WithMany()
+                    .HasForeignKey(p => new { p.ParentType, p.ParentId });
             });
 
             modelBuilder.Entity<Message>(entity =>

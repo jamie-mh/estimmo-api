@@ -9,6 +9,10 @@ namespace Estimmo.Data.Entities
         public string Name { get; set; }
         public string SearchName { get; set; }
         public string PostCode { get; set; }
+        public PlaceType? ParentType { get; set; }
+        public string ParentId { get; set; }
         public Geometry Geometry { get; set; }
+
+        public virtual Place Parent { get; set; }
     }
 }
