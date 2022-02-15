@@ -4,11 +4,9 @@ using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Fastenshtein;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,7 +32,8 @@ namespace Estimmo.Api.Controllers
         {
             if (name == null && (latitude == null || longitude == null))
             {
-                return BadRequest("Name or coordinates must be specified");
+                ModelState.AddModelError("", "Name or coordinates must be specified");
+                return ValidationProblem();
             }
 
             IQueryable<Place> queryable;
