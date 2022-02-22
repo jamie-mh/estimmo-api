@@ -19,6 +19,7 @@ namespace Estimmo.Data
         public virtual DbSet<Town> Towns { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<PropertySale> PropertySales { get; set; }
+        public virtual DbSet<FranceAverageValue> FranceAverageValues { get; set; }
         public virtual DbSet<RegionAverageValue> RegionAverageValues { get; set; }
         public virtual DbSet<DepartmentAverageValue> DepartmentAverageValues { get; set; }
         public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
@@ -180,6 +181,17 @@ namespace Estimmo.Data
                 entity.HasOne(p => p.Section)
                     .WithMany(p => p.PropertySales)
                     .HasForeignKey(p => p.SectionId);
+            });
+
+            modelBuilder.Entity<FranceAverageValue>(entity =>
+            {
+                entity.ToView("france_avg_value");
+
+                entity.HasKey(e => e.Type);
+
+                entity.Property(e => e.Type).HasColumnName("type");
+
+                entity.Property(e => e.Value).HasColumnName("value");
             });
 
             modelBuilder.Entity<RegionAverageValue>(entity =>

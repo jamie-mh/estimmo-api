@@ -104,10 +104,6 @@ namespace Estimmo.Api
                 .ForMember(d => d.Coordinates,
                     o => o.MapFrom(v => new Point(v.PropertyCoordinates.Longitude, v.PropertyCoordinates.Latitude)));
 
-            config.CreateMap<IAverageValue, KeyValuePair<string, int>>()
-                .ConstructUsing(av =>
-                    new KeyValuePair<string, int>(av.Id, (int) Math.Round(av.Value)));
-
             config.CreateMap<IEnumerable<Region>, FeatureCollection>()
                 .ConvertUsing<RegionsTypeConverter>();
 

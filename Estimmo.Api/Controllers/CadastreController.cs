@@ -1,4 +1,5 @@
 using AutoMapper;
+using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,13 +23,18 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/regions")]
-        public async Task<FeatureCollection> GetRegions()
+        public async Task<RegionsData> GetRegions()
         {
             var regions = await _context.Regions
                 .Include(r => r.AverageValues)
                 .ToListAsync();
 
-            return _mapper.Map<FeatureCollection>(regions);
+            var featureCollection = _mapper.Map<FeatureCollection>(regions);
+
+            var averageValues = await _context.FranceAverageValues
+                .ToDictionaryAsync(v => (int) v.Type, v => v.Value);
+
+            return new RegionsData { AverageValues = averageValues, GeoJson = featureCollection };
         }
 
         [HttpGet]
