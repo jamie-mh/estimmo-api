@@ -10,7 +10,10 @@ namespace Estimmo.Api.Models
         [JsonPropertyName("coordinates")]
         public Coordinates PropertyCoordinates { get; set; }
 
-        [Required] [JsonPropertyName("rooms")] public int Rooms { get; set; }
+        [Required]
+        [Range(1, int.MaxValue)]
+        [JsonPropertyName("rooms")]
+        public int Rooms { get; set; }
 
         [Required]
         [Range(1, int.MaxValue)]
