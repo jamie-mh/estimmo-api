@@ -3,7 +3,6 @@ using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
-using Fastenshtein;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
@@ -46,32 +45,24 @@ namespace Estimmo.Api.Controllers
 
                 queryable = _context.Places
                     .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")) ||
-                                EF.Functions.Like(p.PostCode, EF.Functions.Unaccent($"%{lowerName}%")));
+                                EF.Functions.Like(p.PostCode, $"%{lowerName}%"))
+                    .OrderBy(p =>
+                        EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName,
+                            EF.Functions.Unaccent(lowerName)));
             }
             else
             {
                 var point = new Point(longitude.Value, latitude.Value);
 
                 queryable = _context.Places
-                    .Where(p => p.Geometry.Covers(point));
+                    .Where(p => p.Geometry.Covers(point))
+                    .OrderBy(p => p.Type);
             }
 
             var places = await queryable
-                .OrderBy(p => p.Name)
                 .Take(limit)
                 .ProjectTo<SimplePlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
-
-            if (name == null)
-            {
-                return Ok(places);
-            }
-
-            var levenshtein = new Levenshtein(name.ToLowerInvariant());
-
-            places = places
-                .OrderBy(p => levenshtein.DistanceFrom(p.Name.ToLowerInvariant()))
-                .ToList();
 
             return Ok(places);
         }
