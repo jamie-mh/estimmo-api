@@ -23,7 +23,7 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/regions")]
-        public async Task<RegionsData> GetRegions()
+        public async Task<CadastreItem> GetRegions()
         {
             var regions = await _context.Regions
                 .Include(r => r.AverageValues)
@@ -34,43 +34,61 @@ namespace Estimmo.Api.Controllers
             var averageValues = await _context.FranceAverageValues
                 .ToDictionaryAsync(v => (int) v.Type, v => v.Value);
 
-            return new RegionsData { AverageValues = averageValues, GeoJson = featureCollection };
+            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
         }
 
         [HttpGet]
         [Route("/regions/{regionId}/departments")]
-        public async Task<FeatureCollection> GetDepartments(string regionId)
+        public async Task<CadastreItem> GetDepartments(string regionId)
         {
             var departments = await _context.Departments
                 .Where(d => d.RegionId == regionId)
                 .Include(d => d.AverageValues)
                 .ToListAsync();
 
-            return _mapper.Map<FeatureCollection>(departments);
+            var featureCollection = _mapper.Map<FeatureCollection>(departments);
+
+            var averageValues = await _context.RegionAverageValues
+                .Where(r => r.Id == regionId)
+                .ToDictionaryAsync(v => (int) v.Type, v => v.Value);
+
+            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
         }
 
         [HttpGet]
         [Route("/departments/{departmentId}/towns")]
-        public async Task<FeatureCollection> GetTowns(string departmentId)
+        public async Task<CadastreItem> GetTowns(string departmentId)
         {
             var towns = await _context.Towns
                 .Where(t => t.DepartmentId == departmentId)
                 .Include(t => t.AverageValues)
                 .ToListAsync();
 
-            return _mapper.Map<FeatureCollection>(towns);
+            var featureCollection = _mapper.Map<FeatureCollection>(towns);
+
+            var averageValues = await _context.DepartmentAverageValues
+                .Where(d => d.Id == departmentId)
+                .ToDictionaryAsync(v => (int) v.Type, v => v.Value);
+
+            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
         }
 
         [HttpGet]
         [Route("/towns/{townId}/sections")]
-        public async Task<FeatureCollection> GetSections(string townId)
+        public async Task<CadastreItem> GetSections(string townId)
         {
             var sections = await _context.Sections
                 .Where(s => s.TownId == townId)
                 .Include(s => s.AverageValues)
                 .ToListAsync();
 
-            return _mapper.Map<FeatureCollection>(sections);
+            var featureCollection = _mapper.Map<FeatureCollection>(sections);
+
+            var averageValues = await _context.TownAverageValues
+                .Where(t => t.Id == townId)
+                .ToDictionaryAsync(v => (int) v.Type, v => v.Value);
+
+            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
         }
     }
 }

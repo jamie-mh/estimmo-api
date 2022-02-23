@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Estimmo.Api.Entities
 {
-    public class RegionsData
+    public class CadastreItem
     {
         [JsonPropertyName("averageValues")]
         public Dictionary<int, double> AverageValues { get; set; }

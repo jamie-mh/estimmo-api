@@ -16,7 +16,6 @@ using Microsoft.Extensions.Hosting;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
-using System;
 using System.Collections.Generic;
 
 namespace Estimmo.Api
