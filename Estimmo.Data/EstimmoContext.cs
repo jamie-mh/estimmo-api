@@ -65,6 +65,10 @@ namespace Estimmo.Data
                 entity.HasMany(e => e.AverageValues)
                     .WithOne(e => e.Region)
                     .HasForeignKey(e => e.Id);
+
+                entity.HasMany(e => e.AverageValuesByYear)
+                    .WithOne(e => e.Region)
+                    .HasForeignKey(e => e.Id);
             });
 
             modelBuilder.Entity<Department>(entity =>

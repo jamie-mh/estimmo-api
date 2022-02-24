@@ -387,19 +387,12 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("smallint")
                         .HasColumnName("year");
 
-                    b.Property<string>("RegionId")
-                        .HasColumnType("text")
-                        .HasColumnName("region_id");
-
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
                     b.HasKey("Id", "Type", "Year")
                         .HasName("pk_region_average_values_by_year");
-
-                    b.HasIndex("RegionId")
-                        .HasDatabaseName("ix_region_average_values_by_year_region_id");
 
                     b.ToTable((string)null);
 
@@ -692,7 +685,9 @@ namespace Estimmo.Data.Migrations
                 {
                     b.HasOne("Estimmo.Data.Entities.Region", "Region")
                         .WithMany("AverageValuesByYear")
-                        .HasForeignKey("RegionId")
+                        .HasForeignKey("Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_region_average_values_by_year_regions_region_id");
 
                     b.Navigation("Region");
