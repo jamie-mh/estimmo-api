@@ -361,19 +361,12 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("type");
 
-                    b.Property<string>("RegionId")
-                        .HasColumnType("text")
-                        .HasColumnName("region_id");
-
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
                     b.HasKey("Id", "Type")
                         .HasName("pk_region_average_values");
-
-                    b.HasIndex("RegionId")
-                        .HasDatabaseName("ix_region_average_values_region_id");
 
                     b.ToTable((string)null);
 
@@ -685,17 +678,12 @@ namespace Estimmo.Data.Migrations
 
             modelBuilder.Entity("Estimmo.Data.Entities.RegionAverageValue", b =>
                 {
-                    b.HasOne("Estimmo.Data.Entities.Region", null)
+                    b.HasOne("Estimmo.Data.Entities.Region", "Region")
                         .WithMany("AverageValues")
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_region_average_values_regions_region_id");
-
-                    b.HasOne("Estimmo.Data.Entities.Region", "Region")
-                        .WithMany()
-                        .HasForeignKey("RegionId")
-                        .HasConstraintName("fk_region_average_values_region_region_id1");
 
                     b.Navigation("Region");
                 });

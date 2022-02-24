@@ -63,7 +63,7 @@ namespace Estimmo.Data
                 entity.HasIndex(e => e.Geometry).HasMethod("gist");
 
                 entity.HasMany(e => e.AverageValues)
-                    .WithOne()
+                    .WithOne(e => e.Region)
                     .HasForeignKey(e => e.Id);
             });
 
