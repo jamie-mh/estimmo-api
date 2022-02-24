@@ -1,13 +1,14 @@
 namespace Estimmo.Data.Entities
 {
-    public class DepartmentAverageValue : IAverageValue
+    public class TownAverageValueByYear : IAverageValueByYear
     {
         public string Id { get; set; }
         public PropertyType Type { get; set; }
-        public string RegionId { get; set; }
+        public short Year { get; set; }
+        public string DepartmentId { get; set; }
         public double Value { get; set; }
 
+        public virtual Town Town { get; set; }
         public virtual Department Department { get; set; }
-        public virtual Region Region { get; set; }
     }
 }

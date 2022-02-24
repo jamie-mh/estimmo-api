@@ -7,6 +7,7 @@ namespace Estimmo.Data.Entities
         public string DepartmentId { get; set; }
         public double Value { get; set; }
 
+        public virtual Town Town { get; set; }
         public virtual Department Department { get; set; }
     }
 }
