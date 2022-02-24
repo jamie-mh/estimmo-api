@@ -35,7 +35,9 @@ namespace Estimmo.Runner.Modules
             { "Pl", "Place" },
             { "All", "Allée" },
             { "Mte", "Montée" },
-            { "Bd", "Boulevard" }
+            { "Bd", "Boulevard" },
+            { "Crs", "Cours" },
+            { "Sq", "Square" }
         };
 
         private readonly ILogger _log = Log.ForContext<ImportPropertySales>();
