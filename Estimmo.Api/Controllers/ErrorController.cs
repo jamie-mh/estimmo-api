@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Estimmo.Api.Controllers
 {
     [ApiController]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public class ErrorController : ControllerBase
     {
         [Route("/error/404")]
