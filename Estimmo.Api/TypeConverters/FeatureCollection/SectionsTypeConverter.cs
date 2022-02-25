@@ -19,7 +19,12 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                 {
                     { "featureId", Math.Abs(section.Id.GetHashCode()) },
                     { "id", section.Id },
-                    { "averageValues", section.AverageValues.ToDictionary(r => (int) r.Type, r => r.Value) }
+                    {
+                        "averageValues",
+                        context.Mapper.Map<Dictionary<short, double>>(section.AverageValuesByYear.Any()
+                            ? section.AverageValuesByYear
+                            : section.AverageValues)
+                    }
                 };
 
                 collection.Add(new Feature(section.Geometry, attributes));

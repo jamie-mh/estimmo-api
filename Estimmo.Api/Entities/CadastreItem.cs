@@ -7,7 +7,7 @@ namespace Estimmo.Api.Entities
     public class CadastreItem
     {
         [JsonPropertyName("averageValues")]
-        public Dictionary<int, double> AverageValues { get; set; }
+        public Dictionary<short, double> AverageValues { get; set; }
 
         [JsonPropertyName("geojson")]
         public FeatureCollection GeoJson { get; set; }

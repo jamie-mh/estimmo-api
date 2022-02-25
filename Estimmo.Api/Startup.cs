@@ -17,6 +17,7 @@ using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Estimmo.Api
 {
@@ -117,6 +118,9 @@ namespace Estimmo.Api
 
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
                 .ConvertUsing<PropertySalesTypeConverter>();
+
+            config.CreateMap<IAverageValue, KeyValuePair<short, double>>()
+                .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Value));
 
             config.CreateMap<Place, SimplePlace>();
 
