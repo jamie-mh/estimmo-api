@@ -44,10 +44,15 @@ namespace Estimmo.Api.Controllers
 
             var featureCollection = _mapper.Map<FeatureCollection>(regions);
 
-            var averageValues = await _context.FranceAverageValues
-                .ToDictionaryAsync(v => (short) v.Type, v => v.Value);
+            var averageValues = await _context.FranceAverageValues.ToListAsync();
+            var averageValuesByYear = await _context.FranceAverageValuesByYear.ToListAsync();
 
-            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
+            return new CadastreItem
+            {
+                AverageValues = averageValues,
+                AverageValuesByYear = averageValuesByYear,
+                GeoJson = featureCollection
+            };
         }
 
         [HttpGet]
@@ -74,9 +79,18 @@ namespace Estimmo.Api.Controllers
 
             var averageValues = await _context.RegionAverageValues
                 .Where(r => r.Id == regionId)
-                .ToDictionaryAsync(v => (short) v.Type, v => v.Value);
+                .ToListAsync();
 
-            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
+            var averageValuesByYear = await _context.RegionAverageValuesByYear
+                .Where(r => r.Id == regionId)
+                .ToListAsync();
+
+            return new CadastreItem
+            {
+                AverageValues = averageValues,
+                AverageValuesByYear = averageValuesByYear,
+                GeoJson = featureCollection
+            };
         }
 
         [HttpGet]
@@ -103,9 +117,18 @@ namespace Estimmo.Api.Controllers
 
             var averageValues = await _context.DepartmentAverageValues
                 .Where(d => d.Id == departmentId)
-                .ToDictionaryAsync(v => (short) v.Type, v => v.Value);
+                .ToListAsync();
 
-            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
+            var averageValuesByYear = await _context.DepartmentAverageValuesByYear
+                .Where(d => d.Id == departmentId)
+                .ToListAsync();
+
+            return new CadastreItem
+            {
+                AverageValues = averageValues,
+                AverageValuesByYear = averageValuesByYear,
+                GeoJson = featureCollection
+            };
         }
 
         [HttpGet]
@@ -132,9 +155,18 @@ namespace Estimmo.Api.Controllers
 
             var averageValues = await _context.TownAverageValues
                 .Where(t => t.Id == townId)
-                .ToDictionaryAsync(v => (short) v.Type, v => v.Value);
+                .ToListAsync();
 
-            return new CadastreItem { AverageValues = averageValues, GeoJson = featureCollection };
+            var averageValuesByYear = await _context.TownAverageValuesByYear
+                .Where(t => t.Id == townId)
+                .ToListAsync();
+
+            return new CadastreItem
+            {
+                AverageValues = averageValues,
+                AverageValuesByYear = averageValuesByYear,
+                GeoJson = featureCollection
+            };
         }
     }
 }
