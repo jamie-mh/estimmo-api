@@ -24,7 +24,7 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/sections/{sectionId}/property-sales")]
-        public async Task<IActionResult> GetPropertySales(string sectionId, PropertyType? type = null)
+        public async Task<IActionResult> GetPropertySales(string sectionId, PropertyType? type = null, short? year = null)
         {
             var section = await _context.Sections.SingleOrDefaultAsync(s => s.Id == sectionId);
 
@@ -37,17 +37,17 @@ namespace Estimmo.Api.Controllers
                 .Include(p => p.Section)
                 .Where(p => p.SectionId == sectionId);
 
-            List<PropertySale> sales;
-
-            if (type == null)
+            if (type != null)
             {
-                sales = await queryable.ToListAsync();
-            }
-            else
-            {
-                sales = await queryable.Where(s => s.Type == type).ToListAsync();
+                queryable = queryable.Where(s => s.Type == type);
             }
 
+            if (year != null)
+            {
+                queryable = queryable.Where(s => s.Date.Year == year);
+            }
+
+            var sales = await queryable.ToListAsync();
             var collection = _mapper.Map<FeatureCollection>(sales);
             collection.BoundingBox = section.Geometry.EnvelopeInternal;
 
