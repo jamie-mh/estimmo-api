@@ -2,6 +2,6 @@
 {
     public enum PropertyType
     {
-        House = 1, Apartment = 2
+        All = 0, House = 1, Apartment = 2
     }
 }

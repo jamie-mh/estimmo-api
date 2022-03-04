@@ -187,12 +187,17 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW france_avg_value AS
+                SELECT 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                UNION
                 SELECT ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 GROUP BY ps.type;
 
                 CREATE UNIQUE INDEX pk_france_avg_value ON france_avg_value(type);
 
                 CREATE MATERIALIZED VIEW france_avg_value_by_year AS
+                SELECT 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                GROUP BY year
+                UNION
                 SELECT ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 GROUP BY ps.type, year;
 
@@ -201,6 +206,13 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW region_avg_value AS
+                SELECT r.id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                INNER JOIN department d on t.department_id = d.id
+                INNER JOIN region r on d.region_id = r.id
+                GROUP BY r.id
+                UNION
                 SELECT r.id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -211,6 +223,13 @@ namespace Estimmo.Data.Migrations
                 CREATE UNIQUE INDEX pk_region_avg_value ON region_avg_value(id, type);
 
                 CREATE MATERIALIZED VIEW region_avg_value_by_year AS
+                SELECT r.id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                INNER JOIN department d on t.department_id = d.id
+                INNER JOIN region r on d.region_id = r.id
+                GROUP BY r.id, year
+                UNION
                 SELECT r.id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -223,6 +242,12 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW department_avg_value AS
+                SELECT d.id, d.region_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                INNER JOIN department d on t.department_id = d.id
+                GROUP BY d.id
+                UNION
                 SELECT d.id, d.region_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -233,6 +258,12 @@ namespace Estimmo.Data.Migrations
                 CREATE INDEX ix_department_avg_value_region_id ON department_avg_value(region_id);
 
                 CREATE MATERIALIZED VIEW department_avg_value_by_year AS
+                SELECT d.id, d.region_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                INNER JOIN department d on t.department_id = d.id
+                GROUP BY d.id, year
+                UNION
                 SELECT d.id, d.region_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -245,6 +276,11 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW town_avg_value AS
+                SELECT t.id, t.department_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                GROUP BY t.id
+                UNION
                 SELECT t.id, t.department_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -254,6 +290,11 @@ namespace Estimmo.Data.Migrations
                 CREATE INDEX ix_town_avg_value ON town_avg_value(department_id);
 
                 CREATE MATERIALIZED VIEW town_avg_value_by_year AS
+                SELECT t.id, t.department_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                INNER JOIN town t on s.town_id = t.id
+                GROUP BY t.id, year
+                UNION
                 SELECT t.id, t.department_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 INNER JOIN town t on s.town_id = t.id
@@ -265,6 +306,10 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW section_avg_value AS
+                SELECT s.id, s.town_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                GROUP BY s.id
+                UNION
                 SELECT s.id, s.town_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 GROUP BY s.id, ps.type;
@@ -273,6 +318,10 @@ namespace Estimmo.Data.Migrations
                 CREATE INDEX ix_section_avg_value_town_id ON section_avg_value(town_id);
 
                 CREATE MATERIALIZED VIEW section_avg_value_by_year AS
+                SELECT s.id, s.town_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
+                INNER JOIN section s on ps.section_id = s.id
+                GROUP BY s.id, year
+                UNION
                 SELECT s.id, s.town_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
                 INNER JOIN section s on ps.section_id = s.id
                 GROUP BY s.id, ps.type, year;
