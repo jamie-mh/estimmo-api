@@ -44,7 +44,19 @@ namespace Estimmo.Api.Controllers
 
             var featureCollection = _mapper.Map<FeatureCollection>(regions);
 
-            var averageValues = await _context.FranceAverageValues.ToListAsync();
+            IEnumerable<IAverageValue> averageValues;
+
+            if (salesYear == null)
+            {
+                averageValues = await _context.FranceAverageValues.ToListAsync();
+            }
+            else
+            {
+                averageValues = await _context.FranceAverageValuesByYear
+                    .Where(v => v.Year == salesYear)
+                    .ToListAsync();
+            }
+
             var averageValuesByYear = await _context.FranceAverageValuesByYear.ToListAsync();
 
             return new CadastreItem
@@ -77,9 +89,20 @@ namespace Estimmo.Api.Controllers
 
             var featureCollection = _mapper.Map<FeatureCollection>(departments);
 
-            var averageValues = await _context.RegionAverageValues
-                .Where(r => r.Id == regionId)
-                .ToListAsync();
+            IEnumerable<IAverageValue> averageValues;
+
+            if (salesYear == null)
+            {
+                averageValues = await _context.RegionAverageValues
+                    .Where(v => v.Id == regionId)
+                    .ToListAsync();
+            }
+            else
+            {
+                averageValues = await _context.RegionAverageValuesByYear
+                    .Where(v => v.Id == regionId && v.Year == salesYear)
+                    .ToListAsync();
+            }
 
             var averageValuesByYear = await _context.RegionAverageValuesByYear
                 .Where(r => r.Id == regionId)
@@ -115,9 +138,20 @@ namespace Estimmo.Api.Controllers
 
             var featureCollection = _mapper.Map<FeatureCollection>(towns);
 
-            var averageValues = await _context.DepartmentAverageValues
-                .Where(d => d.Id == departmentId)
-                .ToListAsync();
+            IEnumerable<IAverageValue> averageValues;
+
+            if (salesYear == null)
+            {
+                averageValues = await _context.DepartmentAverageValues
+                    .Where(v => v.Id == departmentId)
+                    .ToListAsync();
+            }
+            else
+            {
+                averageValues = await _context.DepartmentAverageValuesByYear
+                    .Where(v => v.Id == departmentId && v.Year == salesYear)
+                    .ToListAsync();
+            }
 
             var averageValuesByYear = await _context.DepartmentAverageValuesByYear
                 .Where(d => d.Id == departmentId)
@@ -153,9 +187,20 @@ namespace Estimmo.Api.Controllers
 
             var featureCollection = _mapper.Map<FeatureCollection>(sections);
 
-            var averageValues = await _context.TownAverageValues
-                .Where(t => t.Id == townId)
-                .ToListAsync();
+            IEnumerable<IAverageValue> averageValues;
+
+            if (salesYear == null)
+            {
+                averageValues = await _context.TownAverageValues
+                    .Where(v => v.Id == townId)
+                    .ToListAsync();
+            }
+            else
+            {
+                averageValues = await _context.TownAverageValuesByYear
+                    .Where(v => v.Id == townId && v.Year == salesYear)
+                    .ToListAsync();
+            }
 
             var averageValuesByYear = await _context.TownAverageValuesByYear
                 .Where(t => t.Id == townId)
