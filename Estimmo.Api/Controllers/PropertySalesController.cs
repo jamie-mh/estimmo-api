@@ -26,6 +26,11 @@ namespace Estimmo.Api.Controllers
         [Route("/sections/{sectionId}/property-sales")]
         public async Task<IActionResult> GetPropertySales(string sectionId, PropertyType? type = null, short? year = null)
         {
+            if (type == PropertyType.All)
+            {
+                type = null;
+            }
+
             var section = await _context.Sections.SingleOrDefaultAsync(s => s.Id == sectionId);
 
             if (section == null)
