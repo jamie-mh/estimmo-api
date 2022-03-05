@@ -52,7 +52,10 @@ namespace Estimmo.Api.Controllers
                 queryable = queryable.Where(s => s.Date.Year == year);
             }
 
-            var sales = await queryable.ToListAsync();
+            var sales = await queryable
+                .OrderByDescending(s => s.Date)
+                .ToListAsync();
+
             var collection = _mapper.Map<FeatureCollection>(sales);
             collection.BoundingBox = section.Geometry.EnvelopeInternal;
 
