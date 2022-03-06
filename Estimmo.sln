@@ -16,6 +16,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Estimmo.Shared", "Estimmo.Shared\Estimmo.Shared.csproj", "{37ACF67F-D216-4981-BDFA-B696F8AE5167}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{8251781E-7C77-4EC9-8869-1191B408C425}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8251781E-7C77-4EC9-8869-1191B408C425}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8251781E-7C77-4EC9-8869-1191B408C425}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37ACF67F-D216-4981-BDFA-B696F8AE5167}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37ACF67F-D216-4981-BDFA-B696F8AE5167}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37ACF67F-D216-4981-BDFA-B696F8AE5167}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37ACF67F-D216-4981-BDFA-B696F8AE5167}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

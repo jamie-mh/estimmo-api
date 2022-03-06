@@ -1,7 +1,7 @@
 ﻿using Estimmo.Data.Entities;
 using NetTopologySuite.Geometries;
 
-namespace Estimmo.Api.Entities
+namespace Estimmo.Shared.Entities
 {
     public class EstimateRequest
     {

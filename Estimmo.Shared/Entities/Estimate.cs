@@ -1,4 +1,4 @@
-﻿namespace Estimmo.Api.Entities
+﻿namespace Estimmo.Shared.Entities
 {
     public class Estimate
     {

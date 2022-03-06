@@ -1,11 +1,12 @@
 using AutoMapper;
 using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
-using Estimmo.Api.Services;
-using Estimmo.Api.Services.Impl;
 using Estimmo.Api.TypeConverters.FeatureCollection;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Estimmo.Shared.Entities;
+using Estimmo.Shared.Services;
+using Estimmo.Shared.Services.Impl;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -17,7 +18,6 @@ using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Estimmo.Api
 {

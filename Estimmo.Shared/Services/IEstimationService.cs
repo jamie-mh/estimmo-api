@@ -1,7 +1,6 @@
-﻿using Estimmo.Api.Entities;
-using System.Threading.Tasks;
+﻿using Estimmo.Shared.Entities;
 
-namespace Estimmo.Api.Services
+namespace Estimmo.Shared.Services
 {
     public interface IEstimationService
     {

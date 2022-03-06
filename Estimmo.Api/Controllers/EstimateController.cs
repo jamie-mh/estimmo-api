@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
-using Estimmo.Api.Services;
+using Estimmo.Shared.Entities;
+using Estimmo.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 

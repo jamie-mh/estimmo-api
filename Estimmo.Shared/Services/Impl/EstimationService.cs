@@ -1,12 +1,9 @@
-using Estimmo.Api.Entities;
 using Estimmo.Data;
+using Estimmo.Shared.Entities;
 using MathNet.Numerics.LinearRegression;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace Estimmo.Api.Services.Impl
+namespace Estimmo.Shared.Services.Impl
 {
     public class EstimationService : IEstimationService
     {
