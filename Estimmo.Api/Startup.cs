@@ -167,6 +167,10 @@ namespace Estimmo.Api
             config.CreateMap<Place, DetailedPlace>();
 
             config.CreateMap<MessageModel, Message>();
+
+            config.CreateMap<Message, SimpleMessage>();
+
+            config.CreateMap<Message, DetailedMessage>();
         }
     }
 }
