@@ -1,23 +1,29 @@
 using AutoMapper;
 using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
+using Estimmo.Api.Options;
 using Estimmo.Api.TypeConverters.FeatureCollection;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Shared.Entities;
 using Estimmo.Shared.Services;
 using Estimmo.Shared.Services.Impl;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace Estimmo.Api
 {
@@ -40,6 +46,11 @@ namespace Estimmo.Api
                 options.UseNpgsql(connectionString);
             });
 
+            services.AddIdentity<AdminUser, AdminRole>()
+                .AddEntityFrameworkStores<EstimmoContext>()
+                .AddDefaultTokenProviders()
+                .AddSignInManager();
+
             services.AddCors(options =>
             {
                 options.AddPolicy(CorsPolicyName, builder =>
@@ -56,6 +67,26 @@ namespace Estimmo.Api
                     new GeoJsonConverterFactory(GeometryFactory.Default, true, "featureId"));
             });
 
+            var jwtOptions = JwtOptions.FromConfiguration(_configuration);
+
+            services.AddAuthorization();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
+
             services.AddSwaggerGen();
             services.AddAutoMapper(ConfigureMappers);
 
@@ -68,6 +99,9 @@ namespace Estimmo.Api
             services.AddSingleton<TownsTypeConverter>();
             services.AddSingleton<SectionsTypeConverter>();
             services.AddSingleton<PropertySalesTypeConverter>();
+
+            // Options
+            services.AddSingleton(_ => jwtOptions);
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EstimmoContext context)
@@ -92,6 +126,9 @@ namespace Estimmo.Api
             }
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseCors();
 
