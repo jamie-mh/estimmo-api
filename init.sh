@@ -21,6 +21,8 @@ function download {
         curl "https://geo.api.gouv.fr/departements/$dep/communes?geometry=contour&format=geojson&type=commune-actuelle" > "download/towns/$dep.geojson"
     done
 
+    # Download Paris separately, get "arrondissements" as towns
+    echo "Downloading towns for department 75"
     curl "https://cadastre.data.gouv.fr/data/etalab-cadastre/latest/geojson/departements/75/cadastre-75-communes.json.gz" > download/towns/75.geojson.gz
     gzip -d download/towns/75.geojson.gz
 
