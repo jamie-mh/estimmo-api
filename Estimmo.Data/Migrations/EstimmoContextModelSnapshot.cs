@@ -384,7 +384,7 @@ namespace Estimmo.Data.Migrations
                     b.Property<Point>("Coordinates")
                         .IsRequired()
                         .HasColumnType("geography")
-                        .HasColumnName("coodinates");
+                        .HasColumnName("coordinates");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("date")
@@ -431,7 +431,7 @@ namespace Estimmo.Data.Migrations
                         .HasName("pk_property_sale");
 
                     b.HasIndex("Coordinates")
-                        .HasDatabaseName("ix_property_sale_coodinates");
+                        .HasDatabaseName("ix_property_sale_coordinates");
 
                     NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Coordinates"), "gist");
 

@@ -123,7 +123,7 @@ namespace Estimmo.Data.Migrations
                     room_count = table.Column<short>(type: "smallint", nullable: false),
                     value = table.Column<decimal>(type: "money", nullable: false),
                     section_id = table.Column<string>(type: "text", nullable: true),
-                    coodinates = table.Column<Point>(type: "geography", nullable: false)
+                    coordinates = table.Column<Point>(type: "geography", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -147,9 +147,9 @@ namespace Estimmo.Data.Migrations
                 column: "region_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_property_sale_coodinates",
+                name: "ix_property_sale_coordinates",
                 table: "property_sale",
-                column: "coodinates")
+                column: "coordinates")
                 .Annotation("Npgsql:IndexMethod", "gist");
 
             migrationBuilder.CreateIndex(

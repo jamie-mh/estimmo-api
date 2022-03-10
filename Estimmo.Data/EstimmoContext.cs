@@ -201,7 +201,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.SectionId).HasColumnName("section_id");
 
-                entity.Property(e => e.Coordinates).HasColumnName("coodinates").HasColumnType("geography").IsRequired();
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates").HasColumnType("geography").IsRequired();
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");
 
