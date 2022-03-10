@@ -1,4 +1,6 @@
 ﻿using Estimmo.Data;
+using Estimmo.Data.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,19 +20,18 @@ namespace Estimmo.Runner
     {
         public static async Task<int> Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
-                    .WithDefaultDestructurers()
-                    .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() }))
-                .MinimumLevel.Debug()
-                .WriteTo.Console()
-                .CreateLogger();
-
-            var services = new ServiceCollection();
-
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
+
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(configuration)
+                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
+                    .WithDefaultDestructurers()
+                    .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() }))
+                .CreateLogger();
+
+            var services = new ServiceCollection();
 
             RegisterServices(services, configuration);
             var provider = services.BuildServiceProvider();
@@ -68,13 +69,22 @@ namespace Estimmo.Runner
             return 0;
         }
 
-        public static void RegisterServices(IServiceCollection services, IConfiguration configuration)
+        private static void RegisterServices(IServiceCollection services, IConfiguration configuration)
         {
+            services.AddLogging(builder =>
+            {
+                builder.AddSerilog();
+            });
+
             services.AddDbContext<EstimmoContext>(options =>
             {
                 var connectionString = configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
             });
+
+            services.AddIdentity<AdminUser, AdminRole>()
+                .AddEntityFrameworkStores<EstimmoContext>()
+                .AddDefaultTokenProviders();
         }
 
         private static List<ModuleArg> ParseCommandLine(string[] args)

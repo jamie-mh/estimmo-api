@@ -77,6 +77,7 @@ function import {
     done
 
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews
+    dotnet run $DOTNET_ARGS AddUser estimmo "3sP9S^3gzg5SYyvQ"
 }
 
 if [[ ! -d "download" ]] ; then
