@@ -53,7 +53,7 @@ namespace Estimmo.Api.Controllers
         private JwtSecurityToken GetTokenForUser(AdminUser user, IEnumerable<string> roles)
         {
             var notBefore = DateTime.UtcNow;
-            var expiry = DateTime.UtcNow.AddDays(_jwtOptions.ExpirationInDays);
+            var expiry = DateTime.UtcNow.AddHours(_jwtOptions.ExpirationInHours);
             var claims = new List<Claim>
             {
                 new(JwtRegisteredClaimNames.Sub, user.UserName),
