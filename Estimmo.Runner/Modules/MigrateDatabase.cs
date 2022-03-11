@@ -9,8 +9,8 @@ namespace Estimmo.Runner.Modules
 {
     public class MigrateDatabase : IModule
     {
-        private EstimmoContext _context;
-        private ILogger _log = Log.ForContext<MigrateDatabase>();
+        private readonly EstimmoContext _context;
+        private readonly ILogger _log = Log.ForContext<MigrateDatabase>();
 
         public MigrateDatabase(EstimmoContext context)
         {
