@@ -1,9 +1,11 @@
 using AutoMapper;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,6 +25,14 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/sections/{sectionId}/property-sales")]
+        [SwaggerOperation(
+            Summary = "Get property sales that occurred in a section",
+            OperationId = "GetPropertySales",
+            Tags = new[] { "PropertySales" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Feature collection", typeof(FeatureCollection))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Section not found")]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<IActionResult> GetPropertySales(string sectionId, PropertyType? type = null, short? year = null)
         {
             if (type == PropertyType.All)

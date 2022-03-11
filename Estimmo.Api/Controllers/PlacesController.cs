@@ -3,9 +3,12 @@ using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,6 +29,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/places")]
+        [SwaggerOperation(
+            Summary = "Get list of places matching criteria",
+            OperationId = "GetPlaces",
+            Tags = new[] { "Place" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Place list", typeof(IEnumerable<SimplePlace>))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<ActionResult> GetPlaces(string name, double? latitude, double? longitude,
             [Range(1, 100)] int limit = 100)
         {
@@ -69,6 +79,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/places/{id}")]
+        [SwaggerOperation(
+            Summary = "Get single place an its hierarchy",
+            OperationId = "GetPlace",
+            Tags = new[] { "Place" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Place", typeof(DetailedPlace))]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<IActionResult> GetPlace(string id, [Required] PlaceType type)
         {
             var place = await _context.Places

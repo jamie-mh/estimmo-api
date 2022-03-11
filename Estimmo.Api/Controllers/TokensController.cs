@@ -1,9 +1,11 @@
 using Estimmo.Api.Models;
 using Estimmo.Api.Options;
 using Estimmo.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -31,6 +33,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpPost]
         [Route("/tokens")]
+        [SwaggerOperation(
+            Summary = "Generate an authentication token",
+            OperationId = "CreateToken",
+            Tags = new[] { "Auth" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Generated token", typeof(string))]
+        [SwaggerResponse(StatusCodes.Status403Forbidden, "The username or password is invalid")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginModel model)
         {
             var loginResult =

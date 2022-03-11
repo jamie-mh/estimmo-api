@@ -5,9 +5,12 @@ using Estimmo.Api.Models;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.Annotations;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -29,6 +32,14 @@ namespace Estimmo.Api.Controllers
         [HttpGet]
         [Authorize]
         [Route("/messages")]
+        [SwaggerOperation(
+            Summary = "Get messages",
+            OperationId = "GetMessages",
+            Tags = new[] { "Message" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Message list", typeof(IEnumerable<Message>))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "No authentication token provided")]
+        [SwaggerResponse(StatusCodes.Status403Forbidden, "Invalid authentication token or role")]
         public async Task<IActionResult> GetMessages(
             [Range(0, int.MaxValue)] int offset = 0, [Range(1, 100)] int limit = 100, bool isArchived = false)
         {
@@ -46,6 +57,14 @@ namespace Estimmo.Api.Controllers
         [HttpGet]
         [Authorize]
         [Route("/messages/{id:int}")]
+        [SwaggerOperation(
+            Summary = "Get single message",
+            OperationId = "GetMessage",
+            Tags = new[] { "Message" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Message", typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "No authentication token provided")]
+        [SwaggerResponse(StatusCodes.Status403Forbidden, "Invalid authentication token or role")]
         public async Task<IActionResult> GetMessage(int id)
         {
             var message = await _context.Messages
@@ -64,6 +83,14 @@ namespace Estimmo.Api.Controllers
         [HttpPatch]
         [Authorize]
         [Route("/messages/{id:int}")]
+        [SwaggerOperation(
+            Summary = "Set message as archived",
+            OperationId = "UpdateMessage",
+            Tags = new[] { "Message" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Message", typeof(Message))]
+        [SwaggerResponse(StatusCodes.Status401Unauthorized, "No authentication token provided")]
+        [SwaggerResponse(StatusCodes.Status403Forbidden, "Invalid authentication token or role")]
         public async Task<IActionResult> SetArchived(int id, MessagePatchModel model)
         {
             var message = await _context.Messages
@@ -82,6 +109,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpPost]
         [Route("/messages")]
+        [SwaggerOperation(
+            Summary = "Send message",
+            OperationId = "CreateMessage",
+            Tags = new[] { "Message" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK)]
+        [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<IActionResult> SendMessage([FromBody] MessageModel model)
         {
             var message = _mapper.Map<Message>(model);

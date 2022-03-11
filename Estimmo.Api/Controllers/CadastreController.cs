@@ -2,9 +2,11 @@ using AutoMapper;
 using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
+using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -25,6 +27,12 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/regions")]
+        [SwaggerOperation(
+            Summary = "Get all regions",
+            OperationId = "GetRegions",
+            Tags = new[] { "Cadastre" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
         public async Task<CadastreItem> GetRegions(short? salesYear = null)
         {
             List<Region> regions;
@@ -69,6 +77,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/regions/{regionId}/departments")]
+        [SwaggerOperation(
+            Summary = "Get all departments belonging to region",
+            OperationId = "GetDepartments",
+            Tags = new[] { "Cadastre" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Region not found")]
         public async Task<CadastreItem> GetDepartments(string regionId, short? salesYear = null)
         {
             var queryable = _context.Departments.Where(d => d.RegionId == regionId);
@@ -118,6 +133,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/departments/{departmentId}/towns")]
+        [SwaggerOperation(
+            Summary = "Get all towns belonging to department",
+            OperationId = "GetTowns",
+            Tags = new[] { "Cadastre" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Department not found")]
         public async Task<CadastreItem> GetTowns(string departmentId, short? salesYear = null)
         {
             var queryable = _context.Towns.Where(t => t.DepartmentId == departmentId);
@@ -167,6 +189,13 @@ namespace Estimmo.Api.Controllers
 
         [HttpGet]
         [Route("/towns/{townId}/sections")]
+        [SwaggerOperation(
+            Summary = "Get all sections belonging to town",
+            OperationId = "GetSections",
+            Tags = new[] { "Cadastre" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Town not found")]
         public async Task<CadastreItem> GetSections(string townId, short? salesYear = null)
         {
             var queryable = _context.Sections.Where(s => s.TownId == townId);
