@@ -141,11 +141,12 @@ namespace Estimmo.Api
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EstimmoContext context)
         {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI();
             }
             else
             {
