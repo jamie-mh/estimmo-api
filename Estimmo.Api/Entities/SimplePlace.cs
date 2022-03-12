@@ -14,6 +14,9 @@ namespace Estimmo.Api.Entities
         [JsonPropertyName("name")]
         public string Name { get; set; }
 
+        [JsonPropertyName("shortName")]
+        public string ShortName { get; set; }
+
         [JsonPropertyName("postCode")]
         public string PostCode { get; set; }
     }
