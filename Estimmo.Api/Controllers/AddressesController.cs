@@ -58,7 +58,7 @@ namespace Estimmo.Api.Controllers
                 queryable = _context.Places
                     .Where(p => p.Type == PlaceType.Address &&
                                 EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{simplifiedName}%")))
-                    .OrderBy(p => EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName, EF.Functions.Unaccent(simplifiedName)));
+                    .OrderBy(p => EF.Functions.TrigramsSimilarityDistance(p.SearchName, simplifiedName));
             }
             else
             {

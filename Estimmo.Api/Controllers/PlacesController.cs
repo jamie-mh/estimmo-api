@@ -57,8 +57,7 @@ namespace Estimmo.Api.Controllers
                     .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")))
                     .OrderBy(p => p.Type)
                     .ThenBy(p =>
-                        EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName,
-                            EF.Functions.Unaccent(lowerName)));
+                        EF.Functions.TrigramsSimilarityDistance(p.SearchName, lowerName));
             }
             else
             {
