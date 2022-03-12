@@ -28,7 +28,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get property sales that occurred in a section",
             OperationId = "GetPropertySales",
-            Tags = new[] { "PropertySales" }
+            Tags = new[] { "PropertySale" }
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Feature collection", typeof(FeatureCollection))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Section not found")]
