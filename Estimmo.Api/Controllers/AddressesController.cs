@@ -51,12 +51,14 @@ namespace Estimmo.Api.Controllers
 
             if (name != null)
             {
-                var lowerName = name.ToLowerInvariant();
+                var simplifiedName = name
+                    .ToLowerInvariant()
+                    .Replace(",", "");
 
                 queryable = _context.Places
                     .Where(p => p.Type == PlaceType.Address &&
-                                EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")))
-                    .OrderBy(p => EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName, EF.Functions.Unaccent(lowerName)));
+                                EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{simplifiedName}%")))
+                    .OrderBy(p => EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName, EF.Functions.Unaccent(simplifiedName)));
             }
             else
             {
