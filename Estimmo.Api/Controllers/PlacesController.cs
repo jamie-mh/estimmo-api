@@ -54,10 +54,8 @@ namespace Estimmo.Api.Controllers
                     .Replace("-", " ");
 
                 queryable = _context.Places
-                    .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")) ||
-                                p.PostCode == name)
-                    // Prefer exact postcode matches
-                    .OrderByDescending(p => p.Type == PlaceType.Town && p.PostCode == name)
+                    .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")))
+                    .OrderBy(p => p.Type)
                     .ThenBy(p =>
                         EF.Functions.FuzzyStringMatchLevenshtein(p.SearchName,
                             EF.Functions.Unaccent(lowerName)));
