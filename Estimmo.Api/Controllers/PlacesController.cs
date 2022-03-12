@@ -36,8 +36,8 @@ namespace Estimmo.Api.Controllers
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Place list", typeof(IEnumerable<SimplePlace>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
-        public async Task<ActionResult> GetPlaces(string name, double? latitude, double? longitude,
-            [Range(1, 100)] int limit = 100)
+        public async Task<ActionResult> GetPlaces(
+            [MinLength(3)] string name, double? latitude, double? longitude, [Range(1, 100)] int limit = 100)
         {
             if (name == null && (latitude == null || longitude == null))
             {

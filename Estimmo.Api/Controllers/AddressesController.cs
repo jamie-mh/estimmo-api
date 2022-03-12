@@ -39,7 +39,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Address list", typeof(IEnumerable<AddressItem>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<ActionResult> GetAddresses(
-            string name, double? latitude, double? longitude, [Range(1, 100)] int limit = 100)
+            [MinLength(3)] string name, double? latitude, double? longitude, [Range(1, 100)] int limit = 100)
         {
             if (name == null && (latitude == null || longitude == null))
             {
