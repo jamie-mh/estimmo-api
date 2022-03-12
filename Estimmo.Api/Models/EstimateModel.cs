@@ -1,3 +1,4 @@
+using Estimmo.Api.Entities;
 using Estimmo.Data.Entities;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
@@ -26,16 +27,5 @@ namespace Estimmo.Api.Models
         public int LandSurfaceArea { get; set; }
 
         [Required] [JsonPropertyName("type")] public PropertyType PropertyType { get; set; }
-
-        public class Coordinates
-        {
-            [Required]
-            [JsonPropertyName("latitude")]
-            public double Latitude { get; set; }
-
-            [Required]
-            [JsonPropertyName("longitude")]
-            public double Longitude { get; set; }
-        }
     }
 }

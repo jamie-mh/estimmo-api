@@ -25,6 +25,7 @@ using NetTopologySuite.IO.Converters;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using Coordinates = Estimmo.Api.Entities.Coordinates;
 
 namespace Estimmo.Api
 {
@@ -197,6 +198,11 @@ namespace Estimmo.Api
 
             config.CreateMap<IAverageValue, KeyValuePair<short, double>>()
                 .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Value));
+
+            config.CreateMap<Place, AddressItem>()
+                .ForMember(a => a.Coordinates,
+                    p => p.MapFrom(c =>
+                        new Coordinates { Latitude = c.Geometry.Coordinate.X, Longitude = c.Geometry.Coordinate.Y }));
 
             config.CreateMap<Place, SimplePlace>();
 
