@@ -202,7 +202,7 @@ namespace Estimmo.Api
             config.CreateMap<Place, AddressItem>()
                 .ForMember(a => a.Coordinates,
                     p => p.MapFrom(c =>
-                        new Coordinates { Latitude = c.Geometry.Coordinate.X, Longitude = c.Geometry.Coordinate.Y }));
+                        new Coordinates { Latitude = c.Geometry.Coordinate.Y, Longitude = c.Geometry.Coordinate.X }));
 
             config.CreateMap<Place, SimplePlace>();
 
