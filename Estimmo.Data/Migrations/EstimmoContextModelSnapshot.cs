@@ -21,9 +21,51 @@ namespace Estimmo.Data.Migrations
                 .HasAnnotation("ProductVersion", "6.0.2")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "postgis");
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "unaccent");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Address", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<Geometry>("Coordinates")
+                        .HasColumnType("geometry")
+                        .HasColumnName("coordinates");
+
+                    b.Property<int?>("Number")
+                        .HasColumnType("integer")
+                        .HasColumnName("number");
+
+                    b.Property<string>("PostCode")
+                        .HasColumnType("text")
+                        .HasColumnName("post_code");
+
+                    b.Property<string>("StreetId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("street_id");
+
+                    b.Property<string>("Suffix")
+                        .HasColumnType("text")
+                        .HasColumnName("suffix");
+
+                    b.HasKey("Id")
+                        .HasName("pk_address");
+
+                    b.HasIndex("Coordinates")
+                        .HasDatabaseName("ix_address_coordinates");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Coordinates"), "gist");
+
+                    b.HasIndex("StreetId")
+                        .HasDatabaseName("ix_address_street_id");
+
+                    b.ToTable("address", (string)null);
+                });
 
             modelBuilder.Entity("Estimmo.Data.Entities.AdminRole", b =>
                 {
@@ -617,6 +659,31 @@ namespace Estimmo.Data.Migrations
                     b.ToView("section_avg_value_by_year");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Street", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("TownId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("town_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_street");
+
+                    b.HasIndex("TownId")
+                        .HasDatabaseName("ix_street_town_id");
+
+                    b.ToTable("street", (string)null);
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Town", b =>
                 {
                     b.Property<string>("Id")
@@ -848,6 +915,18 @@ namespace Estimmo.Data.Migrations
                     b.ToTable("user_token", (string)null);
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Address", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Street", "Street")
+                        .WithMany("Addresses")
+                        .HasForeignKey("StreetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_address_street_street_id");
+
+                    b.Navigation("Street");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Department", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Region", "Region")
@@ -984,6 +1063,18 @@ namespace Estimmo.Data.Migrations
                         .HasConstraintName("fk_section_average_value_by_year_towns_town_id");
 
                     b.Navigation("Section");
+
+                    b.Navigation("Town");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Street", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Town", "Town")
+                        .WithMany()
+                        .HasForeignKey("TownId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_street_town_town_id");
 
                     b.Navigation("Town");
                 });
@@ -1128,6 +1219,11 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("AverageValuesByYear");
 
                     b.Navigation("PropertySales");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.Street", b =>
+                {
+                    b.Navigation("Addresses");
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Town", b =>

@@ -33,6 +33,8 @@ namespace Estimmo.Data
         public virtual DbSet<SectionAverageValue> SectionAverageValuesByYear { get; set; }
         public virtual DbSet<Place> Places { get; set; }
         public virtual DbSet<Message> Messages { get; set; }
+        public virtual DbSet<Street> Streets { get; set; }
+        public virtual DbSet<Address> Addresses { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -51,6 +53,7 @@ namespace Estimmo.Data
 
             modelBuilder.HasPostgresExtension("postgis");
             modelBuilder.HasPostgresExtension("unaccent");
+            modelBuilder.HasPostgresExtension("pg_trgm");
 
             modelBuilder.Entity<Region>(entity =>
             {
@@ -428,6 +431,44 @@ namespace Estimmo.Data
                 entity.Property(e => e.SentOn).HasColumnName("sent_on");
 
                 entity.Property(e => e.IsArchived).HasColumnName("is_archived").HasDefaultValue(false);
+            });
+
+            modelBuilder.Entity<Street>(entity =>
+            {
+                entity.ToTable("street");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
+
+                entity.Property(e => e.TownId).IsRequired().HasColumnName("town_id");
+
+                entity.HasMany(e => e.Addresses)
+                    .WithOne(e => e.Street)
+                    .HasForeignKey(e => e.StreetId);
+            });
+
+            modelBuilder.Entity<Address>(entity =>
+            {
+                entity.ToTable("address");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Number).HasColumnName("number");
+
+                entity.Property(e => e.Suffix).HasColumnName("suffix");
+
+                entity.Property(e => e.PostCode).HasColumnName("post_code");
+
+                entity.Property(e => e.StreetId).IsRequired().HasColumnName("street_id");
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+
+                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
             });
 
             modelBuilder.Entity<AdminUser>(entity =>

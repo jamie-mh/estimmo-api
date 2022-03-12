@@ -13,7 +13,8 @@ namespace Estimmo.Data.Migrations
         {
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,")
-                .Annotation("Npgsql:PostgresExtension:unaccent", ",,");
+                .Annotation("Npgsql:PostgresExtension:unaccent", ",,")
+                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
 
             migrationBuilder.CreateTable(
                 name: "message",
@@ -135,6 +136,47 @@ namespace Estimmo.Data.Migrations
                         principalColumn: "id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "street",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    town_id = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_street", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_street_town_town_id",
+                        column: x => x.town_id,
+                        principalTable: "town",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "address",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    number = table.Column<int>(type: "integer", nullable: true),
+                    suffix = table.Column<string>(type: "text", nullable: true),
+                    post_code = table.Column<string>(type: "text", nullable: true),
+                    street_id = table.Column<string>(type: "text", nullable: false),
+                    coordinates = table.Column<Geometry>(type: "geometry", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_address", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_address_street_street_id",
+                        column: x => x.street_id,
+                        principalTable: "street",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_department_geometry",
                 table: "department",
@@ -184,6 +226,22 @@ namespace Estimmo.Data.Migrations
                 table: "town",
                 column: "geometry")
                 .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_address_coordinates",
+                table: "address",
+                column: "coordinates")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_address_street_id",
+                table: "address",
+                column: "street_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_street_town_id",
+                table: "street",
+                column: "town_id");
 
             migrationBuilder.Sql(@"
                 CREATE MATERIALIZED VIEW france_avg_value AS
@@ -341,8 +399,15 @@ namespace Estimmo.Data.Migrations
                     UNION
                     SELECT 3 AS type, t.id, t.name, t.post_code, 2 AS parent_type, d.id AS parent_id, t.geometry FROM town t
                     INNER JOIN department d on t.department_id = d.id
+                    UNION
+                    SELECT 4 AS type, a.id, CONCAT(a.number, a.suffix, ' ', s.name, ' ', t.name) AS name, a.post_code, 3 AS parent_type, s.town_id AS parent_id, a.coordinates AS geometry FROM address a
+                    INNER JOIN street s on a.street_id = s.id
+                    INNER JOIN town t on s.town_id = t.id
                 ) s;
 
+                CREATE UNIQUE INDEX pk_place ON place(type, id);
+                CREATE INDEX ix_place_search_name ON place USING gin (search_name gin_trgm_ops);
+                CREATE INDEX ix_place_post_code ON place(post_code);
                 CREATE INDEX ix_place_geometry ON place USING GIST(geometry);
             ");
         }
@@ -365,6 +430,12 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "message");
+
+            migrationBuilder.DropTable(
+                name: "address");
+
+            migrationBuilder.DropTable(
+                name: "street");
 
             migrationBuilder.DropTable(
                 name: "property_sale");
