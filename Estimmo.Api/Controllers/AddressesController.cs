@@ -76,5 +76,28 @@ namespace Estimmo.Api.Controllers
 
             return Ok(addresses);
         }
+
+        [HttpGet]
+        [Route("/addresses/{id}")]
+        [SwaggerOperation(
+            Summary = "Get single address",
+            OperationId = "GetAddress",
+            Tags = new[] { "Address" }
+        )]
+        [SwaggerResponse(StatusCodes.Status200OK, "Address", typeof(AddressItem))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found")]
+        public async Task<ActionResult> GetAddress(string id)
+        {
+            var place = await _context.Places
+                .FirstOrDefaultAsync(p => p.Type == PlaceType.Address && p.Id == id);
+
+            if (place == null)
+            {
+                return NotFound();
+            }
+
+            var address = _mapper.Map<AddressItem>(place);
+            return Ok(address);
+        }
     }
 }
