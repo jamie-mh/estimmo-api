@@ -23,4 +23,25 @@
         <PackageReference Include="Npgsql.NetTopologySuite" Version="6.0.3" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="sql\place.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="sql\department_avg_value.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="sql\france_avg_value.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="sql\region_avg_value.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="sql\section_avg_value.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+      <None Update="sql\town_avg_value.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

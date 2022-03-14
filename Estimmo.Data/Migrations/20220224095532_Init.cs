@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore.Migrations;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+using System.IO;
+using System.Reflection;
 
 #nullable disable
 
@@ -243,173 +245,17 @@ namespace Estimmo.Data.Migrations
                 table: "street",
                 column: "town_id");
 
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW france_avg_value AS
-                SELECT 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                UNION
-                SELECT ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                GROUP BY ps.type;
+            ExecuteSqlFile(migrationBuilder, "france_avg_value");
 
-                CREATE UNIQUE INDEX pk_france_avg_value ON france_avg_value(type);
+            ExecuteSqlFile(migrationBuilder, "region_avg_value");
 
-                CREATE MATERIALIZED VIEW france_avg_value_by_year AS
-                SELECT 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                GROUP BY year
-                UNION
-                SELECT ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                GROUP BY ps.type, year;
+            ExecuteSqlFile(migrationBuilder, "department_avg_value");
 
-                CREATE UNIQUE INDEX pk_france_avg_value_by_year ON france_avg_value_by_year(type, year);
-            ");
+            ExecuteSqlFile(migrationBuilder, "town_avg_value");
 
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW region_avg_value AS
-                SELECT r.id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                INNER JOIN region r on d.region_id = r.id
-                GROUP BY r.id
-                UNION
-                SELECT r.id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                INNER JOIN region r on d.region_id = r.id
-                GROUP BY r.id, ps.type;
+            ExecuteSqlFile(migrationBuilder, "section_avg_value");
 
-                CREATE UNIQUE INDEX pk_region_avg_value ON region_avg_value(id, type);
-
-                CREATE MATERIALIZED VIEW region_avg_value_by_year AS
-                SELECT r.id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                INNER JOIN region r on d.region_id = r.id
-                GROUP BY r.id, year
-                UNION
-                SELECT r.id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                INNER JOIN region r on d.region_id = r.id
-                GROUP BY r.id, ps.type, year;
-
-                CREATE UNIQUE INDEX pk_region_avg_value_by_year ON region_avg_value_by_year(id, type, year);
-            ");
-
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW department_avg_value AS
-                SELECT d.id, d.region_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                GROUP BY d.id
-                UNION
-                SELECT d.id, d.region_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                GROUP BY d.id, ps.type;
-
-                CREATE UNIQUE INDEX pk_department_avg_value ON department_avg_value(id, type);
-                CREATE INDEX ix_department_avg_value_region_id ON department_avg_value(region_id);
-
-                CREATE MATERIALIZED VIEW department_avg_value_by_year AS
-                SELECT d.id, d.region_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                GROUP BY d.id, year
-                UNION
-                SELECT d.id, d.region_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                INNER JOIN department d on t.department_id = d.id
-                GROUP BY d.id, ps.type, year;
-
-                CREATE UNIQUE INDEX pk_department_avg_value_by_year ON department_avg_value_by_year(id, type, year);
-                CREATE INDEX ix_department_avg_value_by_year_region_id ON department_avg_value_by_year(region_id);
-            ");
-
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW town_avg_value AS
-                SELECT t.id, t.department_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                GROUP BY t.id
-                UNION
-                SELECT t.id, t.department_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                GROUP BY t.id, ps.type;
-
-                CREATE UNIQUE INDEX pk_town_avg_value ON town_avg_value(id, type);
-                CREATE INDEX ix_town_avg_value ON town_avg_value(department_id);
-
-                CREATE MATERIALIZED VIEW town_avg_value_by_year AS
-                SELECT t.id, t.department_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                GROUP BY t.id, year
-                UNION
-                SELECT t.id, t.department_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                INNER JOIN town t on s.town_id = t.id
-                GROUP BY t.id, ps.type, year;
-
-                CREATE UNIQUE INDEX pk_town_avg_value_by_year ON town_avg_value_by_year(id, type, year);
-                CREATE INDEX ix_town_avg_value_by_year ON town_avg_value_by_year(department_id);
-            ");
-
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW section_avg_value AS
-                SELECT s.id, s.town_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                GROUP BY s.id
-                UNION
-                SELECT s.id, s.town_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                GROUP BY s.id, ps.type;
-
-                CREATE UNIQUE INDEX pk_section_avg_value ON section_avg_value(id, type);
-                CREATE INDEX ix_section_avg_value_town_id ON section_avg_value(town_id);
-
-                CREATE MATERIALIZED VIEW section_avg_value_by_year AS
-                SELECT s.id, s.town_id, 0 AS type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                GROUP BY s.id, year
-                UNION
-                SELECT s.id, s.town_id, ps.type, CAST(EXTRACT(YEAR FROM ps.date) AS smallint) AS year, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value FROM property_sale ps
-                INNER JOIN section s on ps.section_id = s.id
-                GROUP BY s.id, ps.type, year;
-
-                CREATE UNIQUE INDEX pk_section_avg_value_by_year ON section_avg_value_by_year(id, type, year);
-                CREATE INDEX ix_section_avg_value_by_year_town_id ON section_avg_value_by_year(town_id);
-            ");
-
-            migrationBuilder.Sql(@"
-                CREATE MATERIALIZED VIEW place AS
-                SELECT type, id, name, short_name, UNACCENT(REPLACE(REGEXP_REPLACE(LOWER(name), '[(),]+', '', 'g'), '-', ' ')) AS search_name, post_code, parent_type, parent_id, geometry FROM
-                (
-                    SELECT 1 AS type, id, name, name AS short_name, NULL AS post_code, NULL AS parent_type, NULL AS parent_id, geometry FROM region
-                    UNION
-                    SELECT 2 AS type, d.id, d.name, d.name AS short_name, NULL AS post_code, 1 AS parent_type, r.id AS parent_id, d.geometry FROM department d
-                    INNER JOIN region r on d.region_id = r.id
-                    UNION
-                    SELECT 3 AS type, t.id, CONCAT(t.name, ' (', t.post_code, ')') AS name, t.name AS short_name, t.post_code, 2 AS parent_type, d.id AS parent_id, t.geometry FROM town t
-                    INNER JOIN department d on t.department_id = d.id
-                    UNION
-                    SELECT 4 AS type, a.id, CONCAT(a.number, a.suffix, ' ', s.name, ', ', t.name, ' (', a.post_code, ')') AS name, CONCAT(a.number, a.suffix, ' ', s.name) AS short_name, a.post_code, 3 AS parent_type, s.town_id AS parent_id, a.coordinates AS geometry FROM address a
-                    INNER JOIN street s on a.street_id = s.id
-                    INNER JOIN town t on s.town_id = t.id
-                ) s;
-
-                CREATE UNIQUE INDEX pk_place ON place(type, id);
-                CREATE INDEX ix_place_type ON place (type);
-                CREATE INDEX ix_place_search_name ON place (search_name text_pattern_ops);
-                CREATE INDEX ix_place_geometry ON place USING GIST(geometry);
-            ");
+            ExecuteSqlFile(migrationBuilder, "place");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -451,6 +297,14 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "region");
+        }
+
+        private static void ExecuteSqlFile(MigrationBuilder migrationBuilder, string name)
+        {
+            var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var path = Path.Join(currentDir, "sql", $"{name}.sql");
+            var sql = File.ReadAllText(path);
+            migrationBuilder.Sql(sql);
         }
     }
 }
