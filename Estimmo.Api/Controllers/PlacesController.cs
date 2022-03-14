@@ -49,15 +49,15 @@ namespace Estimmo.Api.Controllers
 
             if (name != null)
             {
-                var lowerName = name
+                var simplifiedName = name
                     .ToLowerInvariant()
-                    .Replace("-", " ");
+                    .Unaccent()
+                    .Replace("-", "")
+                    .Replace(",", "");
 
                 queryable = _context.Places
-                    .Where(p => EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{lowerName}%")))
-                    .OrderBy(p => p.Type)
-                    .ThenBy(p =>
-                        EF.Functions.TrigramsSimilarityDistance(p.SearchName, lowerName));
+                    .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
+                    .OrderBy(p => p.Type);
             }
             else
             {

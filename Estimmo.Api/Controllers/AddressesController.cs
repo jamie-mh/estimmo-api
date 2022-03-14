@@ -53,12 +53,13 @@ namespace Estimmo.Api.Controllers
             {
                 var simplifiedName = name
                     .ToLowerInvariant()
+                    .Unaccent()
+                    .Replace("-", "")
                     .Replace(",", "");
 
                 queryable = _context.Places
-                    .Where(p => p.Type == PlaceType.Address &&
-                                EF.Functions.Like(p.SearchName, EF.Functions.Unaccent($"%{simplifiedName}%")))
-                    .OrderBy(p => EF.Functions.TrigramsSimilarityDistance(p.SearchName, simplifiedName));
+                    .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
+                    .OrderBy(p => p.Type);
             }
             else
             {
