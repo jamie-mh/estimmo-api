@@ -56,7 +56,7 @@ namespace Estimmo.Runner.Modules
                 saidPlaces.Add(new SaidPlace
                 {
                     Id = entry.Id,
-                    Name = entry.Name,
+                    Name = entry.Name.Replace("’", "'"),
                     PostCode = entry.PostCode,
                     TownId = entry.InseeCode,
                     Coordinates = new Point(entry.Longitude.Value, entry.Latitude.Value)

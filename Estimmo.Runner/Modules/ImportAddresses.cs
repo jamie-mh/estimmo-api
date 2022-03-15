@@ -59,7 +59,11 @@ namespace Estimmo.Runner.Modules
                 var idParts = entry.Id.Split('_');
                 var streetId = idParts[0] + '_' + idParts[1];
 
-                var street = new Street { Id = streetId, TownId = entry.InseeCode, Name = entry.StreetName };
+                var street = new Street
+                {
+                    Id = streetId, TownId = entry.InseeCode, Name = entry.StreetName.Replace("’", "'")
+                };
+
                 streets.Add(street);
 
                 addresses.Add(new Address
