@@ -1,3 +1,4 @@
+using Estimmo.Api.Entities;
 using Estimmo.Api.Models;
 using Estimmo.Api.Options;
 using Estimmo.Data.Entities;
@@ -38,7 +39,7 @@ namespace Estimmo.Api.Controllers
             OperationId = "CreateToken",
             Tags = new[] { "Auth" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Generated token", typeof(string))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Generated token", typeof(TokenPayload))]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "The username or password is invalid")]
         public async Task<IActionResult> GenerateToken([FromBody] LoginModel model)
         {
@@ -54,9 +55,13 @@ namespace Estimmo.Api.Controllers
             var roles = await _userManager.GetRolesAsync(user);
 
             var token = GetTokenForUser(user, roles);
-            var output = new JwtSecurityTokenHandler().WriteToken(token);
+            var encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
 
-            return Ok(output);
+            return Ok(new TokenPayload
+            {
+                Token = encodedToken,
+                ValidTo = token.ValidTo
+            });
         }
 
         private JwtSecurityToken GetTokenForUser(AdminUser user, IEnumerable<string> roles)
