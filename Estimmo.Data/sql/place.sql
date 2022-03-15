@@ -53,14 +53,14 @@ FROM (
                   INNER JOIN street s on a.street_id = s.id
                   INNER JOIN town t on s.town_id = t.id
          UNION
-         SELECT 5              AS type,
+         SELECT 5                                                      AS type,
                 sp.id,
-                sp.name,
-                sp.name        AS short_name,
+                CONCAT(sp.name, ', ', t.name, ' (', sp.post_code, ')') AS name,
+                sp.name                                                AS short_name,
                 sp.post_code,
-                3              AS parent_type,
-                sp.town_id     AS parent_id,
-                sp.coordinates AS geometry
+                3                                                      AS parent_type,
+                sp.town_id                                             AS parent_id,
+                sp.coordinates                                         AS geometry
          FROM said_place sp
                   INNER JOIN town t on sp.town_id = t.id
      ) s;
