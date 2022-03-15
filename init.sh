@@ -22,7 +22,7 @@ function download {
     for dep in $DEPARTMENT_IDS ; do
         echo "Downloading towns for department $dep"
 
-        Download Paris from Etalab, get "arrondissements" as towns
+        # Download Paris from Etalab, get "arrondissements" as towns
         if [[ $dep = "75" ]] ; then
             curl "https://cadastre.data.gouv.fr/data/etalab-cadastre/latest/geojson/departements/$dep/cadastre-$dep-communes.json.gz" > "download/towns/$dep.geojson.gz"
             gzip -d "download/towns/$dep.geojson.gz"
