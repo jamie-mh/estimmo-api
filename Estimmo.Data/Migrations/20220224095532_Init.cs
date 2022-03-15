@@ -179,6 +179,27 @@ namespace Estimmo.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "said_place",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    town_id = table.Column<string>(type: "text", nullable: false),
+                    post_code = table.Column<string>(type: "text", nullable: false),
+                    coordinates = table.Column<Point>(type: "geometry", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_said_place", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_said_place_town_town_id",
+                        column: x => x.town_id,
+                        principalTable: "town",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "ix_department_geometry",
                 table: "department",
@@ -245,6 +266,17 @@ namespace Estimmo.Data.Migrations
                 table: "street",
                 column: "town_id");
 
+            migrationBuilder.CreateIndex(
+                name: "ix_said_place_coordinates",
+                table: "said_place",
+                column: "coordinates")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_said_place_town_id",
+                table: "said_place",
+                column: "town_id");
+
             ExecuteSqlFile(migrationBuilder, "france_avg_value");
 
             ExecuteSqlFile(migrationBuilder, "region_avg_value");
@@ -282,6 +314,9 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "street");
+
+            migrationBuilder.DropTable(
+                name: "said_place");
 
             migrationBuilder.DropTable(
                 name: "property_sale");

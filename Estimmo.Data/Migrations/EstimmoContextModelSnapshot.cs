@@ -32,7 +32,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("id");
 
-                    b.Property<Geometry>("Coordinates")
+                    b.Property<Point>("Coordinates")
                         .HasColumnType("geometry")
                         .HasColumnName("coordinates");
 
@@ -399,6 +399,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("search_name");
 
+                    b.Property<string>("ShortName")
+                        .HasColumnType("text")
+                        .HasColumnName("short_name");
+
                     b.HasKey("Type", "Id")
                         .HasName("pk_places");
 
@@ -556,6 +560,45 @@ namespace Estimmo.Data.Migrations
                     b.ToTable((string)null);
 
                     b.ToView("region_avg_value_by_year");
+                });
+
+            modelBuilder.Entity("Estimmo.Data.Entities.SaidPlace", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text")
+                        .HasColumnName("id");
+
+                    b.Property<Point>("Coordinates")
+                        .HasColumnType("geometry")
+                        .HasColumnName("coordinates");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PostCode")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("post_code");
+
+                    b.Property<string>("TownId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("town_id");
+
+                    b.HasKey("Id")
+                        .HasName("pk_said_place");
+
+                    b.HasIndex("Coordinates")
+                        .HasDatabaseName("ix_said_place_coordinates");
+
+                    NpgsqlIndexBuilderExtensions.HasMethod(b.HasIndex("Coordinates"), "gist");
+
+                    b.HasIndex("TownId")
+                        .HasDatabaseName("ix_said_place_town_id");
+
+                    b.ToTable("said_place", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
@@ -1019,6 +1062,18 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("Region");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.SaidPlace", b =>
+                {
+                    b.HasOne("Estimmo.Data.Entities.Town", "Town")
+                        .WithMany("SaidPlaces")
+                        .HasForeignKey("TownId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_said_place_town_town_id");
+
+                    b.Navigation("Town");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Section", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
@@ -1070,7 +1125,7 @@ namespace Estimmo.Data.Migrations
             modelBuilder.Entity("Estimmo.Data.Entities.Street", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
-                        .WithMany()
+                        .WithMany("Streets")
                         .HasForeignKey("TownId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -1232,11 +1287,15 @@ namespace Estimmo.Data.Migrations
 
                     b.Navigation("AverageValuesByYear");
 
+                    b.Navigation("SaidPlaces");
+
                     b.Navigation("SectionAverageValues");
 
                     b.Navigation("SectionAverageValuesByYear");
 
                     b.Navigation("Sections");
+
+                    b.Navigation("Streets");
                 });
 #pragma warning restore 612, 618
         }

@@ -35,6 +35,7 @@ namespace Estimmo.Data
         public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Street> Streets { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
+        public virtual DbSet<SaidPlace> SaidPlaces { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -136,6 +137,14 @@ namespace Estimmo.Data
                 entity.HasMany(e => e.AverageValuesByYear)
                     .WithOne(e => e.Town)
                     .HasForeignKey(e => e.Id);
+
+                entity.HasMany(e => e.Streets)
+                    .WithOne(e => e.Town)
+                    .HasForeignKey(e => e.TownId);
+
+                entity.HasMany(e => e.SaidPlaces)
+                    .WithOne(e => e.Town)
+                    .HasForeignKey(e => e.TownId);
             });
 
             modelBuilder.Entity<Section>(entity =>
@@ -467,6 +476,25 @@ namespace Estimmo.Data
                 entity.Property(e => e.PostCode).HasColumnName("post_code");
 
                 entity.Property(e => e.StreetId).IsRequired().HasColumnName("street_id");
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
+
+                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
+            });
+
+            modelBuilder.Entity<SaidPlace>(entity =>
+            {
+                entity.ToTable("said_place");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
+
+                entity.Property(e => e.PostCode).IsRequired().HasColumnName("post_code");
+
+                entity.Property(e => e.TownId).IsRequired().HasColumnName("town_id");
 
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
 

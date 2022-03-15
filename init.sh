@@ -15,13 +15,14 @@ function download {
     mkdir -p download/towns
     mkdir -p download/sections
     mkdir -p download/addresses
+    mkdir -p download/saidplaces
 
     DEPARTMENT_IDS="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 21 22 23 24 25 26 27 28 29 2A 2B 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95"
 
     for dep in $DEPARTMENT_IDS ; do
         echo "Downloading towns for department $dep"
 
-        # Download Paris from Etalab, get "arrondissements" as towns
+        Download Paris from Etalab, get "arrondissements" as towns
         if [[ $dep = "75" ]] ; then
             curl "https://cadastre.data.gouv.fr/data/etalab-cadastre/latest/geojson/departements/$dep/cadastre-$dep-communes.json.gz" > "download/towns/$dep.geojson.gz"
             gzip -d "download/towns/$dep.geojson.gz"
@@ -36,6 +37,10 @@ function download {
         echo "Downloading addresses for department $dep"
         curl "https://adresse.data.gouv.fr/data/ban/adresses/latest/csv/adresses-$dep.csv.gz" > "download/addresses/$dep.csv.gz"
         gzip -d "download/addresses/$dep.csv.gz"
+
+        echo "Downloading said places for department $dep"
+        curl "https://adresse.data.gouv.fr/data/ban/adresses/latest/csv/lieux-dits-$dep-beta.csv.gz" > "download/saidplaces/$dep.csv.gz"
+        gzip -d "download/saidplaces/$dep.csv.gz"
     done
 
     echo "Downloading postcodes"
@@ -76,6 +81,11 @@ function import {
     echo "Importing addresses"
     for file in download/addresses/*.csv ; do
         dotnet run $DOTNET_ARGS ImportAddresses $file
+    done
+
+    echo "Importing said places"
+    for file in download/saidplaces/*.csv ; do
+        dotnet run $DOTNET_ARGS ImportSaidPlaces $file
     done
 
     echo "Importing postcodes"
