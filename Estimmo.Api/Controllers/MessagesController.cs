@@ -37,12 +37,14 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetMessages",
             Tags = new[] { "Message" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Message list", typeof(IEnumerable<Message>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Message list", typeof(MessageList))]
         [SwaggerResponse(StatusCodes.Status401Unauthorized, "No authentication token provided")]
         [SwaggerResponse(StatusCodes.Status403Forbidden, "Invalid authentication token or role")]
         public async Task<IActionResult> GetMessages(
             [Range(0, int.MaxValue)] int offset = 0, [Range(1, 100)] int limit = 100, bool isArchived = false)
         {
+            var count = await _context.Messages.CountAsync();
+
             var messages = await _context.Messages
                 .Where(m => m.IsArchived == isArchived)
                 .ProjectTo<SimpleMessage>(_mapper.ConfigurationProvider)
@@ -51,7 +53,11 @@ namespace Estimmo.Api.Controllers
                 .Take(limit)
                 .ToListAsync();
 
-            return Ok(messages);
+            return Ok(new MessageList
+            {
+                Total = count,
+                Messages = messages
+            });
         }
 
         [HttpGet]
