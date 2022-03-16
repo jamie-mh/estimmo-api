@@ -11,6 +11,7 @@ using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Estimmo.Api.Controllers
@@ -49,15 +50,27 @@ namespace Estimmo.Api.Controllers
 
             if (name != null)
             {
-                var simplifiedName = name
-                    .ToLowerInvariant()
-                    .Unaccent()
-                    .Replace("-", "")
-                    .Replace(",", "");
+                var postCodeMatch = Regex.Match(name, @"^(\d{5})$");
 
-                queryable = _context.Places
-                    .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
-                    .OrderBy(p => p.Type);
+                if (postCodeMatch.Success)
+                {
+                    var postCode = postCodeMatch.Groups[1].Value;
+
+                    queryable = _context.Places
+                        .Where(p => p.Type == PlaceType.Town && p.PostCode == postCode);
+                }
+                else
+                {
+                    var simplifiedName = name
+                        .ToLowerInvariant()
+                        .Unaccent()
+                        .Replace("-", "")
+                        .Replace(",", "");
+
+                    queryable = _context.Places
+                        .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
+                        .OrderBy(p => p.Type);
+                }
             }
             else
             {

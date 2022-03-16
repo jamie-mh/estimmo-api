@@ -68,4 +68,5 @@ FROM (
 CREATE UNIQUE INDEX pk_place ON place (type, id);
 CREATE INDEX ix_place_type ON place (type);
 CREATE INDEX ix_place_search_name ON place (search_name text_pattern_ops);
+CREATE INDEX ix_place_post_code ON place (post_code);
 CREATE INDEX ix_place_geometry ON place USING GIST (geometry);
