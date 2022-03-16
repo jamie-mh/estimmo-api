@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Estimmo.Api.Entities
 {
-    public class AddressItem
+    public class AddressLike
     {
         [JsonPropertyName("id")]
         public string Id { get; set; }

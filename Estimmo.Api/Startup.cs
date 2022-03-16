@@ -199,7 +199,7 @@ namespace Estimmo.Api
             config.CreateMap<IAverageValue, KeyValuePair<short, double>>()
                 .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Value));
 
-            config.CreateMap<Place, AddressItem>()
+            config.CreateMap<Place, AddressLike>()
                 .ForMember(a => a.Coordinates,
                     p => p.MapFrom(c =>
                         new Coordinates { Latitude = c.Geometry.Coordinate.Y, Longitude = c.Geometry.Coordinate.X }));
