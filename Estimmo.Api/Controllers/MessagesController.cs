@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
@@ -43,7 +42,9 @@ namespace Estimmo.Api.Controllers
         public async Task<IActionResult> GetMessages(
             [Range(0, int.MaxValue)] int offset = 0, [Range(1, 100)] int limit = 100, bool isArchived = false)
         {
-            var count = await _context.Messages.CountAsync();
+            var count = await _context.Messages
+                .Where(m => m.IsArchived == isArchived)
+                .CountAsync();
 
             var messages = await _context.Messages
                 .Where(m => m.IsArchived == isArchived)
