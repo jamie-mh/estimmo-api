@@ -59,7 +59,7 @@ namespace Estimmo.Api
                 {
                     builder.AllowAnyOrigin();
                     builder.AllowAnyHeader();
-                    builder.WithMethods("GET", "POST");
+                    builder.WithMethods("GET", "POST", "PATCH");
                 });
             });
 
