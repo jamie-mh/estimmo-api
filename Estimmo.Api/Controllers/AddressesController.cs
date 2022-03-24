@@ -55,7 +55,9 @@ namespace Estimmo.Api.Controllers
                     .ToLowerInvariant()
                     .Unaccent()
                     .Replace("-", "")
-                    .Replace(",", "");
+                    .Replace(",", "")
+                    .Replace("(", "")
+                    .Replace(")", "");
 
                 queryable = _context.Places
                     .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
