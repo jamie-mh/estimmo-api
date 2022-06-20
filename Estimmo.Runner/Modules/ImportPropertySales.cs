@@ -77,8 +77,12 @@ namespace Estimmo.Runner.Modules
 
             async Task FlushBufferAsync()
             {
-                _context.PropertySales.AddRange(buffer);
-                await _context.SaveChangesAsync();
+                await _context.PropertySales
+                    .UpsertRange(buffer)
+                    .On(t => new { t.Hash })
+                    .NoUpdate()
+                    .RunAsync();
+
                 inserted += buffer.Count;
                 _log.Information("Processed {Count} mutations", inserted);
             }

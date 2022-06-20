@@ -113,8 +113,7 @@ namespace Estimmo.Data.Migrations
                 name: "property_sale",
                 columns: table => new
                 {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
+                    hash = table.Column<string>(type: "text", nullable: false),
                     date = table.Column<DateTime>(type: "date", nullable: false),
                     street_number = table.Column<short>(type: "smallint", nullable: true),
                     street_number_suffix = table.Column<string>(type: "text", nullable: true),
@@ -130,7 +129,7 @@ namespace Estimmo.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_property_sale", x => x.id);
+                    table.PrimaryKey("pk_property_sale", x => x.hash);
                     table.ForeignKey(
                         name: "fk_property_sale_section_section_id",
                         column: x => x.section_id,

@@ -416,12 +416,9 @@ namespace Estimmo.Data.Migrations
 
             modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
+                    b.Property<string>("Hash")
+                        .HasColumnType("text")
+                        .HasColumnName("hash");
 
                     b.Property<int>("BuildingSurfaceArea")
                         .HasColumnType("integer")

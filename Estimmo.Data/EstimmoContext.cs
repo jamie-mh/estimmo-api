@@ -182,11 +182,9 @@ namespace Estimmo.Data
             {
                 entity.ToTable("property_sale");
 
-                entity.HasKey(e => e.Id);
+                entity.HasKey(e => e.Hash);
 
-                entity.Property(e => e.Id)
-                    .HasColumnName("id")
-                    .UseIdentityAlwaysColumn();
+                entity.Property(e => e.Hash).HasColumnName("hash");
 
                 entity.Property(e => e.Date).HasColumnName("date").HasColumnType("date").IsRequired();
 
