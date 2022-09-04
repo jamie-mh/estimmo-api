@@ -14,9 +14,9 @@ namespace Estimmo.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,")
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,")
-                .Annotation("Npgsql:PostgresExtension:unaccent", ",,")
-                .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,");
+                .Annotation("Npgsql:PostgresExtension:unaccent", ",,");
 
             migrationBuilder.CreateTable(
                 name: "message",
@@ -90,6 +90,27 @@ namespace Estimmo.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "said_place",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    town_id = table.Column<string>(type: "text", nullable: false),
+                    post_code = table.Column<string>(type: "text", nullable: false),
+                    coordinates = table.Column<Point>(type: "geometry", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_said_place", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_said_place_town_town_id",
+                        column: x => x.town_id,
+                        principalTable: "town",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "section",
                 columns: table => new
                 {
@@ -107,6 +128,25 @@ namespace Estimmo.Data.Migrations
                         column: x => x.town_id,
                         principalTable: "town",
                         principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "street",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    town_id = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_street", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_street_town_town_id",
+                        column: x => x.town_id,
+                        principalTable: "town",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -138,25 +178,6 @@ namespace Estimmo.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "street",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    town_id = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_street", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_street_town_town_id",
-                        column: x => x.town_id,
-                        principalTable: "town",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "address",
                 columns: table => new
                 {
@@ -165,7 +186,7 @@ namespace Estimmo.Data.Migrations
                     suffix = table.Column<string>(type: "text", nullable: true),
                     post_code = table.Column<string>(type: "text", nullable: true),
                     street_id = table.Column<string>(type: "text", nullable: false),
-                    coordinates = table.Column<Geometry>(type: "geometry", nullable: true)
+                    coordinates = table.Column<Point>(type: "geometry", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -178,26 +199,16 @@ namespace Estimmo.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "said_place",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    town_id = table.Column<string>(type: "text", nullable: false),
-                    post_code = table.Column<string>(type: "text", nullable: false),
-                    coordinates = table.Column<Point>(type: "geometry", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_said_place", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_said_place_town_town_id",
-                        column: x => x.town_id,
-                        principalTable: "town",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
+            migrationBuilder.CreateIndex(
+                name: "ix_address_coordinates",
+                table: "address",
+                column: "coordinates")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_address_street_id",
+                table: "address",
+                column: "street_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_department_geometry",
@@ -228,6 +239,17 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:IndexMethod", "gist");
 
             migrationBuilder.CreateIndex(
+                name: "ix_said_place_coordinates",
+                table: "said_place",
+                column: "coordinates")
+                .Annotation("Npgsql:IndexMethod", "gist");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_said_place_town_id",
+                table: "said_place",
+                column: "town_id");
+
+            migrationBuilder.CreateIndex(
                 name: "ix_section_geometry",
                 table: "section",
                 column: "geometry")
@@ -236,6 +258,11 @@ namespace Estimmo.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_section_town_id",
                 table: "section",
+                column: "town_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_street_town_id",
+                table: "street",
                 column: "town_id");
 
             migrationBuilder.CreateIndex(
@@ -248,33 +275,6 @@ namespace Estimmo.Data.Migrations
                 table: "town",
                 column: "geometry")
                 .Annotation("Npgsql:IndexMethod", "gist");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_address_coordinates",
-                table: "address",
-                column: "coordinates")
-                .Annotation("Npgsql:IndexMethod", "gist");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_address_street_id",
-                table: "address",
-                column: "street_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_street_town_id",
-                table: "street",
-                column: "town_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_said_place_coordinates",
-                table: "said_place",
-                column: "coordinates")
-                .Annotation("Npgsql:IndexMethod", "gist");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_said_place_town_id",
-                table: "said_place",
-                column: "town_id");
 
             ExecuteSqlFile(migrationBuilder, "france_avg_value");
 
@@ -306,19 +306,19 @@ namespace Estimmo.Data.Migrations
             ");
 
             migrationBuilder.DropTable(
-                name: "message");
-
-            migrationBuilder.DropTable(
                 name: "address");
 
             migrationBuilder.DropTable(
-                name: "street");
+                name: "message");
+
+            migrationBuilder.DropTable(
+                name: "property_sale");
 
             migrationBuilder.DropTable(
                 name: "said_place");
 
             migrationBuilder.DropTable(
-                name: "property_sale");
+                name: "street");
 
             migrationBuilder.DropTable(
                 name: "section");

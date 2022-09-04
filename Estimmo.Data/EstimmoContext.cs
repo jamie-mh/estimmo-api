@@ -1,11 +1,9 @@
 ﻿using Estimmo.Data.Entities;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estimmo.Data
 {
-    public class EstimmoContext : IdentityDbContext<AdminUser, AdminRole, int>
+    public class EstimmoContext : DbContext
     {
         public EstimmoContext()
         {
@@ -32,7 +30,6 @@ namespace Estimmo.Data
         public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
         public virtual DbSet<SectionAverageValue> SectionAverageValuesByYear { get; set; }
         public virtual DbSet<Place> Places { get; set; }
-        public virtual DbSet<Message> Messages { get; set; }
         public virtual DbSet<Street> Streets { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
         public virtual DbSet<SaidPlace> SaidPlaces { get; set; }
@@ -421,27 +418,6 @@ namespace Estimmo.Data
                     .HasForeignKey(p => new { p.ParentType, p.ParentId });
             });
 
-            modelBuilder.Entity<Message>(entity =>
-            {
-                entity.ToTable("message");
-
-                entity.HasKey(e => e.Id);
-
-                entity.Property(e => e.Id).HasColumnName("id").UseIdentityAlwaysColumn();
-
-                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
-
-                entity.Property(e => e.Email).HasColumnName("email").IsRequired();
-
-                entity.Property(e => e.Subject).HasColumnName("subject").IsRequired();
-
-                entity.Property(e => e.Content).HasColumnName("content").IsRequired();
-
-                entity.Property(e => e.SentOn).HasColumnName("sent_on");
-
-                entity.Property(e => e.IsArchived).HasColumnName("is_archived").HasDefaultValue(false);
-            });
-
             modelBuilder.Entity<Street>(entity =>
             {
                 entity.ToTable("street");
@@ -497,49 +473,6 @@ namespace Estimmo.Data
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates");
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");
-            });
-
-            modelBuilder.Entity<AdminUser>(entity =>
-            {
-                entity.ToTable(name:"user");
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-            });
-
-            modelBuilder.Entity<AdminRole>(entity =>
-            {
-                entity.ToTable(name: "role");
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-            });
-
-            modelBuilder.Entity<IdentityUserClaim<int>>(entity =>
-            {
-                entity.ToTable("user_claim");
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-            });
-
-            modelBuilder.Entity<IdentityUserLogin<int>>(entity =>
-            {
-                entity.ToTable("user_login");
-            });
-
-            modelBuilder.Entity<IdentityRoleClaim<int>>(entity =>
-            {
-                entity.ToTable("role_claim");
-
-                entity.Property(e => e.Id).UseIdentityAlwaysColumn();
-            });
-
-            modelBuilder.Entity<IdentityUserRole<int>>(entity =>
-            {
-                entity.ToTable("user_role");
-            });
-
-            modelBuilder.Entity<IdentityUserToken<int>>(entity =>
-            {
-                entity.ToTable("user_token");
             });
         }
     }

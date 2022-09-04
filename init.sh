@@ -49,7 +49,7 @@ function download {
     echo "Downloading property sales"
     mkdir -p download/sales
 
-    DVF_YEARS="2016 2017 2018 2019 2020 2021"
+    DVF_YEARS="2017 2018 2019 2020 2021"
 
     for year in $DVF_YEARS ; do
         echo "Downloading sales for year $year"
@@ -97,7 +97,6 @@ function import {
     done
 
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews
-    dotnet run $DOTNET_ARGS AddUser estimmo "3sP9S^3gzg5SYyvQ"
 }
 
 if [[ ! -d "download" ]] ; then

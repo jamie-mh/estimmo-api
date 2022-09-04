@@ -1,6 +1,4 @@
 ﻿using Estimmo.Data;
-using Estimmo.Data.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -81,10 +79,6 @@ namespace Estimmo.Runner
                 var connectionString = configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
             });
-
-            services.AddIdentity<AdminUser, AdminRole>()
-                .AddEntityFrameworkStores<EstimmoContext>()
-                .AddDefaultTokenProviders();
         }
 
         private static List<ModuleArg> ParseCommandLine(string[] args)
