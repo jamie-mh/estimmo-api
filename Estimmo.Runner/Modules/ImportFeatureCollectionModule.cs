@@ -1,6 +1,5 @@
 using NetTopologySuite.Features;
 using NetTopologySuite.IO;
-using NetTopologySuite.Simplify;
 using Newtonsoft.Json;
 using Serilog;
 using System.Collections.Generic;
@@ -13,7 +12,6 @@ namespace Estimmo.Runner.Modules
     public abstract class ImportFeatureCollectionModule : IModule
     {
         private readonly ILogger _log = Log.ForContext<ImportFeatureCollectionModule>();
-        protected abstract double SimplificationDistanceTolerance { get; }
 
         public async Task RunAsync(List<string> args)
         {
@@ -35,11 +33,10 @@ namespace Estimmo.Runner.Modules
                 collection = serialiser.Deserialize<FeatureCollection>(jsonReader);
             });
 
-            _log.Information("Simplifying geometry");
-            foreach (var feature in collection)
+            _log.Information("Removing invalid features");
+            foreach (var feature in collection.Where(f => f.Geometry == null).ToList())
             {
-                var simplifier = new VWSimplifier(feature.Geometry) { DistanceTolerance = SimplificationDistanceTolerance };
-                feature.Geometry = simplifier.GetResultGeometry();
+                collection.Remove(feature);
             }
 
             _log.Information("Calculating bounding boxes");
