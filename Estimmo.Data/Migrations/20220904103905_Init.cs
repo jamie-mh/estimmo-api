@@ -19,24 +19,6 @@ namespace Estimmo.Data.Migrations
                 .Annotation("Npgsql:PostgresExtension:unaccent", ",,");
 
             migrationBuilder.CreateTable(
-                name: "message",
-                columns: table => new
-                {
-                    id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityAlwaysColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    email = table.Column<string>(type: "text", nullable: false),
-                    subject = table.Column<string>(type: "text", nullable: false),
-                    content = table.Column<string>(type: "text", nullable: false),
-                    sent_on = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    is_archived = table.Column<bool>(type: "boolean", nullable: false, defaultValue: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_message", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "region",
                 columns: table => new
                 {
@@ -307,9 +289,6 @@ namespace Estimmo.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "address");
-
-            migrationBuilder.DropTable(
-                name: "message");
 
             migrationBuilder.DropTable(
                 name: "property_sale");
