@@ -37,12 +37,19 @@ namespace Estimmo.Runner.Modules
             var config = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" };
             using var csv = new CsvReader(reader, config);
             var entries = csv.GetRecordsAsync<PostCodeEntry>();
+            var count = 0;
 
             await foreach (var entry in entries)
             {
-                _log.Information("Updating {Town}", entry.TownName);
                 await _context.Database.ExecuteSqlRawAsync(
                     "UPDATE town SET post_code = {0} WHERE id = {1}", entry.PostCode, entry.InseeCode);
+
+                if (count > 0 && count % 1000 == 0)
+                {
+                    _log.Information("Processed {Count} postcodes", count);
+                }
+
+                count++;
             }
         }
     }
