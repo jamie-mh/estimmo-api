@@ -86,4 +86,4 @@ CREATE INDEX ix_place_type ON place (type);
 CREATE INDEX ix_place_search_name ON place (search_name text_pattern_ops) WHERE is_searchable;
 CREATE INDEX ix_place_post_code ON place (post_code) WHERE type = 3;
 CREATE INDEX ix_place_is_searchable ON place (is_searchable);
-CREATE INDEX ix_place_geometry ON place USING GIST (geometry) WHERE type IN (1, 2, 3, 4);
+CREATE INDEX ix_place_geometry ON place USING GIST (geometry);

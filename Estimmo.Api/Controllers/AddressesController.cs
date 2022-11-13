@@ -60,8 +60,8 @@ namespace Estimmo.Api.Controllers
                     .Replace(")", "");
 
                 queryable = _context.Places
-                    .Where(p => p.Type == PlaceType.Address && EF.Functions.Like(p.SearchName, simplifiedName + "%"))
-                    .OrderBy(p => p.Type);
+                    .Where(p => p.IsSearchable && p.Type == PlaceType.Address &&
+                                EF.Functions.Like(p.SearchName, simplifiedName + "%"));
             }
             else
             {
