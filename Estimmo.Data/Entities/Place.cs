@@ -12,6 +12,7 @@ namespace Estimmo.Data.Entities
         public string PostCode { get; set; }
         public PlaceType? ParentType { get; set; }
         public string ParentId { get; set; }
+        public bool IsSearchable { get; set; }
         public Geometry Geometry { get; set; }
 
         public virtual Place Parent { get; set; }

@@ -68,7 +68,7 @@ namespace Estimmo.Api.Controllers
                         .Replace(",", "");
 
                     queryable = _context.Places
-                        .Where(p => EF.Functions.Like(p.SearchName, simplifiedName + "%"))
+                        .Where(p => p.IsSearchable && EF.Functions.Like(p.SearchName, simplifiedName + "%"))
                         .OrderBy(p => p.Type);
                 }
             }
@@ -102,6 +102,7 @@ namespace Estimmo.Api.Controllers
         {
             var place = await _context.Places
                 .Include(p => p.Parent)
+                .ThenInclude(p => p.Parent)
                 .ThenInclude(p => p.Parent)
                 .ThenInclude(p => p.Parent)
                 .SingleOrDefaultAsync(p => p.Id == id && p.Type == type);

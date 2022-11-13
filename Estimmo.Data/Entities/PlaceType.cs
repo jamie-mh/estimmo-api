@@ -5,7 +5,8 @@ namespace Estimmo.Data.Entities
         Region = 1,
         Department = 2,
         Town = 3,
-        Address = 4,
-        SaidPlace = 5
+        Section = 4,
+        Address = 5,
+        SaidPlace = 6
     }
 }
