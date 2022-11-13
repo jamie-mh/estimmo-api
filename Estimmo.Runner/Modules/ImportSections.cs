@@ -2,7 +2,10 @@ using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
+using NetTopologySuite.Operation.Overlay.Snap;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -55,6 +58,25 @@ namespace Estimmo.Runner.Modules
                     continue;
                 }
 
+                var town = await _context.Towns.FirstOrDefaultAsync(t => t.Id == townId);
+
+                if (town == null)
+                {
+                    continue;
+                }
+
+                Geometry geometry;
+
+                try
+                {
+                    geometry = town.Geometry.Intersection(feature.Geometry);
+                }
+                catch (TopologyException e)
+                {
+                    _log.Warning(e, "Failed to calculate intersection");
+                    geometry = feature.Geometry;
+                }
+
                 var id = feature.Attributes["id"].ToString();
                 var prefix = feature.Attributes["prefixe"].ToString();
                 var code = feature.Attributes["code"].ToString();
@@ -65,7 +87,7 @@ namespace Estimmo.Runner.Modules
                     TownId = townId,
                     Prefix = prefix,
                     Code = code,
-                    Geometry = feature.Geometry
+                    Geometry = geometry
                 });
 
                 if (buffer.Count % BufferSize == 0)
