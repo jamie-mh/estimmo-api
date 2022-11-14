@@ -28,7 +28,7 @@ namespace Estimmo.Data
         public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
         public virtual DbSet<TownAverageValueByYear> TownAverageValuesByYear { get; set; }
         public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
-        public virtual DbSet<SectionAverageValue> SectionAverageValuesByYear { get; set; }
+        public virtual DbSet<SectionAverageValueByYear> SectionAverageValuesByYear { get; set; }
         public virtual DbSet<Place> Places { get; set; }
         public virtual DbSet<Street> Streets { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }

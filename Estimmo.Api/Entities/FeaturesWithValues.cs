@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace Estimmo.Api.Entities
 {
-    public class CadastreItem
+    public class FeaturesWithValues
     {
         [JsonPropertyName("averageValues")]
         [JsonConverter(typeof(AverageValuesJsonConverter))]

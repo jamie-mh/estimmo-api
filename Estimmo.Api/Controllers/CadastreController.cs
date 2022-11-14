@@ -32,8 +32,8 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetRegions",
             Tags = new[] { "Cadastre" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
-        public async Task<CadastreItem> GetRegions(short? salesYear = null)
+        [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
+        public async Task<FeaturesWithValues> GetRegions(short? salesYear = null)
         {
             List<Region> regions;
 
@@ -67,7 +67,7 @@ namespace Estimmo.Api.Controllers
 
             var averageValuesByYear = await _context.FranceAverageValuesByYear.ToListAsync();
 
-            return new CadastreItem
+            return new FeaturesWithValues
             {
                 AverageValues = averageValues,
                 AverageValuesByYear = averageValuesByYear,
@@ -82,9 +82,9 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetDepartments",
             Tags = new[] { "Cadastre" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Region not found")]
-        public async Task<CadastreItem> GetDepartments(string regionId, short? salesYear = null)
+        public async Task<FeaturesWithValues> GetDepartments(string regionId, short? salesYear = null)
         {
             var queryable = _context.Departments.Where(d => d.RegionId == regionId);
             List<Department> departments;
@@ -123,7 +123,7 @@ namespace Estimmo.Api.Controllers
                 .Where(r => r.Id == regionId)
                 .ToListAsync();
 
-            return new CadastreItem
+            return new FeaturesWithValues
             {
                 AverageValues = averageValues,
                 AverageValuesByYear = averageValuesByYear,
@@ -138,9 +138,9 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetTowns",
             Tags = new[] { "Cadastre" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Department not found")]
-        public async Task<CadastreItem> GetTowns(string departmentId, short? salesYear = null)
+        public async Task<FeaturesWithValues> GetTowns(string departmentId, short? salesYear = null)
         {
             var queryable = _context.Towns.Where(t => t.DepartmentId == departmentId);
             List<Town> towns;
@@ -179,7 +179,7 @@ namespace Estimmo.Api.Controllers
                 .Where(d => d.Id == departmentId)
                 .ToListAsync();
 
-            return new CadastreItem
+            return new FeaturesWithValues
             {
                 AverageValues = averageValues,
                 AverageValuesByYear = averageValuesByYear,
@@ -194,9 +194,9 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetSections",
             Tags = new[] { "Cadastre" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Cadastre item payload", typeof(CadastreItem))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Town not found")]
-        public async Task<CadastreItem> GetSections(string townId, short? salesYear = null)
+        public async Task<FeaturesWithValues> GetSections(string townId, short? salesYear = null)
         {
             var queryable = _context.Sections.Where(s => s.TownId == townId);
             List<Section> sections;
@@ -235,7 +235,7 @@ namespace Estimmo.Api.Controllers
                 .Where(t => t.Id == townId)
                 .ToListAsync();
 
-            return new CadastreItem
+            return new FeaturesWithValues
             {
                 AverageValues = averageValues,
                 AverageValuesByYear = averageValuesByYear,

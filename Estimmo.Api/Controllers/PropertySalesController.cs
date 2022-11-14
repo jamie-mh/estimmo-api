@@ -1,4 +1,5 @@
 using AutoMapper;
+using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -30,7 +32,7 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetPropertySales",
             Tags = new[] { "PropertySale" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Feature collection", typeof(FeatureCollection))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Section not found")]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<IActionResult> GetPropertySales(string sectionId, PropertyType? type = null, short? year = null)
@@ -40,7 +42,20 @@ namespace Estimmo.Api.Controllers
                 type = null;
             }
 
-            var section = await _context.Sections.SingleOrDefaultAsync(s => s.Id == sectionId);
+            Section section;
+
+            if (year == null)
+            {
+                section = await _context.Sections
+                    .Include(t => t.AverageValues)
+                    .FirstOrDefaultAsync(s => s.Id == sectionId);
+            }
+            else
+            {
+                section = await _context.Sections
+                    .Include(t => t.AverageValuesByYear.Where(v => v.Year == year))
+                    .FirstOrDefaultAsync(s => s.Id == sectionId);
+            }
 
             if (section == null)
             {
@@ -65,10 +80,34 @@ namespace Estimmo.Api.Controllers
                 .OrderByDescending(s => s.Date)
                 .ToListAsync();
 
-            var collection = _mapper.Map<FeatureCollection>(sales);
-            collection.BoundingBox = section.Geometry.EnvelopeInternal;
+            var featureCollection = _mapper.Map<FeatureCollection>(sales);
+            featureCollection.BoundingBox = section.Geometry.EnvelopeInternal;
 
-            return Ok(collection);
+            IEnumerable<IAverageValue> averageValues;
+
+            if (year == null)
+            {
+                averageValues = await _context.SectionAverageValues
+                    .Where(v => v.Id == sectionId)
+                    .ToListAsync();
+            }
+            else
+            {
+                averageValues = await _context.SectionAverageValuesByYear
+                    .Where(v => v.Id == sectionId && v.Year == year)
+                    .ToListAsync();
+            }
+
+            var averageValuesByYear = await _context.SectionAverageValuesByYear
+                .Where(d => d.Id == sectionId)
+                .ToListAsync();
+
+            return Ok(new FeaturesWithValues
+            {
+                AverageValues = averageValues,
+                AverageValuesByYear = averageValuesByYear,
+                GeoJson = featureCollection
+            });
         }
     }
 }
