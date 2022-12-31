@@ -10,10 +10,10 @@ variables:
 
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET 6 SDK'
+  displayName: 'Use .NET 7 SDK'
   inputs:
     packageType: 'sdk'
-    version: 6.0.x
+    version: 7.x
 
 - task: DotNetCoreCLI@2
   displayName: 'Run Tests'
