@@ -117,37 +117,37 @@ function import {
     dotnet run $DOTNET_ARGS MigrateDatabase
 
     echo "Importing regions"
-    dotnet run $DOTNET_ARGS ImportRegions download/regions-simplified.geojson
+    dotnet run $DOTNET_ARGS ImportRegions file="download/regions-simplified.geojson"
 
     echo "Importing departments"
-    dotnet run $DOTNET_ARGS ImportDepartments download/departments-simplified.geojson
+    dotnet run $DOTNET_ARGS ImportDepartments file="download/departments-simplified.geojson"
 
     echo "Importing towns"
     for file in download/towns/simplified/*.geojson; do
-        dotnet run $DOTNET_ARGS ImportTowns $file
+        dotnet run $DOTNET_ARGS ImportTowns file="$file"
     done
 
     echo "Importing sections"
     for file in download/sections/simplified/*.geojson; do
-        dotnet run $DOTNET_ARGS ImportSections $file
+        dotnet run $DOTNET_ARGS ImportSections file="$file"
     done
 
     echo "Importing addresses"
     for file in download/addresses/*.csv; do
-        dotnet run $DOTNET_ARGS ImportAddresses $file
+        dotnet run $DOTNET_ARGS ImportAddresses file="$file"
     done
 
     echo "Importing said places"
     for file in download/saidplaces/*.csv; do
-        dotnet run $DOTNET_ARGS ImportSaidPlaces $file
+        dotnet run $DOTNET_ARGS ImportSaidPlaces file="$file"
     done
 
     echo "Importing postcodes"
-    dotnet run $DOTNET_ARGS ImportPostCodes download/postcodes.csv
+    dotnet run $DOTNET_ARGS ImportPostCodes file="download/postcodes.csv"
 
     echo "Importing property sales"
     for file in download/sales/*.csv; do
-        dotnet run $DOTNET_ARGS ImportPropertySales $file
+        dotnet run $DOTNET_ARGS ImportPropertySales file="$file"
     done
 
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews

@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
-using Serilog.Exceptions.EntityFrameworkCore.Destructurers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner
@@ -24,20 +24,19 @@ namespace Estimmo.Runner
 
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(configuration)
-                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder()
-                    .WithDefaultDestructurers()
-                    .WithDestructurers(new[] { new DbUpdateExceptionDestructurer() }))
+                .Enrich.WithExceptionDetails(new DestructuringOptionsBuilder().WithDefaultDestructurers())
                 .CreateLogger();
 
             var services = new ServiceCollection();
 
             RegisterServices(services, configuration);
             var provider = services.BuildServiceProvider();
-            List<ModuleArg> moduleArgs;
+
+            ValueTuple<Type, Dictionary<string, string>> command;
 
             try
             {
-                moduleArgs = ParseCommandLine(args);
+                command = ParseCommandLine(args);
             }
             catch (ArgumentException e)
             {
@@ -46,17 +45,11 @@ namespace Estimmo.Runner
                 return 2;
             }
 
-            var tasks = new List<Task>();
-
-            foreach (var arg in moduleArgs)
-            {
-                var module = (IModule) ActivatorUtilities.CreateInstance(provider, arg.Type);
-                tasks.Add(module.RunAsync(arg.Args));
-            }
+            var module = (IModule) ActivatorUtilities.CreateInstance(provider, command.Item1);
 
             try
             {
-                await Task.WhenAll(tasks);
+                await module.RunAsync(command.Item2);
             }
             catch (Exception e)
             {
@@ -81,48 +74,38 @@ namespace Estimmo.Runner
             });
         }
 
-        private static List<ModuleArg> ParseCommandLine(string[] args)
+        private static ValueTuple<Type, Dictionary<string, string>> ParseCommandLine(string[] args)
         {
             if (args.Length == 0)
             {
                 throw new ArgumentException("No arguments provided");
             }
 
-            var moduleTypes = GetModuleTypes().ToList();
-            var result = new List<ModuleArg>();
-            ModuleArg moduleArg = null;
+            var availableTypes = GetModuleTypes().ToList();
+            var type = availableTypes.FirstOrDefault(t => t.Name == args[0]);
 
-            for (var i = 0; i < args.Length; i++)
+            if (type == null)
             {
-                var arg = args[i];
-                var type = moduleTypes.FirstOrDefault(t => t.Name == arg);
+                throw new ArgumentException("Module not found");
+            }
 
-                if (type != null)
+            var parsedArgs = new Dictionary<string, string>();
+
+            foreach (var arg in args.Skip(1))
+            {
+                var match = Regex.Match(arg, @"^(.*?)=(.*?)$");
+
+                if (match.Success)
                 {
-                    if (i > 0)
-                    {
-                        result.Add(moduleArg);
-                    }
-
-                    moduleArg = new ModuleArg { Type = type };
+                    parsedArgs.Add(match.Groups[1].Value, match.Groups[2].Value);
                 }
                 else
                 {
-                    if (i == 0)
-                    {
-                        throw new ArgumentException("No module specified");
-                    }
-
-                    moduleArg.Args.Add(arg);
-                }
-
-                if (i == args.Length - 1)
-                {
-                    result.Add(moduleArg);
+                    parsedArgs.Add(arg, null);
                 }
             }
 
-            return result;
+            return new ValueTuple<Type, Dictionary<string, string>>(type, parsedArgs);
         }
 
         private static IEnumerable<Type> GetModuleTypes()
@@ -134,11 +117,11 @@ namespace Estimmo.Runner
 
         private static void PrintAvailableModules()
         {
-            Log.Information("Available modules:");
+            Console.WriteLine("Available modules:");
 
             foreach (var mod in GetModuleTypes())
             {
-                Log.Information("> {Name}", mod.Name);
+                Console.WriteLine($"- {mod.Name}");
             }
         }
     }

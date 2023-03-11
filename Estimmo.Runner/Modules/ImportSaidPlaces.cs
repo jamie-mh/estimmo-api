@@ -24,15 +24,15 @@ namespace Estimmo.Runner.Modules
             _context = context;
         }
 
-        public async Task RunAsync(List<string> args)
+        public async Task RunAsync(Dictionary<string, string> args)
         {
-            if (!args.Any())
+            if (!args.ContainsKey("file"))
             {
                 _log.Error("No CSV file specified");
                 return;
             }
 
-            var filePath = args[0];
+            var filePath = args["file"];
             _log.Information("Reading {File}", filePath);
 
             using var reader = new StreamReader(filePath);

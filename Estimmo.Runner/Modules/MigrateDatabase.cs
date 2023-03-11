@@ -17,7 +17,7 @@ namespace Estimmo.Runner.Modules
             _context = context;
         }
 
-        public async Task RunAsync(List<string> args)
+        public async Task RunAsync(Dictionary<string, string> args)
         {
             var pending = (await _context.Database.GetPendingMigrationsAsync()).ToList();
 

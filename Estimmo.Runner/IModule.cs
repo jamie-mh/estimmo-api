@@ -5,6 +5,6 @@ namespace Estimmo.Runner
 {
     internal interface IModule
     {
-        public Task RunAsync(List<string> args);
+        public Task RunAsync(Dictionary<string, string> args);
     }
 }

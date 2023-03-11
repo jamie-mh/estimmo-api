@@ -13,21 +13,23 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportFeatureCollectionModule>();
 
-        public async Task RunAsync(List<string> args)
+        public async Task RunAsync(Dictionary<string, string> args)
         {
-            if (!args.Any())
+            if (!args.ContainsKey("file"))
             {
                 _log.Error("No GeoJSON file specified");
                 return;
             }
 
+            var filePath = args["file"];
+            using var streamReader = File.OpenText(filePath);
+
+            await using var jsonReader = new JsonTextReader(streamReader);
             var serialiser = GeoJsonSerializer.Create();
-            using var streamReader = File.OpenText(args[0]);
-            using var jsonReader = new JsonTextReader(streamReader);
 
             FeatureCollection collection = null;
 
-            _log.Information("Reading GeoJSON file {Name}", args[0]);
+            _log.Information("Reading GeoJSON file {Name}", filePath);
             await Task.Run(delegate
             {
                 collection = serialiser.Deserialize<FeatureCollection>(jsonReader);
