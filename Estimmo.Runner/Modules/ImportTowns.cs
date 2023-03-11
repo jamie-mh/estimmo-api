@@ -2,6 +2,7 @@ using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
+using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
@@ -54,6 +55,25 @@ namespace Estimmo.Runner.Modules
                     : feature.Attributes["code"].ToString();
 
                 var departmentId = id.StartsWith("97") ? id[..3] : id[..2];
+                var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId);
+
+                if (department == null)
+                {
+                    continue;
+                }
+
+                Geometry geometry;
+
+                try
+                {
+                    geometry = department.Geometry.Intersection(feature.Geometry);
+                }
+                catch (TopologyException e)
+                {
+                    _log.Warning(e, "Failed to calculate intersection");
+                    geometry = feature.Geometry;
+                }
+
                 var name = _cultureInfo.TextInfo.ToTitleCase(feature.Attributes["nom"].ToString().ToLowerInvariant());
 
                 buffer.Add(new Town
@@ -61,7 +81,7 @@ namespace Estimmo.Runner.Modules
                     Id = id,
                     DepartmentId = departmentId,
                     Name = name,
-                    Geometry = feature.Geometry
+                    Geometry = geometry
                 });
 
                 if (buffer.Count % BufferSize == 0)
