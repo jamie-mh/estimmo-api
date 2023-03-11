@@ -1,4 +1,3 @@
-using CsvHelper;
 using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Runner.Csv;
@@ -6,13 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportPostCodes : IModule
+    public class ImportPostCodes : ImportCsvModule
     {
         private readonly ILogger _log = Log.ForContext<ImportPostCodes>();
         private readonly EstimmoContext _context;
@@ -22,7 +19,7 @@ namespace Estimmo.Runner.Modules
             _context = context;
         }
 
-        public async Task RunAsync(Dictionary<string, string> args)
+        public override async Task RunAsync(Dictionary<string, string> args)
         {
             if (!args.ContainsKey("file"))
             {
@@ -31,26 +28,26 @@ namespace Estimmo.Runner.Modules
             }
 
             var filePath = args["file"];
-            _log.Information("Reading {File}", filePath);
 
-            using var reader = new StreamReader(filePath);
-            var config = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" };
-            using var csv = new CsvReader(reader, config);
-            var entries = csv.GetRecordsAsync<PostCodeEntry>();
-            var count = 0;
-
-            await foreach (var entry in entries)
-            {
-                await _context.Database.ExecuteSqlRawAsync(
-                    "UPDATE town SET post_code = {0} WHERE id = {1}", entry.PostCode, entry.InseeCode);
-
-                if (count > 0 && count % 1000 == 0)
+            await ReadThenProcessFileAsync<SaidPlaceEntry>(filePath,
+                new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" },
+                async entries =>
                 {
-                    _log.Information("Processed {Count} postcodes", count);
-                }
+                    var count = 0;
 
-                count++;
-            }
+                    await foreach (var entry in entries)
+                    {
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "UPDATE town SET post_code = {0} WHERE id = {1}", entry.PostCode, entry.InseeCode);
+
+                        if (count > 0 && count % 1000 == 0)
+                        {
+                            _log.Information("Processed {Count} postcodes", count);
+                        }
+
+                        count++;
+                    }
+                });
         }
     }
 }

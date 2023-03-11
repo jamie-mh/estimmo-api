@@ -1,30 +1,31 @@
-using CsvHelper;
 using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
+using Estimmo.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportSaidPlaces : IModule
+    public class ImportSaidPlaces : ImportCsvModule
     {
         private readonly ILogger _log = Log.ForContext<ImportSaidPlaces>();
         private readonly EstimmoContext _context;
+        private readonly AddressNormaliser _addressNormaliser;
 
-        public ImportSaidPlaces(EstimmoContext context)
+        public ImportSaidPlaces(EstimmoContext context, AddressNormaliser addressNormaliser)
         {
             _context = context;
+            _addressNormaliser = addressNormaliser;
         }
 
-        public async Task RunAsync(Dictionary<string, string> args)
+        public override async Task RunAsync(Dictionary<string, string> args)
         {
             if (!args.ContainsKey("file"))
             {
@@ -32,41 +33,37 @@ namespace Estimmo.Runner.Modules
                 return;
             }
 
-            var filePath = args["file"];
-            _log.Information("Reading {File}", filePath);
-
-            using var reader = new StreamReader(filePath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" });
-            var entries = csv.GetRecordsAsync<SaidPlaceEntry>();
-
-            _log.Information("Fetching town ids");
+            _log.Information("Populating town ID lookup");
             var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
 
-            var saidPlaces = new List<SaidPlace>();
-
-            _log.Information("Processing entries");
-
-            await foreach (var entry in entries)
+            var processor = new BatchListProcessor<SaidPlaceEntry, SaidPlace>(entry =>
             {
                 if (!townIds.Contains(entry.InseeCode) || entry.Latitude == null || entry.Longitude == null)
                 {
-                    continue;
+                    return null;
                 }
 
-                saidPlaces.Add(new SaidPlace
+                return new SaidPlace
                 {
                     Id = entry.Id,
-                    Name = entry.Name.Replace("’", "'"),
+                    Name = _addressNormaliser.NormaliseStreet(entry.Name),
                     PostCode = entry.PostCode,
                     TownId = entry.InseeCode,
                     Coordinates = new Point(entry.Longitude.Value, entry.Latitude.Value)
-                });
-            }
+                };
+            }, async (buffer, processedCount) =>
+            {
+                await _context.SaidPlaces
+                    .UpsertRange(buffer)
+                    .On(t => new { t.Id })
+                    .NoUpdate()
+                    .RunAsync();
 
-            _context.SaidPlaces.AddRange(saidPlaces);
-            await _context.SaveChangesAsync();
+                _log.Information("Imported {Count} said places", processedCount);
+            });
 
-            _log.Information("Imported {Count} said places", saidPlaces.Count);
+            var filePath = args["file"];
+            await ReadThenProcessFileAsync(filePath, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" }, processor);
         }
     }
 }

@@ -1,34 +1,33 @@
-using CsvHelper;
 using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
-using Estimmo.Runner.EqualityComparers;
 using Estimmo.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportAddresses : IModule
+    public class ImportAddresses : ImportCsvModule
     {
         private readonly ILogger _log = Log.ForContext<ImportAddresses>();
         private readonly EstimmoContext _context;
         private readonly AddressNormaliser _addressNormaliser;
+        private readonly CsvConfiguration _csvConfiguration;
 
         public ImportAddresses(EstimmoContext context, AddressNormaliser addressNormaliser)
         {
             _context = context;
             _addressNormaliser = addressNormaliser;
+            _csvConfiguration = new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" };
         }
 
-        public async Task RunAsync(Dictionary<string, string> args)
+        public override async Task RunAsync(Dictionary<string, string> args)
         {
             if (!args.ContainsKey("file"))
             {
@@ -36,57 +35,82 @@ namespace Estimmo.Runner.Modules
                 return;
             }
 
-            var filePath = args["file"];
-            _log.Information("Reading {File}", filePath);
-
-            using var reader = new StreamReader(filePath);
-            using var csv = new CsvReader(reader, new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" });
-            var entries = csv.GetRecordsAsync<AddressEntry>();
-
-            _log.Information("Fetching town ids");
+            _log.Information("Populating town ID lookup");
             var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
 
-            var streets = new HashSet<Street>(new StreetEqualityComparer());
-            var addresses = new List<Address>();
+            var filePath = args["file"];
+            await InsertStreetsAsync(filePath, townIds);
+            await InsertAddressesAsync(filePath, townIds);
+        }
 
-            _log.Information("Processing entries");
+        private static string GetStreetId(string inputId)
+        {
+            // Get only FANTOIR code from id, don't use dedicated column because its sometimes blank
+            var idParts = inputId.Split('_');
+            return idParts[0] + '_' + idParts[1];
+        }
 
-            await foreach (var entry in entries)
+        private async Task InsertStreetsAsync(string filePath, HashSet<string> townIds)
+        {
+            var processor = new BatchListProcessor<AddressEntry, Street>(entry =>
             {
                 if (!townIds.Contains(entry.InseeCode))
                 {
-                    continue;
+                    return null;
                 }
 
-                // Get only FANTOIR code from id, don't use dedicated column because its sometimes blank
-                var idParts = entry.Id.Split('_');
-                var streetId = idParts[0] + '_' + idParts[1];
-
-                var street = new Street
+                return new Street
                 {
-                    Id = streetId,
+                    Id = GetStreetId(entry.Id),
                     TownId = entry.InseeCode,
                     Name = _addressNormaliser.NormaliseStreet(entry.StreetName)
                 };
+            }, async (buffer, processedCount) =>
+            {
+                await _context.Streets
+                    .UpsertRange(buffer)
+                    .On(s => new { s.Id })
+                    .NoUpdate()
+                    .RunAsync();
 
-                streets.Add(street);
+                _log.Information("Imported {Count} streets", processedCount);
+            });
 
-                addresses.Add(new Address
+            _log.Information("Importing streets");
+            await ReadThenProcessFileAsync(filePath, _csvConfiguration, processor);
+        }
+
+        private async Task InsertAddressesAsync(string filePath, HashSet<string> townIds)
+        {
+            var processor = new BatchListProcessor<AddressEntry, Address>(entry =>
+            {
+                if (!townIds.Contains(entry.InseeCode))
+                {
+                    return null;
+                }
+
+                return new Address
                 {
                     Id = entry.Id,
                     Number = entry.Number,
                     Suffix = string.IsNullOrEmpty(entry.Suffix) ? null : entry.Suffix,
                     PostCode = entry.PostCode,
-                    StreetId = streetId,
+                    StreetId = GetStreetId(entry.Id),
                     Coordinates = new Point(entry.Longitude, entry.Latitude)
-                });
-            }
+                };
+            }, async (buffer, processedCount) =>
+            {
+                await _context.Addresses
+                    .UpsertRange(buffer)
+                    .On(s => new { s.Id })
+                    .NoUpdate()
+                    .RunAsync();
 
-            _context.Streets.AddRange(streets);
-            _context.Addresses.AddRange(addresses);
-            await _context.SaveChangesAsync();
+                _log.Information("Imported {Count} addresses", processedCount);
+            });
 
-            _log.Information("Imported {Streets} streets and {Addresses} addresses", streets.Count, addresses.Count);
+            _log.Information("Importing addresses");
+            await ReadThenProcessFileAsync(filePath, _csvConfiguration, processor);
         }
     }
 }

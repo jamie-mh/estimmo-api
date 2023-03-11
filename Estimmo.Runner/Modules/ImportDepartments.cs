@@ -34,13 +34,17 @@ namespace Estimmo.Runner.Modules
 
                 _log.Information("Importing department {Id} {Name} in {Region}", id, name, enclosingRegion.Name);
 
-                _context.Departments.Add(new Department
+                var department = new Department
                 {
                     Id = id, Name = name, RegionId = enclosingRegion.Id, Geometry = feature.Geometry
-                });
-            }
+                };
 
-            await _context.SaveChangesAsync();
+                await _context.Departments
+                    .Upsert(department)
+                    .On(s => new { s.Id })
+                    .NoUpdate()
+                    .RunAsync();
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using Serilog;
 using System.Threading.Tasks;
@@ -24,10 +25,14 @@ namespace Estimmo.Runner.Modules
                 var name = feature.Attributes["nom"].ToString();
 
                 _log.Information("Importing region {Id} {Name}", id, name);
-                _context.Regions.Add(new Region { Id = id, Name = name, Geometry = feature.Geometry });
-            }
+                var region = new Region { Id = id, Name = name, Geometry = feature.Geometry };
 
-            await _context.SaveChangesAsync();
+                await _context.Regions
+                    .Upsert(region)
+                    .On(s => new { s.Id })
+                    .NoUpdate()
+                    .RunAsync();
+            }
         }
     }
 }
