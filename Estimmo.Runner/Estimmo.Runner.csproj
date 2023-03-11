@@ -25,6 +25,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\Estimmo.Data\Estimmo.Data.csproj" />
+        <ProjectReference Include="..\Estimmo.Shared\Estimmo.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>

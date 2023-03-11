@@ -1,4 +1,5 @@
 ﻿using Estimmo.Data;
+using Estimmo.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -72,6 +73,8 @@ namespace Estimmo.Runner
                 var connectionString = configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
             });
+
+            services.AddSingleton<AddressNormaliser>();
         }
 
         private static ValueTuple<Type, Dictionary<string, string>> ParseCommandLine(string[] args)

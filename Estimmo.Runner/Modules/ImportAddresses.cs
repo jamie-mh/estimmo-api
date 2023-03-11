@@ -4,6 +4,7 @@ using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
 using Estimmo.Runner.EqualityComparers;
+using Estimmo.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
@@ -19,10 +20,12 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportAddresses>();
         private readonly EstimmoContext _context;
+        private readonly AddressNormaliser _addressNormaliser;
 
-        public ImportAddresses(EstimmoContext context)
+        public ImportAddresses(EstimmoContext context, AddressNormaliser addressNormaliser)
         {
             _context = context;
+            _addressNormaliser = addressNormaliser;
         }
 
         public async Task RunAsync(Dictionary<string, string> args)
@@ -61,7 +64,7 @@ namespace Estimmo.Runner.Modules
 
                 var street = new Street
                 {
-                    Id = streetId, TownId = entry.InseeCode, Name = entry.StreetName.Replace("’", "'")
+                    Id = streetId, TownId = entry.InseeCode, Name = _addressNormaliser.NormaliseStreet(entry.StreetName)
                 };
 
                 streets.Add(street);

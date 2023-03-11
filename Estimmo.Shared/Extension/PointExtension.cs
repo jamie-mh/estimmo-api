@@ -1,8 +1,8 @@
 using NetTopologySuite.Geometries;
 
-namespace Estimmo.Shared
+namespace Estimmo.Shared.Extension
 {
-    public static class PointExt
+    public static class PointExtension
     {
         private const double EarthRadius = 6371e3;
 

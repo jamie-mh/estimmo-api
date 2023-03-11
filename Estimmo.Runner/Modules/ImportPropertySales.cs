@@ -2,10 +2,10 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
+using Estimmo.Shared.Util;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
-using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -25,29 +25,14 @@ namespace Estimmo.Runner.Modules
         private const int MaxValuePerSquareMeter = 8000;
         private const int MaxValuePerSquareMeterParis = 25000;
 
-        private static readonly Dictionary<string, string> NameSubtitutions = new()
-        {
-            { "Rte", "Route" },
-            { "Imp", "Impasse" },
-            { "Che", "Chemin" },
-            { "Chem", "Chemin" },
-            { "Av", "Avenue" },
-            { "Pl", "Place" },
-            { "All", "Allée" },
-            { "Mte", "Montée" },
-            { "Bd", "Boulevard" },
-            { "Crs", "Cours" },
-            { "Sq", "Square" }
-        };
-
         private readonly ILogger _log = Log.ForContext<ImportPropertySales>();
         private readonly EstimmoContext _context;
-        private readonly CultureInfo _cultureInfo;
+        private readonly AddressNormaliser _addressNormaliser;
 
-        public ImportPropertySales(EstimmoContext context)
+        public ImportPropertySales(EstimmoContext context, AddressNormaliser addressNormaliser)
         {
             _context = context;
-            _cultureInfo = new CultureInfo("FR-fr");
+            _addressNormaliser = addressNormaliser;
         }
 
         public async Task RunAsync(Dictionary<string, string> args)
@@ -143,7 +128,7 @@ namespace Estimmo.Runner.Modules
                     Date = mutation.Date,
                     StreetNumber = mutation.StreetNumber,
                     StreetNumberSuffix = mutation.StreetNumberSuffix,
-                    StreetName = FormatStreetName(mutation.StreetName),
+                    StreetName = _addressNormaliser.NormaliseStreet(mutation.StreetName),
                     PostCode = mutation.PostCode,
                     Type = propertyType,
                     BuildingSurfaceArea = mutation.BuildingSurfaceArea.Value,
@@ -165,22 +150,6 @@ namespace Estimmo.Runner.Modules
             {
                 await FlushBufferAsync();
             }
-        }
-
-        private string FormatStreetName(string street)
-        {
-            foreach (var (search, replace) in NameSubtitutions)
-            {
-                if (!street.StartsWith(search, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                street = street.Replace(search, replace, StringComparison.OrdinalIgnoreCase);
-                break;
-            }
-
-            return _cultureInfo.TextInfo.ToTitleCase(street.ToLowerInvariant());
         }
     }
 }

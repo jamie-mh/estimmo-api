@@ -2,7 +2,7 @@ using NetTopologySuite.Geometries;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Estimmo.Test
+namespace Estimmo.Test.Extension.ClassData
 {
     public class GreatCircleDistanceTestData : IEnumerable<object[]>
     {

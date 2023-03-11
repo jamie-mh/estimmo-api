@@ -1,5 +1,6 @@
 using Estimmo.Data;
 using Estimmo.Shared.Entities;
+using Estimmo.Shared.Extension;
 using MathNet.Numerics.LinearRegression;
 using Microsoft.EntityFrameworkCore;
 

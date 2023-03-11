@@ -1,10 +1,11 @@
-using Estimmo.Shared;
+using Estimmo.Shared.Extension;
+using Estimmo.Test.Extension.ClassData;
 using NetTopologySuite.Geometries;
 using Xunit;
 
-namespace Estimmo.Test
+namespace Estimmo.Test.Extension
 {
-    public class PointExtTest
+    public class PointExtensionTest
     {
         [Theory]
         [ClassData(typeof(GreatCircleDistanceTestData))]
