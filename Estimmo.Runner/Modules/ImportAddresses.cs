@@ -64,7 +64,9 @@ namespace Estimmo.Runner.Modules
 
                 var street = new Street
                 {
-                    Id = streetId, TownId = entry.InseeCode, Name = _addressNormaliser.NormaliseStreet(entry.StreetName)
+                    Id = streetId,
+                    TownId = entry.InseeCode,
+                    Name = _addressNormaliser.NormaliseStreet(entry.StreetName)
                 };
 
                 streets.Add(street);

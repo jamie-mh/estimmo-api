@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace Estimmo.Shared.Util
 {
-    public class AddressNormaliser
+    public partial class AddressNormaliser
     {
         private static readonly Dictionary<string, string> StreetSubtitutions = new()
         {
@@ -21,63 +21,78 @@ namespace Estimmo.Shared.Util
             { "Grd", "Grand" }
         };
 
-        public string NormaliseStreet(string street)
+        private static readonly List<string> LowercaseWords = new(){ "de", "la", "du", "des", "les", "en" };
+
+        private static readonly List<string> UppercaseWords = new(){ "zi" };
+
+        [GeneratedRegex(@"(?: |^)([ld]) ([\w]{2,})", RegexOptions.IgnoreCase)]
+        private static partial Regex MissingApostropheRegex();
+
+        public string NormaliseStreet(string input)
         {
-            foreach (var (search, replace) in StreetSubtitutions)
-            {
-                if (!street.StartsWith(search, StringComparison.OrdinalIgnoreCase))
-                {
-                    continue;
-                }
-
-                street = street.Replace(search, replace, StringComparison.OrdinalIgnoreCase);
-                break;
-            }
-
             // Normalise apostrophes
-            street = street.Replace("’", "'");
+            input = input.Replace("’", "'");
 
             // Add missing apostrophes
-            var missingApostropheMatch = Regex.Match(street, @"(?: |^)([ld]) ([\w]{2,})", RegexOptions.IgnoreCase);
+            var missingApostropheMatch = MissingApostropheRegex().Match(input);
 
             if (missingApostropheMatch.Success)
             {
                 var article = missingApostropheMatch.Groups[1].Value;
                 var word = missingApostropheMatch.Groups[2].Value;
-                street = street.Replace(missingApostropheMatch.Value, $" {article}'{word}");
+                input = input.Replace(missingApostropheMatch.Value, $" {article}'{word}");
             }
 
-            return ToTitleCaseString(street);
-        }
+            var words = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
 
-        private static string ToTitleCaseString(string input)
-        {
-            var words = input
-                .ToLower()
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            var output = new StringBuilder();
-
-            for (var i = 0; i < words.Length; i++)
+            foreach (var (search, replace) in StreetSubtitutions)
             {
-                var word = words[i];
-                var transformed = word;
-
-                if (word.Substring(1, 1) == "'")
+                for (var i = 0; i < words.Length; i++)
                 {
-                    if (word.Length > 5)
+                    var word = words[i];
+
+                    if (String.Equals(word, search, StringComparison.OrdinalIgnoreCase))
                     {
-                        transformed = word[..2] + ToTitleCase(word[2..]);
+                        words[i] = replace;
                     }
                 }
-                else if (word.Length > 3 || i == 0)
+            }
+
+            return ToTitleCase(words);
+        }
+
+        private static string ToTitleCase(IReadOnlyList<string> words)
+        {
+            var output = new StringBuilder();
+
+            for (var i = 0; i < words.Count; i++)
+            {
+                var word = words[i].ToLower();
+                var transformed = word;
+
+                if (i > 0 && word.Length > 3 && word.Substring(1, 1) == "'")
                 {
-                    transformed = ToTitleCase(word);
+                    var afterApostrophe = word[2..];
+
+                    if (!LowercaseWords.Contains(afterApostrophe))
+                    {
+                        afterApostrophe = UppercaseWords.Contains(afterApostrophe)
+                            ? afterApostrophe.ToUpper()
+                            : ToTitleCase(afterApostrophe);
+
+                        transformed = word[..2] + afterApostrophe;
+                    }
+                }
+                else if (i == 0 || !LowercaseWords.Contains(word))
+                {
+                    transformed = UppercaseWords.Contains(word)
+                        ? word.ToUpper()
+                        : ToTitleCase(word);
                 }
 
                 output.Append(transformed);
 
-                if (i < words.Length - 1)
+                if (i < words.Count - 1)
                 {
                     output.Append(' ');
                 }

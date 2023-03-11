@@ -14,6 +14,11 @@ namespace Estimmo.Test.Util
         [InlineData("RTE DE LOUBENS", "Route de Loubens")]
         [InlineData("IMP DE LA GALAGE", "Impasse de la Galage")]
         [InlineData("Rue du  Colonel Melville Lynch", "Rue du Colonel Melville Lynch")]
+        [InlineData("Rue des 5 Chemins", "Rue des 5 Chemins")]
+        [InlineData("Rue de l'ile Verte", "Rue de l'Ile Verte")]
+        [InlineData("Rue mte du Pechu", "Rue Montée du Pechu")]
+        [InlineData("Zi de la Brondalliere", "ZI de la Brondalliere")]
+        [InlineData("Cheminement de la Zi de Pollet", "Cheminement de la ZI de Pollet")]
         public void NormaliseStreet(string input, string expected)
         {
             Assert.Equal(expected, _addressNormaliser.NormaliseStreet(input));
