@@ -14,16 +14,16 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
 
             foreach (var sale in source)
             {
-                var id = HashCode.Combine(sale.Date, sale.StreetNumber, sale.StreetNumberSuffix, sale.StreetNumber, sale.Value);
+                var id = HashCode.Combine(sale.Date, sale.AddressId, sale.Value);
 
                 var attributes = new AttributesTable
                 {
                     { "featureId", Math.Abs(id) },
                     { "date", sale.Date },
-                    { "streetNumber", sale.StreetNumber },
-                    { "streetNumberSuffix", sale.StreetNumberSuffix },
-                    { "streetName", sale.StreetName },
-                    { "postCode", sale.PostCode },
+                    { "streetNumber", sale.Address.Number },
+                    { "streetNumberSuffix", sale.Address.Suffix },
+                    { "streetName", sale.Address.Street.Name },
+                    { "postCode", sale.Address.PostCode },
                     { "type", sale.Type },
                     { "buildingSurfaceArea", sale.BuildingSurfaceArea },
                     { "landSurfaceArea", sale.LandSurfaceArea },

@@ -84,7 +84,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.RegionId).HasColumnName("region_id");
+                entity.Property(e => e.RegionId).HasColumnName("region_id").IsRequired();
 
                 entity.Property(e => e.Name).HasColumnName("name").IsRequired();
 
@@ -152,7 +152,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.TownId).HasColumnName("town_id");
+                entity.Property(e => e.TownId).HasColumnName("town_id").IsRequired();
 
                 entity.Property(e => e.Prefix).HasColumnName("prefix").IsRequired();
 
@@ -185,18 +185,7 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Date).HasColumnName("date").HasColumnType("date").IsRequired();
 
-                entity.Property(e => e.StreetNumber).HasColumnName("street_number");
-
-                entity.Property(e => e.StreetNumberSuffix).HasColumnName("street_number_suffix");
-
-                entity.Property(e => e.StreetName).HasColumnName("street_name").IsRequired();
-
-                entity.Property(e => e.Type)
-                    .HasColumnName("type")
-                    .HasColumnType("smallint")
-                    .HasConversion(v => (int) v, v => (PropertyType) v);
-
-                entity.Property(e => e.PostCode).HasColumnName("post_code");
+                entity.Property(e => e.AddressId).HasColumnName("address_id").IsRequired();
 
                 entity.Property(e => e.BuildingSurfaceArea).HasColumnName("building_surface_area");
 
@@ -206,15 +195,59 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Value).HasColumnName("value").HasColumnType("money");
 
-                entity.Property(e => e.SectionId).HasColumnName("section_id");
+                entity.Property(e => e.SectionId).HasColumnName("section_id").IsRequired();
 
                 entity.Property(e => e.Coordinates).HasColumnName("coordinates").HasColumnType("geography").IsRequired();
 
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");
 
+                entity.HasOne(p => p.Address)
+                    .WithMany(p => p.PropertySales)
+                    .HasForeignKey(p => p.SectionId);
+
                 entity.HasOne(p => p.Section)
                     .WithMany(p => p.PropertySales)
                     .HasForeignKey(p => p.SectionId);
+            });
+
+            modelBuilder.Entity<Address>(entity =>
+            {
+                entity.ToTable("address");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Number).HasColumnName("number");
+
+                entity.Property(e => e.Suffix).HasColumnName("suffix");
+
+                entity.Property(e => e.PostCode).HasColumnName("post_code").IsRequired();
+
+                entity.Property(e => e.StreetId).HasColumnName("street_id").IsRequired();
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates").IsRequired();
+
+                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
+            });
+
+            modelBuilder.Entity<SaidPlace>(entity =>
+            {
+                entity.ToTable("said_place");
+
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
+
+                entity.Property(e => e.PostCode).HasColumnName("post_code").IsRequired();
+
+                entity.Property(e => e.TownId).HasColumnName("town_id").IsRequired();
+
+                entity.Property(e => e.Coordinates).HasColumnName("coordinates").IsRequired();
+
+                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
             });
 
             modelBuilder.Entity<FranceAverageValue>(entity =>
@@ -428,53 +461,13 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
+                entity.Property(e => e.Name).HasColumnName("name").IsRequired();
 
-                entity.Property(e => e.TownId).IsRequired().HasColumnName("town_id");
+                entity.Property(e => e.TownId).HasColumnName("town_id").IsRequired();
 
                 entity.HasMany(e => e.Addresses)
                     .WithOne(e => e.Street)
                     .HasForeignKey(e => e.StreetId);
-            });
-
-            modelBuilder.Entity<Address>(entity =>
-            {
-                entity.ToTable("address");
-
-                entity.HasKey(e => e.Id);
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Number).HasColumnName("number");
-
-                entity.Property(e => e.Suffix).HasColumnName("suffix");
-
-                entity.Property(e => e.PostCode).HasColumnName("post_code");
-
-                entity.Property(e => e.StreetId).IsRequired().HasColumnName("street_id");
-
-                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
-
-                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
-            });
-
-            modelBuilder.Entity<SaidPlace>(entity =>
-            {
-                entity.ToTable("said_place");
-
-                entity.HasKey(e => e.Id);
-
-                entity.Property(e => e.Id).HasColumnName("id");
-
-                entity.Property(e => e.Name).IsRequired().HasColumnName("name");
-
-                entity.Property(e => e.PostCode).IsRequired().HasColumnName("post_code");
-
-                entity.Property(e => e.TownId).IsRequired().HasColumnName("town_id");
-
-                entity.Property(e => e.Coordinates).HasColumnName("coordinates");
-
-                entity.HasIndex(e => e.Coordinates).HasMethod("gist");
             });
         }
     }
