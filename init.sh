@@ -138,7 +138,7 @@ function import {
     done
 
     echo "Calculating street coordinates"
-    dotnet run $DOTNET_ARGS CalculateStreetCoordinates
+    dotnet run $DOTNET_ARGS ExecuteSqlFile file=calculate_street_coordinates.sql
 
     echo "Importing said places"
     for file in download/saidplaces/*.csv; do
@@ -152,6 +152,11 @@ function import {
     for file in download/sales/*.csv; do
         dotnet run $DOTNET_ARGS ImportPropertySales file="$file"
     done
+    
+    dotnet run $DOTNET_ARGS RefreshMaterialisedViews type=stats
+    
+    echo "Removing outliers"
+    dotnet run $DOTNET_ARGS ExecuteSqlFile file=calculate_street_coordinates.sql
 
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews
 }
