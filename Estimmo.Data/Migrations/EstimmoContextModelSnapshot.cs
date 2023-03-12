@@ -253,10 +253,6 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("geometry")
                         .HasColumnName("geometry");
 
-                    b.Property<bool>("IsLocatable")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_locatable");
-
                     b.Property<bool>("IsSearchable")
                         .HasColumnType("boolean")
                         .HasColumnName("is_searchable");

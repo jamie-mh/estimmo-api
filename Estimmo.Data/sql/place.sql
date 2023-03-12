@@ -8,7 +8,6 @@ SELECT type,
        parent_type,
        parent_id,
        is_searchable,
-       is_locatable,
        geometry
 FROM (SELECT 1    AS type,
              id,
@@ -18,7 +17,6 @@ FROM (SELECT 1    AS type,
              NULL AS parent_type,
              NULL AS parent_id,
              true AS is_searchable,
-             true AS is_locatable,
              geometry
       FROM region
       UNION
@@ -30,7 +28,6 @@ FROM (SELECT 1    AS type,
              1      AS parent_type,
              r.id   AS parent_id,
              true   AS is_searchable,
-             true   AS is_locatable,
              d.geometry
       FROM department d
                INNER JOIN region r ON d.region_id = r.id
@@ -43,7 +40,6 @@ FROM (SELECT 1    AS type,
              2                                      AS parent_type,
              d.id                                   AS parent_id,
              true                                   AS is_searchable,
-             true                                   AS is_locatable,
              t.geometry
       FROM town t
                INNER JOIN department d ON t.department_id = d.id
@@ -56,7 +52,6 @@ FROM (SELECT 1    AS type,
              3         AS parent_type,
              s.town_id AS parent_id,
              false     AS is_searchable,
-             true      AS is_locatable,
              s.geometry
       FROM section s
                INNER JOIN town t ON s.town_id = t.id
@@ -69,7 +64,6 @@ FROM (SELECT 1    AS type,
              3                                                     AS parent_type,
              t.id                                                  AS parent_id,
              true                                                  AS is_searchable,
-             false                                                 AS is_locatable,
              st.coordinates                                        AS geometry
       FROM street st
                INNER JOIN town t ON st.town_id = t.id
@@ -82,7 +76,6 @@ FROM (SELECT 1    AS type,
              4                                                                                      AS parent_type,
              (SELECT sc.id FROM section sc WHERE ST_COVEREDBY(sp.coordinates, sc.geometry) LIMIT 1) AS parent_id,
              true                                                                                   AS is_searchable,
-             false                                                                                  AS is_locatable,
              sp.coordinates                                                                         AS geometry
       FROM said_place sp
                INNER JOIN town t ON sp.town_id = t.id
@@ -95,7 +88,6 @@ FROM (SELECT 1    AS type,
              4                                                                                     AS parent_type,
              (SELECT sc.id FROM section sc WHERE ST_COVEREDBY(a.coordinates, sc.geometry) LIMIT 1) AS parent_id,
              true                                                                                  AS is_searchable,
-             false                                                                                 AS is_locatable,
              a.coordinates                                                                         AS geometry
       FROM address a
                INNER JOIN street s ON a.street_id = s.id
@@ -106,5 +98,4 @@ CREATE INDEX ix_place_type ON place (type);
 CREATE INDEX ix_place_search_name ON place (search_name text_pattern_ops) WHERE is_searchable;
 CREATE INDEX ix_place_post_code ON place (post_code) WHERE type = 3;
 CREATE INDEX ix_place_is_searchable ON place (is_searchable);
-CREATE INDEX ix_place_is_locatable ON place (is_locatable);
-CREATE INDEX ix_place_geometry ON place USING GIST (geometry) WHERE is_locatable;
+CREATE INDEX ix_place_geometry ON place USING GIST (geometry);

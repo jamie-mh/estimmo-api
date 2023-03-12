@@ -502,8 +502,6 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.IsSearchable).HasColumnName("is_searchable");
 
-                entity.Property(e => e.IsLocatable).HasColumnName("is_locatable");
-
                 entity.Property(e => e.Geometry).HasColumnName("geometry");
 
                 entity.HasOne(p => p.Parent)

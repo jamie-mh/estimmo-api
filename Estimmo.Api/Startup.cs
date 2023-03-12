@@ -138,14 +138,11 @@ namespace Estimmo.Api
             config.CreateMap<IValueStats, KeyValuePair<short, double>>()
                 .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Average));
 
-            config.CreateMap<Place, AddressLike>()
-                .ForMember(a => a.Coordinates,
-                    p => p.MapFrom(c =>
-                        new Coordinates { Latitude = c.Geometry.Coordinate.Y, Longitude = c.Geometry.Coordinate.X }));
-
             config.CreateMap<Place, SimplePlace>();
 
             config.CreateMap<Place, DetailedPlace>();
+
+            config.CreateMap<Place, RootPlace>();
         }
     }
 }

@@ -37,7 +37,7 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetAddresses",
             Tags = new[] { "Address" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Address list", typeof(IEnumerable<AddressLike>))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Address list", typeof(IEnumerable<RootPlace>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<ActionResult> GetAddresses(
             string name, double? latitude, double? longitude, [Range(1, 100)] int limit = 100)
@@ -75,7 +75,7 @@ namespace Estimmo.Api.Controllers
 
             var addresses = await queryable
                 .Take(limit)
-                .ProjectTo<AddressLike>(_mapper.ConfigurationProvider)
+                .ProjectTo<RootPlace>(_mapper.ConfigurationProvider)
                 .ToListAsync();
 
             return Ok(addresses);
@@ -88,7 +88,7 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetAddress",
             Tags = new[] { "Address" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Address", typeof(AddressLike))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Address", typeof(RootPlace))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Address not found")]
         public async Task<ActionResult> GetAddress(string id)
         {
@@ -100,7 +100,7 @@ namespace Estimmo.Api.Controllers
                 return NotFound();
             }
 
-            var address = _mapper.Map<AddressLike>(place);
+            var address = _mapper.Map<RootPlace>(place);
             return Ok(address);
         }
     }

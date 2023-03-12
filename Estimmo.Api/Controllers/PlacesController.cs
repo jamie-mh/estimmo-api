@@ -78,7 +78,7 @@ namespace Estimmo.Api.Controllers
                 var point = new Point(longitude.Value, latitude.Value);
 
                 queryable = _context.Places
-                    .Where(p => p.IsLocatable && p.Geometry.Covers(point))
+                    .Where(p => p.Geometry.Covers(point))
                     .OrderBy(p => p.Type);
             }
 
@@ -113,7 +113,7 @@ namespace Estimmo.Api.Controllers
                 return NotFound();
             }
 
-            var detailed = _mapper.Map<DetailedPlace>(place);
+            var detailed = _mapper.Map<RootPlace>(place);
             return Ok(detailed);
         }
     }
