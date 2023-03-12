@@ -1,4 +1,4 @@
-﻿using Estimmo.Data.Entities;
+using Estimmo.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Estimmo.Data
@@ -480,6 +480,8 @@ namespace Estimmo.Data
                 entity.Property(e => e.ParentId).HasColumnName("parent_id");
 
                 entity.Property(e => e.IsSearchable).HasColumnName("is_searchable");
+
+                entity.Property(e => e.IsLocatable).HasColumnName("is_locatable");
 
                 entity.Property(e => e.Geometry).HasColumnName("geometry");
 
