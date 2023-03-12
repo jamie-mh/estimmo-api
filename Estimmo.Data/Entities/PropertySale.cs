@@ -16,7 +16,10 @@ namespace Estimmo.Data.Entities
         }
 
         public DateTime Date { get; set; }
-        public string AddressId { get; set; }
+        public short? StreetNumber { get; set; }
+        public string StreetNumberSuffix { get; set; }
+        public string StreetName { get; set; }
+        public string PostCode { get; set; }
         public PropertyType Type { get; set; }
         public int BuildingSurfaceArea { get; set; }
         public int LandSurfaceArea { get; set; }
@@ -25,7 +28,6 @@ namespace Estimmo.Data.Entities
         public string SectionId { get; set; }
         public Point Coordinates { get; set; }
 
-        public virtual Address Address { get; set; }
         public virtual Section Section { get; set; }
 
         private string ComputeHash()
@@ -34,15 +36,33 @@ namespace Estimmo.Data.Entities
 
             builder.Append(Date.ToString("yyyy-MM-dd"));
             builder.Append('|');
-            builder.Append(AddressId);
+
+            if (StreetNumber != null)
+            {
+                builder.Append(StreetNumber);
+                builder.Append('|');
+            }
+
+            if (StreetNumberSuffix != null)
+            {
+                builder.Append(StreetNumberSuffix);
+                builder.Append('|');
+            }
+
+            builder.Append(StreetName);
             builder.Append('|');
+            builder.Append(PostCode);
             builder.Append('|');
             builder.Append((int) Type);
             builder.Append('|');
             builder.Append(Value);
 
             var input = Encoding.UTF8.GetBytes(builder.ToString());
-            return Convert.ToHexString(MD5.HashData(input));
+
+            using var md5 = MD5.Create();
+            var hash = md5.ComputeHash(input);
+
+            return Convert.ToHexString(hash);
         }
     }
 }

@@ -1,9 +1,9 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Estimmo.Api
+namespace Estimmo.Shared.Extension
 {
-    public static class StringExt
+    public static class StringExtension
     {
         public static string Unaccent(this string input)
         {

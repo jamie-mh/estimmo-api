@@ -18,7 +18,7 @@ namespace Estimmo.Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("ProductVersion", "7.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "pg_trgm");
@@ -33,6 +33,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("id");
 
                     b.Property<Point>("Coordinates")
+                        .IsRequired()
                         .HasColumnType("geometry")
                         .HasColumnName("coordinates");
 
@@ -41,6 +42,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("number");
 
                     b.Property<string>("PostCode")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("post_code");
 
@@ -84,6 +86,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("name");
 
                     b.Property<string>("RegionId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("region_id");
 
@@ -127,7 +130,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("department_avg_value");
+                    b.ToView("department_avg_value", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.DepartmentAverageValueByYear", b =>
@@ -160,7 +163,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("department_avg_value_by_year");
+                    b.ToView("department_avg_value_by_year", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.FranceAverageValue", b =>
@@ -178,7 +181,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("france_avg_value");
+                    b.ToView("france_avg_value", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.FranceAverageValueByYear", b =>
@@ -200,52 +203,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("france_avg_value_by_year");
-                });
-
-            modelBuilder.Entity("Estimmo.Data.Entities.Message", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityAlwaysColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("content");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
-
-                    b.Property<bool>("IsArchived")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_archived");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<DateTime>("SentOn")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("sent_on");
-
-                    b.Property<string>("Subject")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("subject");
-
-                    b.HasKey("Id")
-                        .HasName("pk_message");
-
-                    b.ToTable("message", (string)null);
+                    b.ToView("france_avg_value_by_year", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Place", b =>
@@ -261,6 +219,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<Geometry>("Geometry")
                         .HasColumnType("geometry")
                         .HasColumnName("geometry");
+
+                    b.Property<bool>("IsSearchable")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_searchable");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
@@ -294,7 +256,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("place");
+                    b.ToView("place", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
@@ -302,6 +264,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<string>("Hash")
                         .HasColumnType("text")
                         .HasColumnName("hash");
+
+                    b.Property<string>("AddressId")
+                        .HasColumnType("text")
+                        .HasColumnName("address_id");
 
                     b.Property<int>("BuildingSurfaceArea")
                         .HasColumnType("integer")
@@ -329,6 +295,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("room_count");
 
                     b.Property<string>("SectionId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("section_id");
 
@@ -346,7 +313,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("street_number_suffix");
 
                     b.Property<int>("Type")
-                        .HasColumnType("smallint")
+                        .HasColumnType("integer")
                         .HasColumnName("type");
 
                     b.Property<decimal>("Value")
@@ -355,6 +322,9 @@ namespace Estimmo.Data.Migrations
 
                     b.HasKey("Hash")
                         .HasName("pk_property_sale");
+
+                    b.HasIndex("AddressId")
+                        .HasDatabaseName("ix_property_sale_address_id");
 
                     b.HasIndex("Coordinates")
                         .HasDatabaseName("ix_property_sale_coordinates");
@@ -413,7 +383,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("region_avg_value");
+                    b.ToView("region_avg_value", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.RegionAverageValueByYear", b =>
@@ -439,7 +409,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("region_avg_value_by_year");
+                    b.ToView("region_avg_value_by_year", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.SaidPlace", b =>
@@ -449,6 +419,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("id");
 
                     b.Property<Point>("Coordinates")
+                        .IsRequired()
                         .HasColumnType("geometry")
                         .HasColumnName("coordinates");
 
@@ -503,6 +474,7 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("prefix");
 
                     b.Property<string>("TownId")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("town_id");
 
@@ -539,14 +511,14 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("Id", "Type")
-                        .HasName("pk_section_average_value");
+                        .HasName("pk_section_average_values");
 
                     b.HasIndex("TownId")
-                        .HasDatabaseName("ix_section_average_value_town_id");
+                        .HasDatabaseName("ix_section_average_values_town_id");
 
                     b.ToTable((string)null);
 
-                    b.ToView("section_avg_value");
+                    b.ToView("section_avg_value", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.SectionAverageValueByYear", b =>
@@ -572,14 +544,14 @@ namespace Estimmo.Data.Migrations
                         .HasColumnName("value");
 
                     b.HasKey("Id", "Type", "Year")
-                        .HasName("pk_section_average_value_by_year");
+                        .HasName("pk_section_average_values_by_year");
 
                     b.HasIndex("TownId")
-                        .HasDatabaseName("ix_section_average_value_by_year_town_id");
+                        .HasDatabaseName("ix_section_average_values_by_year_town_id");
 
                     b.ToTable((string)null);
 
-                    b.ToView("section_avg_value_by_year");
+                    b.ToView("section_avg_value_by_year", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Street", b =>
@@ -588,10 +560,18 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("id");
 
+                    b.Property<Point>("Coordinates")
+                        .HasColumnType("geometry")
+                        .HasColumnName("coordinates");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
+
+                    b.Property<string>("PostCode")
+                        .HasColumnType("text")
+                        .HasColumnName("post_code");
 
                     b.Property<string>("TownId")
                         .IsRequired()
@@ -672,7 +652,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("town_avg_value");
+                    b.ToView("town_avg_value", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.TownAverageValueByYear", b =>
@@ -705,7 +685,7 @@ namespace Estimmo.Data.Migrations
 
                     b.ToTable((string)null);
 
-                    b.ToView("town_avg_value_by_year");
+                    b.ToView("town_avg_value_by_year", (string)null);
                 });
 
             modelBuilder.Entity("Estimmo.Data.Entities.Address", b =>
@@ -715,7 +695,7 @@ namespace Estimmo.Data.Migrations
                         .HasForeignKey("StreetId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_address_street_street_id");
+                        .HasConstraintName("fk_address_streets_street_id");
 
                     b.Navigation("Street");
                 });
@@ -725,6 +705,8 @@ namespace Estimmo.Data.Migrations
                     b.HasOne("Estimmo.Data.Entities.Region", "Region")
                         .WithMany("Departments")
                         .HasForeignKey("RegionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_department_region_region_id");
 
                     b.Navigation("Region");
@@ -780,9 +762,16 @@ namespace Estimmo.Data.Migrations
 
             modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
                 {
+                    b.HasOne("Estimmo.Data.Entities.Address", null)
+                        .WithMany("PropertySales")
+                        .HasForeignKey("AddressId")
+                        .HasConstraintName("fk_property_sale_addresses_address_id");
+
                     b.HasOne("Estimmo.Data.Entities.Section", "Section")
                         .WithMany("PropertySales")
                         .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_property_sale_section_section_id");
 
                     b.Navigation("Section");
@@ -815,7 +804,7 @@ namespace Estimmo.Data.Migrations
             modelBuilder.Entity("Estimmo.Data.Entities.SaidPlace", b =>
                 {
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
-                        .WithMany("SaidPlaces")
+                        .WithMany()
                         .HasForeignKey("TownId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
@@ -829,6 +818,8 @@ namespace Estimmo.Data.Migrations
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
                         .WithMany("Sections")
                         .HasForeignKey("TownId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
                         .HasConstraintName("fk_section_town_town_id");
 
                     b.Navigation("Town");
@@ -841,12 +832,12 @@ namespace Estimmo.Data.Migrations
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_section_average_value_sections_section_id");
+                        .HasConstraintName("fk_section_average_values_sections_section_id");
 
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
                         .WithMany("SectionAverageValues")
                         .HasForeignKey("TownId")
-                        .HasConstraintName("fk_section_average_value_towns_town_id");
+                        .HasConstraintName("fk_section_average_values_towns_town_id");
 
                     b.Navigation("Section");
 
@@ -860,12 +851,12 @@ namespace Estimmo.Data.Migrations
                         .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_section_average_value_by_year_sections_section_id");
+                        .HasConstraintName("fk_section_average_values_by_year_sections_section_id");
 
                     b.HasOne("Estimmo.Data.Entities.Town", "Town")
                         .WithMany("SectionAverageValuesByYear")
                         .HasForeignKey("TownId")
-                        .HasConstraintName("fk_section_average_value_by_year_towns_town_id");
+                        .HasConstraintName("fk_section_average_values_by_year_towns_town_id");
 
                     b.Navigation("Section");
 
@@ -934,6 +925,11 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("Town");
                 });
 
+            modelBuilder.Entity("Estimmo.Data.Entities.Address", b =>
+                {
+                    b.Navigation("PropertySales");
+                });
+
             modelBuilder.Entity("Estimmo.Data.Entities.Department", b =>
                 {
                     b.Navigation("AverageValues");
@@ -979,8 +975,6 @@ namespace Estimmo.Data.Migrations
                     b.Navigation("AverageValues");
 
                     b.Navigation("AverageValuesByYear");
-
-                    b.Navigation("SaidPlaces");
 
                     b.Navigation("SectionAverageValues");
 

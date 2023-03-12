@@ -23,7 +23,7 @@ namespace Estimmo.Runner.Modules
 
         protected override async Task ParseFeatureCollection(FeatureCollection collection)
         {
-            var processor = new BatchListProcessor<IFeature, Town>(async feature =>
+            var processor = new BatchProcessor<IFeature, Town>(async feature =>
             {
                 var id = feature.Attributes.Exists("id")
                     ? feature.Attributes["id"].ToString()

@@ -25,7 +25,7 @@ namespace Estimmo.Runner.Modules
             _log.Information("Populating town ID lookup");
             var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
 
-            var processor = new BatchListProcessor<IFeature, Section>(async feature =>
+            var processor = new BatchProcessor<IFeature, Section>(async feature =>
             {
                 var townId = feature.Attributes["commune"].ToString();
 

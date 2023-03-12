@@ -29,7 +29,7 @@ namespace Estimmo.Runner.Modules
 
             var filePath = args["file"];
 
-            await ReadThenProcessFileAsync<SaidPlaceEntry>(filePath,
+            await ReadThenProcessFileAsync<PostCodeEntry>(filePath,
                 new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" },
                 async entries =>
                 {

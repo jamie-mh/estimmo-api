@@ -36,7 +36,7 @@ namespace Estimmo.Runner.Modules
             _log.Information("Populating town ID lookup");
             var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
 
-            var processor = new BatchListProcessor<SaidPlaceEntry, SaidPlace>(entry =>
+            var processor = new BatchProcessor<SaidPlaceEntry, SaidPlace>(entry =>
             {
                 if (!townIds.Contains(entry.InseeCode) || entry.Latitude == null || entry.Longitude == null)
                 {

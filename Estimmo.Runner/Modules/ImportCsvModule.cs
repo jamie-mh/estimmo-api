@@ -15,7 +15,7 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportCsvModule>();
 
-        protected async Task ReadThenProcessFileAsync<T, TU>(string filePath, CsvConfiguration configuration, BatchListProcessor<T, TU> processor)
+        protected async Task ReadThenProcessFileAsync<T, TU>(string filePath, CsvConfiguration configuration, BatchProcessor<T, TU> processor)
         {
             _log.Information("Reading {File}", filePath);
             using var reader = new StreamReader(filePath);

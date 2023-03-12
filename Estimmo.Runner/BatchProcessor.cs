@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Estimmo.Runner
 {
-    public class BatchListProcessor<T, TU>
+    public class BatchProcessor<T, TU>
     {
         private const int DefaultBufferSize = 10000;
 
@@ -13,14 +13,14 @@ namespace Estimmo.Runner
         private readonly Func<T, Task<TU>> _processItemAsync;
         private readonly Func<List<TU>, int, Task> _flushBufferAsync;
 
-        public BatchListProcessor(Func<T, Task<TU>> processItemAsync, Func<List<TU>, int, Task> flushBufferAsync, int bufferSize = DefaultBufferSize)
+        public BatchProcessor(Func<T, Task<TU>> processItemAsync, Func<List<TU>, int, Task> flushBufferAsync, int bufferSize = DefaultBufferSize)
         {
             _buffer = new List<TU>(bufferSize);
             _processItemAsync = processItemAsync;
             _flushBufferAsync = flushBufferAsync;
         }
 
-        public BatchListProcessor(Func<T, TU> processItem, Func<List<TU>, int, Task> flushBufferAsync, int bufferSize = DefaultBufferSize)
+        public BatchProcessor(Func<T, TU> processItem, Func<List<TU>, int, Task> flushBufferAsync, int bufferSize = DefaultBufferSize)
         {
             _buffer = new List<TU>(bufferSize);
             _processItemAsync = i => Task.FromResult(processItem(i));

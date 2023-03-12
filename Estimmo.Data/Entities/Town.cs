@@ -13,7 +13,6 @@ namespace Estimmo.Data.Entities
             AverageValues = new HashSet<TownAverageValue>();
             AverageValuesByYear = new HashSet<TownAverageValueByYear>();
             Streets = new HashSet<Street>();
-            SaidPlaces = new HashSet<SaidPlace>();
         }
 
         public string Id { get; set; }
@@ -29,6 +28,5 @@ namespace Estimmo.Data.Entities
         public virtual ICollection<TownAverageValue> AverageValues { get; set; }
         public virtual ICollection<TownAverageValueByYear> AverageValuesByYear { get; set; }
         public virtual ICollection<Street> Streets { get; set; }
-        public virtual ICollection<SaidPlace> SaidPlaces { get; set; }
     }
 }

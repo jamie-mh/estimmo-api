@@ -1,4 +1,4 @@
-﻿using CsvHelper;
+﻿using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
@@ -8,23 +8,13 @@ using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
 {
-    public class ImportPropertySales : IModule
+    public class ImportPropertySales : ImportCsvModule
     {
-        private const int BufferSize = 10000;
-
-        private const int MinValue = 10000;
-        private const int MaxValue = 2000000;
-        private const int ParisMaxValue = 10000000;
-
-        private const int MaxValuePerSquareMeter = 8000;
-        private const int MaxValuePerSquareMeterParis = 25000;
-
         private readonly ILogger _log = Log.ForContext<ImportPropertySales>();
         private readonly EstimmoContext _context;
         private readonly AddressNormaliser _addressNormaliser;
@@ -35,7 +25,7 @@ namespace Estimmo.Runner.Modules
             _addressNormaliser = addressNormaliser;
         }
 
-        public async Task RunAsync(Dictionary<string, string> args)
+        public override async Task RunAsync(Dictionary<string, string> args)
         {
             if (!args.ContainsKey("file"))
             {
@@ -44,63 +34,18 @@ namespace Estimmo.Runner.Modules
             }
 
             var filePath = args["file"];
-            _log.Information("Reading {File}", filePath);
 
-            using var reader = new StreamReader(filePath);
-            using var csv = new CsvReader(reader, CultureInfo.CurrentCulture);
-            var mutations = csv.GetRecordsAsync<PropertyMutation>();
-            await ParsePropertyMutationsAsync(mutations);
-        }
-
-        private async Task ParsePropertyMutationsAsync(IAsyncEnumerable<PropertyMutation> mutations)
-        {
-            _log.Information("Fetching section ids");
+            _log.Information("Populating section ID lookup");
             var sectionIds = new HashSet<string>(await _context.Sections.Select(p => p.Id).ToListAsync());
 
-            var buffer = new List<PropertySale>(BufferSize);
-            var inserted = 0;
-
-            async Task FlushBufferAsync()
-            {
-                await _context.PropertySales
-                    .UpsertRange(buffer)
-                    .On(t => new { t.Hash })
-                    .NoUpdate()
-                    .RunAsync();
-
-                inserted += buffer.Count;
-                _log.Information("Processed {Count} mutations", inserted);
-            }
-
-            await foreach (var mutation in mutations)
+            var processor = new BatchProcessor<PropertyMutation, PropertySale>(mutation =>
             {
                 if (mutation.LocalType == null || mutation.MutationType != "Vente" ||
                     mutation.Value == null || mutation.BuildingSurfaceArea == null ||
                     mutation.RoomCount == null || mutation.Latitude == null || mutation.Longitude == null ||
                     mutation.ParcelId == null)
                 {
-                    continue;
-                }
-
-                var departmentId = mutation.ParcelId[..2];
-
-                if (mutation.Value < MinValue || mutation.Value > (departmentId == "75" ? ParisMaxValue : MaxValue))
-                {
-                    continue;
-                }
-
-                var valuePerSquareMeter = mutation.Value / mutation.BuildingSurfaceArea;
-
-                if (valuePerSquareMeter > (departmentId == "75" ? MaxValuePerSquareMeterParis : MaxValuePerSquareMeter))
-                {
-                    continue;
-                }
-
-                var sectionId = mutation.ParcelId[..^4];
-
-                if (!sectionIds.Contains(sectionId))
-                {
-                    continue;
+                    return null;
                 }
 
                 PropertyType propertyType;
@@ -115,7 +60,14 @@ namespace Estimmo.Runner.Modules
                         propertyType = PropertyType.Apartment;
                         break;
 
-                    default: continue;
+                    default: return null;
+                }
+
+                var sectionId = mutation.ParcelId[..^4];
+
+                if (!sectionIds.Contains(sectionId))
+                {
+                    return null;
                 }
 
                 if (string.IsNullOrEmpty(mutation.StreetNumberSuffix))
@@ -123,7 +75,7 @@ namespace Estimmo.Runner.Modules
                     mutation.StreetNumberSuffix = null;
                 }
 
-                buffer.Add(new PropertySale
+                return new PropertySale
                 {
                     Date = mutation.Date,
                     StreetNumber = mutation.StreetNumber,
@@ -137,19 +89,19 @@ namespace Estimmo.Runner.Modules
                     Value = mutation.Value.Value,
                     SectionId = sectionId,
                     Coordinates = new Point(mutation.Longitude.Value, mutation.Latitude.Value)
-                });
-
-                if (buffer.Count % BufferSize == 0)
-                {
-                    await FlushBufferAsync();
-                    buffer.Clear();
-                }
-            }
-
-            if (buffer.Any())
+                };
+            }, async (buffer, processedCount) =>
             {
-                await FlushBufferAsync();
-            }
+                await _context.PropertySales
+                    .UpsertRange(buffer)
+                    .On(t => new { t.Hash })
+                    .NoUpdate()
+                    .RunAsync();
+
+                _log.Information("Imported {Count} mutations", processedCount);
+            });
+
+            await ReadThenProcessFileAsync(filePath, new CsvConfiguration(CultureInfo.CurrentCulture), processor);
         }
     }
 }

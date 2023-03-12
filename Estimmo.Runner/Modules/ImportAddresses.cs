@@ -52,7 +52,7 @@ namespace Estimmo.Runner.Modules
 
         private async Task InsertStreetsAsync(string filePath, HashSet<string> townIds)
         {
-            var processor = new BatchListProcessor<AddressEntry, Street>(entry =>
+            var processor = new BatchProcessor<AddressEntry, Street>(entry =>
             {
                 if (!townIds.Contains(entry.InseeCode))
                 {
@@ -82,7 +82,7 @@ namespace Estimmo.Runner.Modules
 
         private async Task InsertAddressesAsync(string filePath, HashSet<string> townIds)
         {
-            var processor = new BatchListProcessor<AddressEntry, Address>(entry =>
+            var processor = new BatchProcessor<AddressEntry, Address>(entry =>
             {
                 if (!townIds.Contains(entry.InseeCode))
                 {

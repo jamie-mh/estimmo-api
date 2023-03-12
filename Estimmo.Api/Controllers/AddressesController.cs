@@ -3,6 +3,7 @@ using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Estimmo.Shared.Extension;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
