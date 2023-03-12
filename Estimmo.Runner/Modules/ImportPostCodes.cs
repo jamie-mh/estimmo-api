@@ -42,7 +42,7 @@ namespace Estimmo.Runner.Modules
 
                         if (count > 0 && count % 1000 == 0)
                         {
-                            _log.Information("Processed {Count} postcodes", count);
+                            _log.Information("Imported {Count} postcodes", count);
                         }
 
                         count++;

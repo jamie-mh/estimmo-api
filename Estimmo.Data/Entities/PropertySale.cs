@@ -58,11 +58,7 @@ namespace Estimmo.Data.Entities
             builder.Append(Value);
 
             var input = Encoding.UTF8.GetBytes(builder.ToString());
-
-            using var md5 = MD5.Create();
-            var hash = md5.ComputeHash(input);
-
-            return Convert.ToHexString(hash);
+            return Convert.ToHexString(MD5.HashData(input));
         }
     }
 }

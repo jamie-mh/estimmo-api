@@ -173,17 +173,11 @@ namespace Estimmo.Data.Migrations
                     room_count = table.Column<short>(type: "smallint", nullable: false),
                     value = table.Column<decimal>(type: "money", nullable: false),
                     section_id = table.Column<string>(type: "text", nullable: false),
-                    coordinates = table.Column<Point>(type: "geography", nullable: false),
-                    address_id = table.Column<string>(type: "text", nullable: true)
+                    coordinates = table.Column<Point>(type: "geography", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_property_sale", x => x.hash);
-                    table.ForeignKey(
-                        name: "fk_property_sale_addresses_address_id",
-                        column: x => x.address_id,
-                        principalTable: "address",
-                        principalColumn: "id");
                     table.ForeignKey(
                         name: "fk_property_sale_section_section_id",
                         column: x => x.section_id,
@@ -213,11 +207,6 @@ namespace Estimmo.Data.Migrations
                 name: "ix_department_region_id",
                 table: "department",
                 column: "region_id");
-
-            migrationBuilder.CreateIndex(
-                name: "ix_property_sale_address_id",
-                table: "property_sale",
-                column: "address_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_property_sale_coordinates",

@@ -50,7 +50,7 @@ namespace Estimmo.Runner.Modules
             return idParts[0] + '_' + idParts[1];
         }
 
-        private async Task InsertStreetsAsync(string filePath, HashSet<string> townIds)
+        private async Task InsertStreetsAsync(string filePath, IReadOnlySet<string> townIds)
         {
             var processor = new BatchProcessor<AddressEntry, Street>(entry =>
             {
@@ -80,7 +80,7 @@ namespace Estimmo.Runner.Modules
             await ReadThenProcessFileAsync(filePath, _csvConfiguration, processor);
         }
 
-        private async Task InsertAddressesAsync(string filePath, HashSet<string> townIds)
+        private async Task InsertAddressesAsync(string filePath, IReadOnlySet<string> townIds)
         {
             var processor = new BatchProcessor<AddressEntry, Address>(entry =>
             {

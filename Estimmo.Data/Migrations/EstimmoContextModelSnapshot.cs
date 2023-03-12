@@ -265,10 +265,6 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("text")
                         .HasColumnName("hash");
 
-                    b.Property<string>("AddressId")
-                        .HasColumnType("text")
-                        .HasColumnName("address_id");
-
                     b.Property<int>("BuildingSurfaceArea")
                         .HasColumnType("integer")
                         .HasColumnName("building_surface_area");
@@ -322,9 +318,6 @@ namespace Estimmo.Data.Migrations
 
                     b.HasKey("Hash")
                         .HasName("pk_property_sale");
-
-                    b.HasIndex("AddressId")
-                        .HasDatabaseName("ix_property_sale_address_id");
 
                     b.HasIndex("Coordinates")
                         .HasDatabaseName("ix_property_sale_coordinates");
@@ -762,11 +755,6 @@ namespace Estimmo.Data.Migrations
 
             modelBuilder.Entity("Estimmo.Data.Entities.PropertySale", b =>
                 {
-                    b.HasOne("Estimmo.Data.Entities.Address", null)
-                        .WithMany("PropertySales")
-                        .HasForeignKey("AddressId")
-                        .HasConstraintName("fk_property_sale_addresses_address_id");
-
                     b.HasOne("Estimmo.Data.Entities.Section", "Section")
                         .WithMany("PropertySales")
                         .HasForeignKey("SectionId")
