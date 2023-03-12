@@ -10,15 +10,15 @@ SELECT type,
        is_searchable,
        is_locatable,
        geometry
-FROM (SELECT 1     AS type,
+FROM (SELECT 1    AS type,
              id,
              name,
-             name  AS short_name,
-             NULL  AS post_code,
-             NULL  AS parent_type,
-             NULL  AS parent_id,
-             true  AS is_searchable,
-             false AS is_locatable,
+             name AS short_name,
+             NULL AS post_code,
+             NULL AS parent_type,
+             NULL AS parent_id,
+             true AS is_searchable,
+             true AS is_locatable,
              geometry
       FROM region
       UNION
@@ -30,7 +30,7 @@ FROM (SELECT 1     AS type,
              1      AS parent_type,
              r.id   AS parent_id,
              true   AS is_searchable,
-             false  AS is_locatable,
+             true   AS is_locatable,
              d.geometry
       FROM department d
                INNER JOIN region r ON d.region_id = r.id
@@ -43,7 +43,7 @@ FROM (SELECT 1     AS type,
              2                                      AS parent_type,
              d.id                                   AS parent_id,
              true                                   AS is_searchable,
-             false                                  AS is_locatable,
+             true                                   AS is_locatable,
              t.geometry
       FROM town t
                INNER JOIN department d ON t.department_id = d.id
