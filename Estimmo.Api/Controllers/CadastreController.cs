@@ -40,37 +40,37 @@ namespace Estimmo.Api.Controllers
             if (salesYear == null)
             {
                 regions = await _context.Regions
-                    .Include(r => r.AverageValues)
+                    .Include(r => r.ValueStats)
                     .ToListAsync();
             }
             else
             {
                 regions = await _context.Regions
-                    .Include(r => r.AverageValuesByYear.Where(v => v.Year == salesYear))
+                    .Include(r => r.ValueStatsByYear.Where(v => v.Year == salesYear))
                     .ToListAsync();
             }
 
             var featureCollection = _mapper.Map<FeatureCollection>(regions);
 
-            IEnumerable<IAverageValue> averageValues;
+            IEnumerable<IValueStats> valueStats;
 
             if (salesYear == null)
             {
-                averageValues = await _context.FranceAverageValues.ToListAsync();
+                valueStats = await _context.FranceValueStats.ToListAsync();
             }
             else
             {
-                averageValues = await _context.FranceAverageValuesByYear
+                valueStats = await _context.FranceValueStatsByYear
                     .Where(v => v.Year == salesYear)
                     .ToListAsync();
             }
 
-            var averageValuesByYear = await _context.FranceAverageValuesByYear.ToListAsync();
+            var valueStatsByYear = await _context.FranceValueStatsByYear.ToListAsync();
 
             return new FeaturesWithValues
             {
-                AverageValues = averageValues,
-                AverageValuesByYear = averageValuesByYear,
+                ValueStats = valueStats,
+                ValueStatsByYear = valueStatsByYear,
                 GeoJson = featureCollection
             };
         }
@@ -92,41 +92,41 @@ namespace Estimmo.Api.Controllers
             if (salesYear == null)
             {
                 departments = await queryable
-                    .Include(d => d.AverageValues)
+                    .Include(d => d.ValueStats)
                     .ToListAsync();
             }
             else
             {
                 departments = await queryable
-                    .Include(d => d.AverageValuesByYear.Where(v => v.Year == salesYear))
+                    .Include(d => d.ValueStatsByYear.Where(v => v.Year == salesYear))
                     .ToListAsync();
             }
 
             var featureCollection = _mapper.Map<FeatureCollection>(departments);
 
-            IEnumerable<IAverageValue> averageValues;
+            IEnumerable<IValueStats> valueStats;
 
             if (salesYear == null)
             {
-                averageValues = await _context.RegionAverageValues
+                valueStats = await _context.RegionValueStats
                     .Where(v => v.Id == regionId)
                     .ToListAsync();
             }
             else
             {
-                averageValues = await _context.RegionAverageValuesByYear
+                valueStats = await _context.RegionValueStatsByYear
                     .Where(v => v.Id == regionId && v.Year == salesYear)
                     .ToListAsync();
             }
 
-            var averageValuesByYear = await _context.RegionAverageValuesByYear
+            var valueStatsByYear = await _context.RegionValueStatsByYear
                 .Where(r => r.Id == regionId)
                 .ToListAsync();
 
             return new FeaturesWithValues
             {
-                AverageValues = averageValues,
-                AverageValuesByYear = averageValuesByYear,
+                ValueStats = valueStats,
+                ValueStatsByYear = valueStatsByYear,
                 GeoJson = featureCollection
             };
         }
@@ -148,41 +148,41 @@ namespace Estimmo.Api.Controllers
             if (salesYear == null)
             {
                 towns = await queryable
-                    .Include(t => t.AverageValues)
+                    .Include(t => t.ValueStats)
                     .ToListAsync();
             }
             else
             {
                 towns = await queryable
-                    .Include(t => t.AverageValuesByYear.Where(v => v.Year == salesYear))
+                    .Include(t => t.ValueStatsByYear.Where(v => v.Year == salesYear))
                     .ToListAsync();
             }
 
             var featureCollection = _mapper.Map<FeatureCollection>(towns);
 
-            IEnumerable<IAverageValue> averageValues;
+            IEnumerable<IValueStats> valueStats;
 
             if (salesYear == null)
             {
-                averageValues = await _context.DepartmentAverageValues
+                valueStats = await _context.DepartmentValueStats
                     .Where(v => v.Id == departmentId)
                     .ToListAsync();
             }
             else
             {
-                averageValues = await _context.DepartmentAverageValuesByYear
+                valueStats = await _context.DepartmentValueStatsByYear
                     .Where(v => v.Id == departmentId && v.Year == salesYear)
                     .ToListAsync();
             }
 
-            var averageValuesByYear = await _context.DepartmentAverageValuesByYear
+            var valueStatsByYear = await _context.DepartmentValueStatsByYear
                 .Where(d => d.Id == departmentId)
                 .ToListAsync();
 
             return new FeaturesWithValues
             {
-                AverageValues = averageValues,
-                AverageValuesByYear = averageValuesByYear,
+                ValueStats = valueStats,
+                ValueStatsByYear = valueStatsByYear,
                 GeoJson = featureCollection
             };
         }
@@ -204,41 +204,41 @@ namespace Estimmo.Api.Controllers
             if (salesYear == null)
             {
                 sections = await queryable
-                    .Include(s => s.AverageValues)
+                    .Include(s => s.ValueStats)
                     .ToListAsync();
             }
             else
             {
                 sections = await queryable
-                    .Include(s => s.AverageValuesByYear.Where(v => v.Year == salesYear))
+                    .Include(s => s.ValueStatsByYear.Where(v => v.Year == salesYear))
                     .ToListAsync();
             }
 
             var featureCollection = _mapper.Map<FeatureCollection>(sections);
 
-            IEnumerable<IAverageValue> averageValues;
+            IEnumerable<IValueStats> valueStats;
 
             if (salesYear == null)
             {
-                averageValues = await _context.TownAverageValues
+                valueStats = await _context.TownValueStats
                     .Where(v => v.Id == townId)
                     .ToListAsync();
             }
             else
             {
-                averageValues = await _context.TownAverageValuesByYear
+                valueStats = await _context.TownValueStatsByYear
                     .Where(v => v.Id == townId && v.Year == salesYear)
                     .ToListAsync();
             }
 
-            var averageValuesByYear = await _context.TownAverageValuesByYear
+            var valueStatsByYear = await _context.TownValueStatsByYear
                 .Where(t => t.Id == townId)
                 .ToListAsync();
 
             return new FeaturesWithValues
             {
-                AverageValues = averageValues,
-                AverageValuesByYear = averageValuesByYear,
+                ValueStats = valueStats,
+                ValueStatsByYear = valueStatsByYear,
                 GeoJson = featureCollection
             };
         }

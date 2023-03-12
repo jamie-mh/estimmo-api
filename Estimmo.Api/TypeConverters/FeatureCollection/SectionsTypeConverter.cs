@@ -20,10 +20,10 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                     { "featureId", Math.Abs(section.Id.GetHashCode()) },
                     { "id", section.Id },
                     {
-                        "averageValues",
-                        context.Mapper.Map<Dictionary<short, double>>(section.AverageValuesByYear.Any()
-                            ? section.AverageValuesByYear
-                            : section.AverageValues)
+                        "medianValues",
+                        context.Mapper.Map<Dictionary<short, double>>(section.ValueStatsByYear.Any()
+                            ? section.ValueStatsByYear
+                            : section.ValueStats)
                     }
                 };
 

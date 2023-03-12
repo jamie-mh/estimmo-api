@@ -8,13 +8,13 @@ namespace Estimmo.Api.Entities
 {
     public class FeaturesWithValues
     {
-        [JsonPropertyName("averageValues")]
-        [JsonConverter(typeof(AverageValuesJsonConverter))]
-        public IEnumerable<IAverageValue> AverageValues { get; set; }
+        [JsonPropertyName("medianValues")]
+        [JsonConverter(typeof(MedianValuesJsonConverter))]
+        public IEnumerable<IValueStats> ValueStats { get; set; }
 
-        [JsonPropertyName("averageValuesByYear")]
-        [JsonConverter(typeof(AverageValuesByYearJsonConverter))]
-        public IEnumerable<IAverageValueByYear> AverageValuesByYear { get; set; }
+        [JsonPropertyName("medianValuesByYear")]
+        [JsonConverter(typeof(MedianValuesByYearJsonConverter))]
+        public IEnumerable<IValueStatsByYear> ValueStatsByYear { get; set; }
 
         [JsonPropertyName("geojson")]
         public FeatureCollection GeoJson { get; set; }

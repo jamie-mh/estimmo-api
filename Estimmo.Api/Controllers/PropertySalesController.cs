@@ -47,13 +47,13 @@ namespace Estimmo.Api.Controllers
             if (year == null)
             {
                 section = await _context.Sections
-                    .Include(t => t.AverageValues)
+                    .Include(t => t.ValueStats)
                     .FirstOrDefaultAsync(s => s.Id == sectionId);
             }
             else
             {
                 section = await _context.Sections
-                    .Include(t => t.AverageValuesByYear.Where(v => v.Year == year))
+                    .Include(t => t.ValueStatsByYear.Where(v => v.Year == year))
                     .FirstOrDefaultAsync(s => s.Id == sectionId);
             }
 
@@ -83,29 +83,29 @@ namespace Estimmo.Api.Controllers
             var featureCollection = _mapper.Map<FeatureCollection>(sales);
             featureCollection.BoundingBox = section.Geometry.EnvelopeInternal;
 
-            IEnumerable<IAverageValue> averageValues;
+            IEnumerable<IValueStats> valueStats;
 
             if (year == null)
             {
-                averageValues = await _context.SectionAverageValues
+                valueStats = await _context.SectionValueStats
                     .Where(v => v.Id == sectionId)
                     .ToListAsync();
             }
             else
             {
-                averageValues = await _context.SectionAverageValuesByYear
+                valueStats = await _context.SectionValueStatsByYear
                     .Where(v => v.Id == sectionId && v.Year == year)
                     .ToListAsync();
             }
 
-            var averageValuesByYear = await _context.SectionAverageValuesByYear
+            var valueStatsByYear = await _context.SectionValueStatsByYear
                 .Where(d => d.Id == sectionId)
                 .ToListAsync();
 
             return Ok(new FeaturesWithValues
             {
-                AverageValues = averageValues,
-                AverageValuesByYear = averageValuesByYear,
+                ValueStats = valueStats,
+                ValueStatsByYear = valueStatsByYear,
                 GeoJson = featureCollection
             });
         }

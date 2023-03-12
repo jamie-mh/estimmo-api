@@ -135,8 +135,8 @@ namespace Estimmo.Api
             config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
                 .ConvertUsing<PropertySalesTypeConverter>();
 
-            config.CreateMap<IAverageValue, KeyValuePair<short, double>>()
-                .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Value));
+            config.CreateMap<IValueStats, KeyValuePair<short, double>>()
+                .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Average));
 
             config.CreateMap<Place, AddressLike>()
                 .ForMember(a => a.Coordinates,

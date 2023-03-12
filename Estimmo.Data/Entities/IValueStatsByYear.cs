@@ -1,6 +1,6 @@
 namespace Estimmo.Data.Entities
 {
-    public interface IAverageValueByYear : IAverageValue
+    public interface IValueStatsByYear : IValueStats
     {
         public short Year { get; set; }
     }

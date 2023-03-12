@@ -1,10 +1,10 @@
 namespace Estimmo.Data.Entities
 {
-    public class FranceAverageValueByYear : IAverageValueByYear
+    public class FranceValueStats : IValueStats
     {
         public PropertyType Type { get; set; }
-        public short Year { get; set; }
-        public double Value { get; set; }
+        public double Average { get; set; }
+        public double Median { get; set; }
         public double? StandardDeviation { get; set; }
     }
 }

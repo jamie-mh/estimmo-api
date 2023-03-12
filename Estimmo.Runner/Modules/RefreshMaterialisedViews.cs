@@ -20,9 +20,9 @@ namespace Estimmo.Runner.Modules
         {
             var views = new[]
             {
-                "france_avg_value", "france_avg_value_by_year", "region_avg_value", "region_avg_value_by_year",
-                "department_avg_value", "department_avg_value_by_year", "town_avg_value", "town_avg_value_by_year",
-                "section_avg_value", "section_avg_value_by_year", "place"
+                "france_value_stats", "france_value_stats_by_year", "region_value_stats", "region_value_stats_by_year",
+                "department_value_stats", "department_value_stats_by_year", "town_value_stats", "town_value_stats_by_year",
+                "section_value_stats", "section_value_stats_by_year", "place"
             };
 
             foreach (var view in views)

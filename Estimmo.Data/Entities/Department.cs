@@ -8,10 +8,10 @@ namespace Estimmo.Data.Entities
         public Department()
         {
             Towns = new HashSet<Town>();
-            TownAverageValues = new HashSet<TownAverageValue>();
-            TownAverageValuesByYear = new HashSet<TownAverageValueByYear>();
-            AverageValues = new HashSet<DepartmentAverageValue>();
-            AverageValuesByYear = new HashSet<DepartmentAverageValueByYear>();
+            TownValueStats = new HashSet<TownValueStats>();
+            TownValueStatsByYear = new HashSet<TownValueStatsByYear>();
+            ValueStats = new HashSet<DepartmentValueStats>();
+            ValueStatsByYear = new HashSet<DepartmentValueStatsByYear>();
         }
 
         public string Id { get; set; }
@@ -21,9 +21,9 @@ namespace Estimmo.Data.Entities
 
         public virtual Region Region { get; set; }
         public virtual ICollection<Town> Towns { get; set; }
-        public virtual ICollection<TownAverageValue> TownAverageValues { get; set; }
-        public virtual ICollection<TownAverageValueByYear> TownAverageValuesByYear { get; set; }
-        public virtual ICollection<DepartmentAverageValue> AverageValues { get; set; }
-        public virtual ICollection<DepartmentAverageValueByYear> AverageValuesByYear { get; set; }
+        public virtual ICollection<TownValueStats> TownValueStats { get; set; }
+        public virtual ICollection<TownValueStatsByYear> TownValueStatsByYear { get; set; }
+        public virtual ICollection<DepartmentValueStats> ValueStats { get; set; }
+        public virtual ICollection<DepartmentValueStatsByYear> ValueStatsByYear { get; set; }
     }
 }

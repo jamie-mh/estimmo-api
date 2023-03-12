@@ -8,10 +8,10 @@ namespace Estimmo.Data.Entities
         public Town()
         {
             Sections = new HashSet<Section>();
-            SectionAverageValues = new HashSet<SectionAverageValue>();
-            SectionAverageValuesByYear = new HashSet<SectionAverageValueByYear>();
-            AverageValues = new HashSet<TownAverageValue>();
-            AverageValuesByYear = new HashSet<TownAverageValueByYear>();
+            SectionValueStats = new HashSet<SectionValueStats>();
+            SectionValueStatsByYear = new HashSet<SectionValueStatsByYear>();
+            ValueStats = new HashSet<TownValueStats>();
+            ValueStatsByYear = new HashSet<TownValueStatsByYear>();
             Streets = new HashSet<Street>();
         }
 
@@ -23,10 +23,10 @@ namespace Estimmo.Data.Entities
 
         public virtual Department Department { get; set; }
         public virtual ICollection<Section> Sections { get; set; }
-        public virtual ICollection<SectionAverageValue> SectionAverageValues { get; set; }
-        public virtual ICollection<SectionAverageValueByYear> SectionAverageValuesByYear { get; set; }
-        public virtual ICollection<TownAverageValue> AverageValues { get; set; }
-        public virtual ICollection<TownAverageValueByYear> AverageValuesByYear { get; set; }
+        public virtual ICollection<SectionValueStats> SectionValueStats { get; set; }
+        public virtual ICollection<SectionValueStatsByYear> SectionValueStatsByYear { get; set; }
+        public virtual ICollection<TownValueStats> ValueStats { get; set; }
+        public virtual ICollection<TownValueStatsByYear> ValueStatsByYear { get; set; }
         public virtual ICollection<Street> Streets { get; set; }
     }
 }

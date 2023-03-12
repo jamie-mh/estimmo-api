@@ -17,6 +17,7 @@ namespace Estimmo.Data.Migrations
             migrationBuilder.AlterDatabase()
                 .Annotation("Npgsql:PostgresExtension:pg_trgm", ",,")
                 .Annotation("Npgsql:PostgresExtension:postgis", ",,")
+                .Annotation("Npgsql:PostgresExtension:tdigest", ",,")
                 .Annotation("Npgsql:PostgresExtension:unaccent", ",,");
 
             migrationBuilder.CreateTable(
@@ -263,15 +264,15 @@ namespace Estimmo.Data.Migrations
                 column: "geometry")
                 .Annotation("Npgsql:IndexMethod", "gist");
 
-            ExecuteSqlFile(migrationBuilder, "france_avg_value");
+            ExecuteSqlFile(migrationBuilder, "france_value_stats");
 
-            ExecuteSqlFile(migrationBuilder, "region_avg_value");
+            ExecuteSqlFile(migrationBuilder, "region_value_stats");
 
-            ExecuteSqlFile(migrationBuilder, "department_avg_value");
+            ExecuteSqlFile(migrationBuilder, "department_value_stats");
 
-            ExecuteSqlFile(migrationBuilder, "town_avg_value");
+            ExecuteSqlFile(migrationBuilder, "town_value_stats");
 
-            ExecuteSqlFile(migrationBuilder, "section_avg_value");
+            ExecuteSqlFile(migrationBuilder, "section_value_stats");
 
             ExecuteSqlFile(migrationBuilder, "place");
         }
@@ -281,16 +282,16 @@ namespace Estimmo.Data.Migrations
         {
             migrationBuilder.Sql(@"
                 DROP MATERIALIZED VIEW place;
-                DROP MATERIALIZED VIEW france_avg_value;
-                DROP MATERIALIZED VIEW france_avg_value_by_year;
-                DROP MATERIALIZED VIEW region_avg_value;
-                DROP MATERIALIZED VIEW region_avg_value_by_year;
-                DROP MATERIALIZED VIEW department_avg_value;
-                DROP MATERIALIZED VIEW department_avg_value_by_year;
-                DROP MATERIALIZED VIEW town_avg_value;
-                DROP MATERIALIZED VIEW town_avg_value_by_year;
-                DROP MATERIALIZED VIEW section_avg_value;
-                DROP MATERIALIZED VIEW section_avg_value_by_year;
+                DROP MATERIALIZED VIEW france_value_stats;
+                DROP MATERIALIZED VIEW france_value_stats_by_year;
+                DROP MATERIALIZED VIEW region_value_stats;
+                DROP MATERIALIZED VIEW region_value_stats_by_year;
+                DROP MATERIALIZED VIEW department_value_stats;
+                DROP MATERIALIZED VIEW department_value_stats_by_year;
+                DROP MATERIALIZED VIEW town_value_stats;
+                DROP MATERIALIZED VIEW town_value_stats_by_year;
+                DROP MATERIALIZED VIEW section_value_stats;
+                DROP MATERIALIZED VIEW section_value_stats_by_year;
             ");
 
             migrationBuilder.DropTable(

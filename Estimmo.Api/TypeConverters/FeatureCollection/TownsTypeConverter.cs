@@ -22,10 +22,10 @@ namespace Estimmo.Api.TypeConverters.FeatureCollection
                     { "name", town.Name },
                     { "postCode", town.PostCode },
                     {
-                        "averageValues",
-                        context.Mapper.Map<Dictionary<short, double>>(town.AverageValuesByYear.Any()
-                            ? town.AverageValuesByYear
-                            : town.AverageValues)
+                        "medianValues",
+                        context.Mapper.Map<Dictionary<short, double>>(town.ValueStatsByYear.Any()
+                            ? town.ValueStatsByYear
+                            : town.ValueStats)
                     }
                 };
 

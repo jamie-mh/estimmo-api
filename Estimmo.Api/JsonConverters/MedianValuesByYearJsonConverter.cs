@@ -7,18 +7,21 @@ using System.Text.Json.Serialization;
 
 namespace Estimmo.Api.JsonConverters
 {
-    public class AverageValuesJsonConverter : JsonConverter<IEnumerable<IAverageValue>>
+    public class MedianValuesByYearJsonConverter : JsonConverter<IEnumerable<IValueStatsByYear>>
     {
-        public override IEnumerable<IAverageValue> Read(ref Utf8JsonReader reader, Type typeToConvert,
+        public override IEnumerable<IValueStatsByYear> Read(ref Utf8JsonReader reader, Type typeToConvert,
             JsonSerializerOptions options)
         {
             throw new NotSupportedException();
         }
 
-        public override void Write(Utf8JsonWriter writer, IEnumerable<IAverageValue> value,
+        public override void Write(Utf8JsonWriter writer, IEnumerable<IValueStatsByYear> value,
             JsonSerializerOptions options)
         {
-            var dictionary = value.ToDictionary(v => (short) v.Type, v => v.Value);
+            var dictionary = value
+                .GroupBy(v => v.Type)
+                .ToDictionary(v => (short) v.Key, v => v.ToDictionary(v2 => v2.Year, v2 => v2.Median));
+
             var json = JsonSerializer.Serialize(dictionary);
             writer.WriteRawValue(json);
         }

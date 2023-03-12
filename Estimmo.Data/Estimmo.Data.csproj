@@ -25,21 +25,25 @@
       <None Update="sql\place.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="sql\department_avg_value.sql">
+      <None Update="sql\department_value_stats.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="sql\france_avg_value.sql">
+      <None Update="sql\france_value_stats.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="sql\region_avg_value.sql">
+      <None Update="sql\region_value_stats.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="sql\section_avg_value.sql">
+      <None Update="sql\section_value_stats.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
-      <None Update="sql\town_avg_value.sql">
+      <None Update="sql\town_value_stats.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Migrations" />
     </ItemGroup>
 
 </Project>

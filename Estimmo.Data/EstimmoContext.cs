@@ -19,16 +19,16 @@ namespace Estimmo.Data
         public virtual DbSet<Town> Towns { get; set; }
         public virtual DbSet<Section> Sections { get; set; }
         public virtual DbSet<PropertySale> PropertySales { get; set; }
-        public virtual DbSet<FranceAverageValue> FranceAverageValues { get; set; }
-        public virtual DbSet<FranceAverageValueByYear> FranceAverageValuesByYear { get; set; }
-        public virtual DbSet<RegionAverageValue> RegionAverageValues { get; set; }
-        public virtual DbSet<RegionAverageValueByYear> RegionAverageValuesByYear { get; set; }
-        public virtual DbSet<DepartmentAverageValue> DepartmentAverageValues { get; set; }
-        public virtual DbSet<DepartmentAverageValueByYear> DepartmentAverageValuesByYear { get; set; }
-        public virtual DbSet<TownAverageValue> TownAverageValues { get; set; }
-        public virtual DbSet<TownAverageValueByYear> TownAverageValuesByYear { get; set; }
-        public virtual DbSet<SectionAverageValue> SectionAverageValues { get; set; }
-        public virtual DbSet<SectionAverageValueByYear> SectionAverageValuesByYear { get; set; }
+        public virtual DbSet<FranceValueStats> FranceValueStats { get; set; }
+        public virtual DbSet<FranceValueStatsByYear> FranceValueStatsByYear { get; set; }
+        public virtual DbSet<RegionValueStats> RegionValueStats { get; set; }
+        public virtual DbSet<RegionValueStatsByYear> RegionValueStatsByYear { get; set; }
+        public virtual DbSet<DepartmentValueStats> DepartmentValueStats { get; set; }
+        public virtual DbSet<DepartmentValueStatsByYear> DepartmentValueStatsByYear { get; set; }
+        public virtual DbSet<TownValueStats> TownValueStats { get; set; }
+        public virtual DbSet<TownValueStatsByYear> TownValueStatsByYear { get; set; }
+        public virtual DbSet<SectionValueStats> SectionValueStats { get; set; }
+        public virtual DbSet<SectionValueStatsByYear> SectionValueStatsByYear { get; set; }
         public virtual DbSet<Place> Places { get; set; }
         public virtual DbSet<Street> Streets { get; set; }
         public virtual DbSet<Address> Addresses { get; set; }
@@ -52,6 +52,7 @@ namespace Estimmo.Data
             modelBuilder.HasPostgresExtension("postgis");
             modelBuilder.HasPostgresExtension("unaccent");
             modelBuilder.HasPostgresExtension("pg_trgm");
+            modelBuilder.HasPostgresExtension("tdigest");
 
             modelBuilder.Entity<Region>(entity =>
             {
@@ -67,11 +68,11 @@ namespace Estimmo.Data
 
                 entity.HasIndex(e => e.Geometry).HasMethod("gist");
 
-                entity.HasMany(e => e.AverageValues)
+                entity.HasMany(e => e.ValueStats)
                     .WithOne(e => e.Region)
                     .HasForeignKey(e => e.Id);
 
-                entity.HasMany(e => e.AverageValuesByYear)
+                entity.HasMany(e => e.ValueStatsByYear)
                     .WithOne(e => e.Region)
                     .HasForeignKey(e => e.Id);
             });
@@ -96,11 +97,11 @@ namespace Estimmo.Data
                     .WithMany(r => r.Departments)
                     .HasForeignKey(d => d.RegionId);
 
-                entity.HasMany(e => e.AverageValues)
+                entity.HasMany(e => e.ValueStats)
                     .WithOne(e => e.Department)
                     .HasForeignKey(e => e.Id);
 
-                entity.HasMany(e => e.AverageValuesByYear)
+                entity.HasMany(e => e.ValueStatsByYear)
                     .WithOne(e => e.Department)
                     .HasForeignKey(e => e.Id);
             });
@@ -127,11 +128,11 @@ namespace Estimmo.Data
                     .WithMany(d => d.Towns)
                     .HasForeignKey(t => t.DepartmentId);
 
-                entity.HasMany(e => e.AverageValues)
+                entity.HasMany(e => e.ValueStats)
                     .WithOne(e => e.Town)
                     .HasForeignKey(e => e.Id);
 
-                entity.HasMany(e => e.AverageValuesByYear)
+                entity.HasMany(e => e.ValueStatsByYear)
                     .WithOne(e => e.Town)
                     .HasForeignKey(e => e.Id);
 
@@ -162,11 +163,11 @@ namespace Estimmo.Data
                     .WithMany(t => t.Sections)
                     .HasForeignKey(s => s.TownId);
 
-                entity.HasMany(e => e.AverageValues)
+                entity.HasMany(e => e.ValueStats)
                     .WithOne(e => e.Section)
                     .HasForeignKey(e => e.Id);
 
-                entity.HasMany(e => e.AverageValuesByYear)
+                entity.HasMany(e => e.ValueStatsByYear)
                     .WithOne(e => e.Section)
                     .HasForeignKey(e => e.Id);
             });
@@ -265,54 +266,60 @@ namespace Estimmo.Data
                 entity.HasIndex(e => e.Coordinates).HasMethod("gist");
             });
 
-            modelBuilder.Entity<FranceAverageValue>(entity =>
+            modelBuilder.Entity<FranceValueStats>(entity =>
             {
                 entity.HasKey(e => e.Type);
 
-                entity.ToView("france_avg_value");
+                entity.ToView("france_value_stats");
 
                 entity.Property(e => e.Type).HasColumnName("type");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
             });
 
-            modelBuilder.Entity<FranceAverageValueByYear>(entity =>
+            modelBuilder.Entity<FranceValueStatsByYear>(entity =>
             {
                 entity.HasKey(e => new { e.Type, e.Year });
 
-                entity.ToView("france_avg_value_by_year");
+                entity.ToView("france_value_stats_by_year");
 
                 entity.Property(e => e.Type).HasColumnName("type");
 
                 entity.Property(e => e.Year).HasColumnName("year");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
             });
 
-            modelBuilder.Entity<RegionAverageValue>(entity =>
+            modelBuilder.Entity<RegionValueStats>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type });
 
-                entity.ToView("region_avg_value");
+                entity.ToView("region_value_stats");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Type).HasColumnName("type");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
             });
 
-            modelBuilder.Entity<RegionAverageValueByYear>(entity =>
+            modelBuilder.Entity<RegionValueStatsByYear>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type, e.Year });
 
-                entity.ToView("region_avg_value_by_year");
+                entity.ToView("region_value_stats_by_year");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -320,16 +327,18 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.Year).HasColumnName("year");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
             });
 
-            modelBuilder.Entity<DepartmentAverageValue>(entity =>
+            modelBuilder.Entity<DepartmentValueStats>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type });
 
-                entity.ToView("department_avg_value");
+                entity.ToView("department_value_stats");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -337,20 +346,22 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.RegionId).HasColumnName("region_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(d => d.Region)
-                    .WithMany(r => r.DepartmentAverageValues)
+                    .WithMany(r => r.DepartmentValueStats)
                     .HasForeignKey(d => d.RegionId);
             });
 
-            modelBuilder.Entity<DepartmentAverageValueByYear>(entity =>
+            modelBuilder.Entity<DepartmentValueStatsByYear>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type, e.Year });
 
-                entity.ToView("department_avg_value_by_year");
+                entity.ToView("department_value_stats_by_year");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -360,20 +371,22 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.RegionId).HasColumnName("region_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(d => d.Region)
-                    .WithMany(r => r.DepartmentAverageValuesByYear)
+                    .WithMany(r => r.DepartmentValueStatsByYear)
                     .HasForeignKey(d => d.RegionId);
             });
 
-            modelBuilder.Entity<TownAverageValue>(entity =>
+            modelBuilder.Entity<TownValueStats>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type });
 
-                entity.ToView("town_avg_value");
+                entity.ToView("town_value_stats");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -381,20 +394,22 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.DepartmentId).HasColumnName("department_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(t => t.Department)
-                    .WithMany(d => d.TownAverageValues)
+                    .WithMany(d => d.TownValueStats)
                     .HasForeignKey(t => t.DepartmentId);
             });
 
-            modelBuilder.Entity<TownAverageValueByYear>(entity =>
+            modelBuilder.Entity<TownValueStatsByYear>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type, e.Year });
 
-                entity.ToView("town_avg_value_by_year");
+                entity.ToView("town_value_stats_by_year");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -404,20 +419,22 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.DepartmentId).HasColumnName("department_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(t => t.Department)
-                    .WithMany(d => d.TownAverageValuesByYear)
+                    .WithMany(d => d.TownValueStatsByYear)
                     .HasForeignKey(t => t.DepartmentId);
             });
 
-            modelBuilder.Entity<SectionAverageValue>(entity =>
+            modelBuilder.Entity<SectionValueStats>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type });
 
-                entity.ToView("section_avg_value");
+                entity.ToView("section_value_stats");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -425,20 +442,22 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.TownId).HasColumnName("town_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(s => s.Town)
-                    .WithMany(t => t.SectionAverageValues)
+                    .WithMany(t => t.SectionValueStats)
                     .HasForeignKey(s => s.TownId);
             });
 
-            modelBuilder.Entity<SectionAverageValueByYear>(entity =>
+            modelBuilder.Entity<SectionValueStatsByYear>(entity =>
             {
                 entity.HasKey(e => new { e.Id, e.Type, e.Year });
 
-                entity.ToView("section_avg_value_by_year");
+                entity.ToView("section_value_stats_by_year");
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -448,12 +467,14 @@ namespace Estimmo.Data
 
                 entity.Property(e => e.TownId).HasColumnName("town_id");
 
-                entity.Property(e => e.Value).HasColumnName("value");
+                entity.Property(e => e.Average).HasColumnName("average");
+
+                entity.Property(e => e.Median).HasColumnName("median");
 
                 entity.Property(e => e.StandardDeviation).HasColumnName("standard_deviation");
 
                 entity.HasOne(s => s.Town)
-                    .WithMany(t => t.SectionAverageValuesByYear)
+                    .WithMany(t => t.SectionValueStatsByYear)
                     .HasForeignKey(s => s.TownId);
             });
 

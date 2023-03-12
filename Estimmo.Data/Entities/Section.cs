@@ -8,8 +8,8 @@ namespace Estimmo.Data.Entities
         public Section()
         {
             PropertySales = new HashSet<PropertySale>();
-            AverageValues = new HashSet<SectionAverageValue>();
-            AverageValuesByYear = new HashSet<SectionAverageValueByYear>();
+            ValueStats = new HashSet<SectionValueStats>();
+            ValueStatsByYear = new HashSet<SectionValueStatsByYear>();
         }
 
         public string Id { get; set; }
@@ -20,7 +20,7 @@ namespace Estimmo.Data.Entities
 
         public virtual Town Town { get; set; }
         public virtual ICollection<PropertySale> PropertySales { get; set; }
-        public virtual ICollection<SectionAverageValue> AverageValues { get; set; }
-        public virtual ICollection<SectionAverageValueByYear> AverageValuesByYear { get; set; }
+        public virtual ICollection<SectionValueStats> ValueStats { get; set; }
+        public virtual ICollection<SectionValueStatsByYear> ValueStatsByYear { get; set; }
     }
 }
