@@ -137,6 +137,9 @@ function import {
         dotnet run $DOTNET_ARGS ImportAddresses file="$file"
     done
 
+    echo "Calculating street coordinates"
+    dotnet run $DOTNET_ARGS CalculateStreetCoordinates
+
     echo "Importing said places"
     for file in download/saidplaces/*.csv; do
         dotnet run $DOTNET_ARGS ImportSaidPlaces file="$file"
