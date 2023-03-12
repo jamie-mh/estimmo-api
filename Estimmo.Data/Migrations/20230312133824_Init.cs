@@ -136,28 +136,6 @@ namespace Estimmo.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "address",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "text", nullable: false),
-                    number = table.Column<int>(type: "integer", nullable: true),
-                    suffix = table.Column<string>(type: "text", nullable: true),
-                    post_code = table.Column<string>(type: "text", nullable: false),
-                    street_id = table.Column<string>(type: "text", nullable: false),
-                    coordinates = table.Column<Point>(type: "geometry", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_address", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_address_streets_street_id",
-                        column: x => x.street_id,
-                        principalTable: "street",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "property_sale",
                 columns: table => new
                 {
@@ -182,6 +160,28 @@ namespace Estimmo.Data.Migrations
                         name: "fk_property_sale_section_section_id",
                         column: x => x.section_id,
                         principalTable: "section",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "address",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    number = table.Column<int>(type: "integer", nullable: true),
+                    suffix = table.Column<string>(type: "text", nullable: true),
+                    post_code = table.Column<string>(type: "text", nullable: false),
+                    street_id = table.Column<string>(type: "text", nullable: false),
+                    coordinates = table.Column<Point>(type: "geometry", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_address", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_address_streets_street_id",
+                        column: x => x.street_id,
+                        principalTable: "street",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -294,19 +294,19 @@ namespace Estimmo.Data.Migrations
             ");
 
             migrationBuilder.DropTable(
+                name: "address");
+
+            migrationBuilder.DropTable(
                 name: "property_sale");
 
             migrationBuilder.DropTable(
                 name: "said_place");
 
             migrationBuilder.DropTable(
-                name: "address");
+                name: "street");
 
             migrationBuilder.DropTable(
                 name: "section");
-
-            migrationBuilder.DropTable(
-                name: "street");
 
             migrationBuilder.DropTable(
                 name: "town");

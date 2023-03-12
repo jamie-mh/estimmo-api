@@ -5,11 +5,6 @@ namespace Estimmo.Data.Entities
 {
     public class Address
     {
-        public Address()
-        {
-            PropertySales = new HashSet<PropertySale>();
-        }
-
         public string Id { get; set; }
         public int? Number { get; set; }
         public string Suffix { get; set; }
@@ -18,6 +13,5 @@ namespace Estimmo.Data.Entities
         public Point Coordinates { get; set; }
 
         public virtual Street Street { get; set; }
-        public virtual ICollection<PropertySale> PropertySales { get; set; }
     }
 }
