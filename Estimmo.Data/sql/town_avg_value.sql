@@ -1,11 +1,19 @@
 CREATE MATERIALIZED VIEW town_avg_value AS
-SELECT t.id, t.department_id, 0 AS type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value
+SELECT t.id,
+       t.department_id,
+       0                                                            AS type,
+       AVG(CAST(ps.value AS decimal) / ps.building_surface_area)    AS value,
+       STDDEV(CAST(ps.value AS decimal) / ps.building_surface_area) AS standard_deviation
 FROM property_sale ps
          INNER JOIN section s on ps.section_id = s.id
          INNER JOIN town t on s.town_id = t.id
 GROUP BY t.id
 UNION
-SELECT t.id, t.department_id, ps.type, AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value
+SELECT t.id,
+       t.department_id,
+       ps.type,
+       AVG(CAST(ps.value AS decimal) / ps.building_surface_area)    AS value,
+       STDDEV(CAST(ps.value AS decimal) / ps.building_surface_area) AS standard_deviation
 FROM property_sale ps
          INNER JOIN section s on ps.section_id = s.id
          INNER JOIN town t on s.town_id = t.id
@@ -17,9 +25,10 @@ CREATE INDEX ix_town_avg_value ON town_avg_value (department_id);
 CREATE MATERIALIZED VIEW town_avg_value_by_year AS
 SELECT t.id,
        t.department_id,
-       0                                                         AS type,
-       CAST(EXTRACT(YEAR FROM ps.date) AS smallint)              AS year,
-       AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value
+       0                                                            AS type,
+       CAST(EXTRACT(YEAR FROM ps.date) AS smallint)                 AS year,
+       AVG(CAST(ps.value AS decimal) / ps.building_surface_area)    AS value,
+       STDDEV(CAST(ps.value AS decimal) / ps.building_surface_area) AS standard_deviation
 FROM property_sale ps
          INNER JOIN section s on ps.section_id = s.id
          INNER JOIN town t on s.town_id = t.id
@@ -28,8 +37,9 @@ UNION
 SELECT t.id,
        t.department_id,
        ps.type,
-       CAST(EXTRACT(YEAR FROM ps.date) AS smallint)              AS year,
-       AVG(CAST(ps.value AS decimal) / ps.building_surface_area) AS value
+       CAST(EXTRACT(YEAR FROM ps.date) AS smallint)                 AS year,
+       AVG(CAST(ps.value AS decimal) / ps.building_surface_area)    AS value,
+       STDDEV(CAST(ps.value AS decimal) / ps.building_surface_area) AS standard_deviation
 FROM property_sale ps
          INNER JOIN section s on ps.section_id = s.id
          INNER JOIN town t on s.town_id = t.id

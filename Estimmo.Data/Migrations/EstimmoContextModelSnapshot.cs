@@ -122,6 +122,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
+
                     b.HasKey("Id", "Type")
                         .HasName("pk_department_average_values");
 
@@ -155,6 +159,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
+
                     b.HasKey("Id", "Type", "Year")
                         .HasName("pk_department_average_values_by_year");
 
@@ -175,6 +183,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
+
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
 
                     b.HasKey("Type")
                         .HasName("pk_france_average_values");
@@ -197,6 +209,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
+
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
 
                     b.HasKey("Type", "Year")
                         .HasName("pk_france_average_values_by_year");
@@ -371,6 +387,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
+
                     b.HasKey("Id", "Type")
                         .HasName("pk_region_average_values");
 
@@ -396,6 +416,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
+
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
 
                     b.HasKey("Id", "Type", "Year")
                         .HasName("pk_region_average_values_by_year");
@@ -503,6 +527,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
+
                     b.HasKey("Id", "Type")
                         .HasName("pk_section_average_values");
 
@@ -535,6 +563,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
+
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
 
                     b.HasKey("Id", "Type", "Year")
                         .HasName("pk_section_average_values_by_year");
@@ -637,6 +669,10 @@ namespace Estimmo.Data.Migrations
                         .HasColumnType("double precision")
                         .HasColumnName("value");
 
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
+
                     b.HasKey("Id", "Type")
                         .HasName("pk_town_average_values");
 
@@ -669,6 +705,10 @@ namespace Estimmo.Data.Migrations
                     b.Property<double>("Value")
                         .HasColumnType("double precision")
                         .HasColumnName("value");
+                    
+                    b.Property<double>("StandardDeviation")
+                        .HasColumnType("double precision")
+                        .HasColumnName("standard_deviation");
 
                     b.HasKey("Id", "Type", "Year")
                         .HasName("pk_town_average_values_by_year");

@@ -6,6 +6,7 @@ namespace Estimmo.Data.Entities
         public PropertyType Type { get; set; }
         public short Year { get; set; }
         public double Value { get; set; }
+        public double? StandardDeviation { get; set; }
 
         public virtual Region Region { get; set; }
     }
