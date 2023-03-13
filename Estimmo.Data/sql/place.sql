@@ -56,15 +56,15 @@ FROM (SELECT 1    AS type,
       FROM section s
                INNER JOIN town t ON s.town_id = t.id
       UNION
-      SELECT 5                                                     AS type,
+      SELECT 5                                                                                      AS type,
              st.id,
-             CONCAT(st.name, ', ', t.name, ' (', t.post_code, ')') AS name,
-             st.name                                               AS short_name,
+             CONCAT(st.name, ', ', t.name, ' (', t.post_code, ')')                                  AS name,
+             st.name                                                                                AS short_name,
              t.post_code,
-             3                                                     AS parent_type,
-             t.id                                                  AS parent_id,
-             true                                                  AS is_searchable,
-             st.coordinates                                        AS geometry
+             4                                                                                      AS parent_type,
+             (SELECT sc.id FROM section sc WHERE ST_COVEREDBY(st.coordinates, sc.geometry) LIMIT 1) AS parent_id,
+             true                                                                                   AS is_searchable,
+             st.coordinates                                                                         AS geometry
       FROM street st
                INNER JOIN town t ON st.town_id = t.id
       UNION
