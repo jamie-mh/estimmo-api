@@ -6,8 +6,8 @@ namespace Estimmo.Api.Entities
     public class RootPlace : SimplePlace
     {
         [JsonPropertyName("parent")]
-        public DetailedPlace Parent { get; set; }
-
+        public PlaceWithHierarchy Parent { get; set; }
+        
         [JsonPropertyName("geometry")]
         public Geometry Geometry { get; set; }
     }

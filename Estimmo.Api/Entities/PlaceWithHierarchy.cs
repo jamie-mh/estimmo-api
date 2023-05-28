@@ -2,9 +2,9 @@ using System.Text.Json.Serialization;
 
 namespace Estimmo.Api.Entities
 {
-    public class DetailedPlace : SimplePlace
+    public class PlaceWithHierarchy : SimplePlace
     {
         [JsonPropertyName("parent")]
-        public DetailedPlace Parent { get; set; }
+        public PlaceWithHierarchy Parent { get; set; }
     }
 }

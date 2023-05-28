@@ -139,7 +139,7 @@ namespace Estimmo.Api
 
             config.CreateMap<Place, SimplePlace>();
 
-            config.CreateMap<Place, DetailedPlace>();
+            config.CreateMap<Place, PlaceWithHierarchy>();
 
             config.CreateMap<Place, RootPlace>();
         }

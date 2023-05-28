@@ -109,7 +109,7 @@ namespace Estimmo.Api.Controllers
             OperationId = "GetPlace",
             Tags = new[] { "Place" }
         )]
-        [SwaggerResponse(StatusCodes.Status200OK, "Place", typeof(DetailedPlace))]
+        [SwaggerResponse(StatusCodes.Status200OK, "Place", typeof(RootPlace))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<IActionResult> GetPlace(string id, [Required] PlaceType type)
         {
