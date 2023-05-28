@@ -1,5 +1,5 @@
 ﻿using Estimmo.Data;
-using Estimmo.Shared.Util;
+using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

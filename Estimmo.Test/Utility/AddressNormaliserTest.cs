@@ -1,7 +1,7 @@
-using Estimmo.Shared.Util;
+using Estimmo.Shared.Utility;
 using Xunit;
 
-namespace Estimmo.Test.Util
+namespace Estimmo.Test.Utility
 {
     public class AddressNormaliserTest
     {

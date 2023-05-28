@@ -32,7 +32,7 @@ namespace Estimmo.Api
             }
             finally
             {
-                Log.CloseAndFlush();
+                await Log.CloseAndFlushAsync();
             }
         }
 

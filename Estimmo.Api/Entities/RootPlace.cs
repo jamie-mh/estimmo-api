@@ -9,6 +9,6 @@ namespace Estimmo.Api.Entities
         public DetailedPlace Parent { get; set; }
 
         [JsonPropertyName("geometry")]
-        public Geometry geometry { get; set; }
+        public Geometry Geometry { get; set; }
     }
 }

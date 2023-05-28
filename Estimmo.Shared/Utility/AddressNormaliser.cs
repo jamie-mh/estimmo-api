@@ -1,7 +1,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Estimmo.Shared.Util
+namespace Estimmo.Shared.Utility
 {
     public partial class AddressNormaliser
     {

@@ -21,7 +21,7 @@ namespace Estimmo.Runner.Modules
                     "france_value_stats", "france_value_stats_by_year", "region_value_stats",
                     "region_value_stats_by_year", "department_value_stats", "department_value_stats_by_year",
                     "town_value_stats", "town_value_stats_by_year", "section_value_stats",
-                    "section_value_stats_by_year",
+                    "section_value_stats_by_year"
                 }
             },
             { "place", new[] { "place" } }

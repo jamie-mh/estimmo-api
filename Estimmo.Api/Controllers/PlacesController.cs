@@ -18,8 +18,10 @@ using System.Threading.Tasks;
 namespace Estimmo.Api.Controllers
 {
     [ApiController]
-    public class PlacesController : ControllerBase
+    public partial class PlacesController : ControllerBase
     {
+        private const double DistanceMargin = 50d; 
+        
         private readonly EstimmoContext _context;
         private readonly IMapper _mapper;
 
@@ -27,6 +29,18 @@ namespace Estimmo.Api.Controllers
         {
             _context = context;
             _mapper = mapper;
+        }
+
+        [GeneratedRegex("^(\\d{5})$")]
+        private static partial Regex PostCodeRegex();
+        
+        private static string SimplifyForSearch(string input)
+        {
+            return input
+                .ToLowerInvariant()
+                .Unaccent()
+                .Replace("-", "")
+                .Replace(",", "");
         }
 
         [HttpGet]
@@ -39,7 +53,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, "Place list", typeof(IEnumerable<SimplePlace>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
         public async Task<ActionResult> GetPlaces(
-            string name, double? latitude, double? longitude, [Range(1, 100)] int limit = 100)
+            string name, double? latitude, double? longitude, PlaceType? type, [Range(1, 100)] int limit = 100)
         {
             if (name == null && (latitude == null || longitude == null))
             {
@@ -51,23 +65,16 @@ namespace Estimmo.Api.Controllers
 
             if (name != null)
             {
-                var postCodeMatch = Regex.Match(name, @"^(\d{5})$");
+                var postCodeMatch = PostCodeRegex().Match(name);
 
                 if (postCodeMatch.Success)
                 {
                     var postCode = postCodeMatch.Groups[1].Value;
-
-                    queryable = _context.Places
-                        .Where(p => p.Type == PlaceType.Town && p.PostCode == postCode);
+                    queryable = _context.Places.Where(p => p.Type == PlaceType.Town && p.PostCode == postCode);
                 }
                 else
                 {
-                    var simplifiedName = name
-                        .ToLowerInvariant()
-                        .Unaccent()
-                        .Replace("-", "")
-                        .Replace(",", "");
-
+                    var simplifiedName = SimplifyForSearch(name);
                     queryable = _context.Places
                         .Where(p => p.IsSearchable && EF.Functions.Like(p.SearchName, simplifiedName + "%"));
                 }
@@ -77,8 +84,14 @@ namespace Estimmo.Api.Controllers
                 var point = new Point(longitude.Value, latitude.Value);
 
                 queryable = _context.Places
-                    .Where(p => p.Geometry.Covers(point))
-                    .OrderBy(p => p.Type);
+                    .Where(p => p.Geometry.Covers(point) || p.Geometry.IsWithinDistance(point, DistanceMargin))
+                    .OrderBy(p => p.Type)
+                    .ThenBy(p => p.Geometry.Distance(point));
+            }
+
+            if (type != null)
+            {
+                queryable = queryable.Where(p => p.Type == type);
             }
 
             var places = await queryable

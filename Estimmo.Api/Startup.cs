@@ -19,7 +19,6 @@ using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
 using System.Collections.Generic;
-using Coordinates = Estimmo.Api.Entities.Coordinates;
 
 namespace Estimmo.Api
 {

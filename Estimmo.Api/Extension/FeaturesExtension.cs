@@ -1,9 +1,9 @@
 ﻿using NetTopologySuite.Features;
 using System.Linq;
 
-namespace Estimmo.Api
+namespace Estimmo.Api.Extension
 {
-    public static class PointExt
+    public static class FeaturesExtension
     {
         public static void CalculateBoundingBox(this FeatureCollection collection)
         {

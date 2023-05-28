@@ -2,7 +2,7 @@
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
-using Estimmo.Shared.Util;
+using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;

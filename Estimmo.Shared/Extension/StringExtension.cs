@@ -3,8 +3,11 @@ using System.Text.RegularExpressions;
 
 namespace Estimmo.Shared.Extension
 {
-    public static class StringExtension
+    public static partial class StringExtension
     {
+        [GeneratedRegex("\\p{Mn}")]
+        private static partial Regex NormaliseRegex();
+        
         public static string Unaccent(this string input)
         {
             if (input == null)
@@ -13,7 +16,7 @@ namespace Estimmo.Shared.Extension
             }
 
             var normalised = input.Normalize(NormalizationForm.FormD);
-            return Regex.Replace(normalised, @"\p{Mn}", "");
+            return NormaliseRegex().Replace(normalised, "");
         }
     }
 }
