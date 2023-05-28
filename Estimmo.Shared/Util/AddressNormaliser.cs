@@ -18,7 +18,8 @@ namespace Estimmo.Shared.Util
             { "Bd", "Boulevard" },
             { "Crs", "Cours" },
             { "Sq", "Square" },
-            { "Grd", "Grand" }
+            { "Grd", "Grand" },
+            { "Rpe", "Rampe" }
         };
 
         private static readonly List<string> LowercaseWords = new(){ "de", "la", "du", "des", "les", "en" };
