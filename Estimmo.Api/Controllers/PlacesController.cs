@@ -33,14 +33,14 @@ namespace Estimmo.Api.Controllers
 
         [GeneratedRegex("^(\\d{5})$")]
         private static partial Regex PostCodeRegex();
+
+        [GeneratedRegex("[(),]+")]
+        private static partial Regex SimplifyRegex();
         
         private static string SimplifyForSearch(string input)
         {
-            return input
-                .ToLowerInvariant()
-                .Unaccent()
-                .Replace("-", "")
-                .Replace(",", "");
+            input = input.ToLowerInvariant().Unaccent();
+            return SimplifyRegex().Replace(input, "");
         }
 
         [HttpGet]
