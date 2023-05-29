@@ -156,6 +156,9 @@ function import {
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews type=stats
     
     echo "Removing outliers"
+    dotnet run $DOTNET_ARGS ExecuteSqlFile file=delete_outliers.sql
+
+    echo "Calculating street coordinates"
     dotnet run $DOTNET_ARGS ExecuteSqlFile file=calculate_street_coordinates.sql
 
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews
