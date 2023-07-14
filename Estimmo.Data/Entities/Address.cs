@@ -1,5 +1,4 @@
 using NetTopologySuite.Geometries;
-using System.Collections.Generic;
 
 namespace Estimmo.Data.Entities
 {
