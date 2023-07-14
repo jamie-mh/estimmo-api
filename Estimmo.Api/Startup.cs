@@ -41,6 +41,8 @@ namespace Estimmo.Api
                 options.UseNpgsql(connectionString);
             });
 
+            services.AddScoped<IEstimmoContext>(provider => provider.GetService<EstimmoContext>());
+
             services.AddCors(options =>
             {
                 options.AddPolicy(CorsPolicyName, builder =>

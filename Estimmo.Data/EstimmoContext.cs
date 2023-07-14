@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Estimmo.Data
 {
-    public class EstimmoContext : DbContext
+    public class EstimmoContext : DbContext, IEstimmoContext
     {
         public EstimmoContext()
         {

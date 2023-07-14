@@ -5,6 +5,7 @@ using Estimmo.Shared.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
+using System;
 using System.Threading.Tasks;
 
 namespace Estimmo.Api.Controllers
@@ -33,7 +34,7 @@ namespace Estimmo.Api.Controllers
         public async Task<IActionResult> GetEstimate([FromBody] EstimateModel model)
         {
             var request = _mapper.Map<EstimateRequest>(model);
-            var estimate = await _estimationService.GetEstimateAsync(request);
+            var estimate = await _estimationService.GetEstimateAsync(request, DateTime.Now);
 
             return Ok(estimate);
         }

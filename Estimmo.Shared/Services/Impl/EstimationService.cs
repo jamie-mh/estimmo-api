@@ -10,15 +10,25 @@ namespace Estimmo.Shared.Services.Impl
     {
         private const double SearchRadius = 1_000d;
 
-        private readonly EstimmoContext _context;
+        private readonly IEstimmoContext _context;
 
-        public EstimationService(EstimmoContext context)
+        public EstimationService(IEstimmoContext context)
         {
             _context = context;
         }
 
-        public async Task<Estimate> GetEstimateAsync(EstimateRequest request)
+        public async Task<Estimate> GetEstimateAsync(EstimateRequest request, DateTime date)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (request.Coordinates == null)
+            {
+                throw new ArgumentException("Coordinates cannot be null");
+            }
+            
             var nearbyPropertySales = await _context.PropertySales
                 .Where(p => p.Type == request.PropertyType &&
                             p.Coordinates.IsWithinDistance(request.Coordinates, SearchRadius))
@@ -30,9 +40,7 @@ namespace Estimmo.Shared.Services.Impl
                 return null;
             }
 
-            var now = DateTime.Now;
-            var maxDaysSince = (now - nearbyPropertySales.First().Date).TotalDays;
-
+            var maxDaysSince = (date - nearbyPropertySales.First().Date).TotalDays;
             var parameters = new double[nearbyPropertySales.Count][];
             var values = new double[nearbyPropertySales.Count];
             var weights = new double[nearbyPropertySales.Count];
@@ -49,7 +57,7 @@ namespace Estimmo.Shared.Services.Impl
                 values[i] = (double) sale.Value;
 
                 // Calculate the weight as the distance from the request point and the days since the latest record
-                var daysSince = (now - sale.Date).TotalDays;
+                var daysSince = (date - sale.Date).TotalDays;
                 var normalisedDistance = sale.Coordinates.GreatCircleDistance(request.Coordinates) / SearchRadius;
                 var normalisedDaysSince = 1 - daysSince / maxDaysSince;
 
@@ -61,7 +69,11 @@ namespace Estimmo.Shared.Services.Impl
                 (model[0] * request.Rooms) + (model[1] * request.LandSurfaceArea) +
                 (model[2] * request.BuildingSurfaceArea);
 
-            return new Estimate { Value = estimatedValue };
+            return new Estimate
+            {
+                Value = estimatedValue,
+                DataPointCount = nearbyPropertySales.Count
+            };
         }
     }
 }

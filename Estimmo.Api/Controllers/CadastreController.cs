@@ -16,10 +16,10 @@ namespace Estimmo.Api.Controllers
     [ApiController]
     public class CadastreController : ControllerBase
     {
-        private readonly EstimmoContext _context;
+        private readonly IEstimmoContext _context;
         private readonly IMapper _mapper;
 
-        public CadastreController(EstimmoContext context, IMapper mapper)
+        public CadastreController(IEstimmoContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
