@@ -1,4 +1,7 @@
-﻿using Estimmo.Data.Entities;
+﻿// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using Estimmo.Data.Entities;
 using NetTopologySuite.Geometries;
 
 namespace Estimmo.Shared.Entities

@@ -1,4 +1,7 @@
-﻿using NetTopologySuite.Geometries;
+﻿// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using NetTopologySuite.Geometries;
 using System;
 using System.Security.Cryptography;
 using System.Text;

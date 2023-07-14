@@ -1,4 +1,7 @@
-﻿using NetTopologySuite.Features;
+﻿// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using NetTopologySuite.Features;
 using System.Linq;
 
 namespace Estimmo.Api.Extension

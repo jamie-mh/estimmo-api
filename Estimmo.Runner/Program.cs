@@ -1,4 +1,7 @@
 ﻿using Estimmo.Data;
+// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

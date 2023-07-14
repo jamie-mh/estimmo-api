@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
+using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 using NetTopologySuite.Geometries;
 using System.IO;

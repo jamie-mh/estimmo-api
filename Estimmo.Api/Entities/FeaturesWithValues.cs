@@ -1,3 +1,6 @@
+// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 using Estimmo.Api.JsonConverters;
 using Estimmo.Data.Entities;
 using NetTopologySuite.Features;

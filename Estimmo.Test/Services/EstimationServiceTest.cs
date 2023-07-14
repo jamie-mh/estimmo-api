@@ -1,3 +1,6 @@
+// Copyright (C) 2023 jmh
+// SPDX-License-Identifier: AGPL-3.0-or-later
+
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Shared.Entities;
