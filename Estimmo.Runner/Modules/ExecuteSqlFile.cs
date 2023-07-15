@@ -30,7 +30,7 @@ namespace Estimmo.Runner.Modules
             }
 
             var file = args["file"];
-            _log.Information("Read file {File}", file);
+            _log.Information("Reading file {File}", file);
 
             var currentDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var path = Path.Join(currentDir, "sql", file);

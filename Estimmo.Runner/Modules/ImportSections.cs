@@ -3,12 +3,11 @@
 
 using Estimmo.Data;
 using Estimmo.Data.Entities;
+using Estimmo.Runner.Fixtures;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using Serilog;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -17,16 +16,17 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportSections>();
         private readonly EstimmoContext _context;
+        private readonly TownIdsFixture _townIdsFixture;
 
-        public ImportSections(EstimmoContext context)
+        public ImportSections(EstimmoContext context, TownIdsFixture townIdsFixture)
         {
             _context = context;
+            _townIdsFixture = townIdsFixture;
         }
 
         protected override async Task ParseFeatureCollection(FeatureCollection collection)
         {
-            _log.Information("Populating town ID lookup");
-            var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
+            var townIds = await _townIdsFixture.LoadAndGetValueAsync();
 
             var processor = new BatchProcessor<IFeature, Section>(async feature =>
             {

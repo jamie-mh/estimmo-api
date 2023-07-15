@@ -8,6 +8,7 @@ using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using Serilog;
 using System.Globalization;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -26,14 +27,16 @@ namespace Estimmo.Runner.Modules
 
         protected override async Task ParseFeatureCollection(FeatureCollection collection)
         {
-            var processor = new BatchProcessor<IFeature, Town>(async feature =>
+            var departments = await _context.Departments.ToListAsync();
+            
+            var processor = new BatchProcessor<IFeature, Town>(feature =>
             {
                 var id = feature.Attributes.Exists("id")
                     ? feature.Attributes["id"].ToString()
                     : feature.Attributes["code"].ToString();
 
                 var departmentId = id.StartsWith("97") ? id[..3] : id[..2];
-                var department = await _context.Departments.FirstOrDefaultAsync(d => d.Id == departmentId);
+                var department = departments.FirstOrDefault(d => d.Id == departmentId);
 
                 if (department == null)
                 {

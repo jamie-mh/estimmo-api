@@ -13,9 +13,9 @@ namespace Estimmo.Shared.Services.Impl
     {
         private const double SearchRadius = 1_000d;
 
-        private readonly IEstimmoContext _context;
+        private readonly EstimmoContext _context;
 
-        public EstimationService(IEstimmoContext context)
+        public EstimationService(EstimmoContext context)
         {
             _context = context;
         }

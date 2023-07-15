@@ -19,10 +19,10 @@ namespace Estimmo.Api.Controllers
     [ApiController]
     public class PropertySalesController : ControllerBase
     {
-        private readonly IEstimmoContext _context;
+        private readonly EstimmoContext _context;
         private readonly IMapper _mapper;
 
-        public PropertySalesController(IEstimmoContext context, IMapper mapper)
+        public PropertySalesController(EstimmoContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

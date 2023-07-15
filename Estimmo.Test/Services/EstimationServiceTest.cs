@@ -18,12 +18,12 @@ namespace Estimmo.Test.Services
 {
     public class EstimationServiceTest
     {
-        private readonly Mock<IEstimmoContext> _context;
+        private readonly Mock<EstimmoContext> _context;
         private readonly IEstimationService _estimationService;
 
         public EstimationServiceTest()
         {
-            _context = new Mock<IEstimmoContext>();
+            _context = new Mock<EstimmoContext>();
             _estimationService = new EstimationService(_context.Object);
         }
 

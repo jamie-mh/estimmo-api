@@ -25,10 +25,10 @@ namespace Estimmo.Api.Controllers
     {
         private const double DistanceMargin = 50d; 
         
-        private readonly IEstimmoContext _context;
+        private readonly EstimmoContext _context;
         private readonly IMapper _mapper;
 
-        public PlacesController(IEstimmoContext context, IMapper mapper)
+        public PlacesController(EstimmoContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;

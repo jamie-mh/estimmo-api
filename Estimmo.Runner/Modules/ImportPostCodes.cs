@@ -6,6 +6,7 @@ using Estimmo.Data;
 using Estimmo.Runner.Csv;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -32,25 +33,17 @@ namespace Estimmo.Runner.Modules
 
             var filePath = args["file"];
 
-            await ReadThenProcessFileAsync<PostCodeEntry>(filePath,
-                new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" },
-                async entries =>
+            var processor = new BatchProcessor<PostCodeEntry, FormattableString>(
+                entry => $"UPDATE town SET post_code = '{entry.PostCode}' WHERE id = '{entry.InseeCode}'",
+                async (buffer, count) =>
                 {
-                    var count = 0;
-
-                    await foreach (var entry in entries)
-                    {
-                        await _context.Database.ExecuteSqlRawAsync(
-                            "UPDATE town SET post_code = {0} WHERE id = {1}", entry.PostCode, entry.InseeCode);
-
-                        if (count > 0 && count % 1000 == 0)
-                        {
-                            _log.Information("Imported {Count} postcodes", count);
-                        }
-
-                        count++;
-                    }
+                    var joined = String.Join(";", buffer);
+                    await _context.Database.ExecuteSqlRawAsync(joined);
+                    _log.Information("Imported {Count} postcodes", count);
                 });
+
+            await ReadThenProcessFileAsync(filePath,
+                new CsvConfiguration(CultureInfo.CurrentCulture) { Delimiter = ";" }, processor);
         }
     }
 }

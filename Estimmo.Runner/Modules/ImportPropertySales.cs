@@ -5,13 +5,13 @@ using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
+using Estimmo.Runner.Fixtures;
 using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -20,11 +20,14 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportPropertySales>();
         private readonly EstimmoContext _context;
+        private readonly SectionIdsFixture _sectionIdsFixture;
         private readonly AddressNormaliser _addressNormaliser;
 
-        public ImportPropertySales(EstimmoContext context, AddressNormaliser addressNormaliser)
+        public ImportPropertySales(EstimmoContext context, SectionIdsFixture sectionIdsFixture,
+            AddressNormaliser addressNormaliser)
         {
             _context = context;
+            _sectionIdsFixture = sectionIdsFixture;
             _addressNormaliser = addressNormaliser;
         }
 
@@ -36,10 +39,8 @@ namespace Estimmo.Runner.Modules
                 return;
             }
 
+            var sectionIds = await _sectionIdsFixture.LoadAndGetValueAsync();
             var filePath = args["file"];
-
-            _log.Information("Populating section ID lookup");
-            var sectionIds = new HashSet<string>(await _context.Sections.Select(p => p.Id).ToListAsync());
 
             var processor = new BatchProcessor<PropertyMutation, PropertySale>(mutation =>
             {

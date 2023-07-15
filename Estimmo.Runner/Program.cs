@@ -1,12 +1,14 @@
-﻿using Estimmo.Data;
-// Copyright (C) 2023 jmh
+﻿// Copyright (C) 2023 jmh
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
+using Estimmo.Data;
+using Estimmo.Runner.Fixtures;
 using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
+using Serilog.Context;
 using Serilog.Exceptions;
 using Serilog.Exceptions.Core;
 using System;
@@ -18,8 +20,13 @@ using System.Threading.Tasks;
 
 namespace Estimmo.Runner
 {
-    public static class Program
+    public static partial class Program
     {
+        [GeneratedRegex("^(.*?)=(.*?)$")]
+        private static partial Regex ArgumentRegex();
+
+        private const string ArgumentSkip = ";";
+        
         public static async Task<int> Main(string[] args)
         {
             var configuration = new ConfigurationBuilder()
@@ -36,11 +43,11 @@ namespace Estimmo.Runner
             RegisterServices(services, configuration);
             var provider = services.BuildServiceProvider();
 
-            ValueTuple<Type, Dictionary<string, string>> command;
+            List<ModuleInvocation> invocations;
 
             try
             {
-                command = ParseCommandLine(args);
+                invocations = ParseCommandLine(args);
             }
             catch (ArgumentException e)
             {
@@ -48,12 +55,18 @@ namespace Estimmo.Runner
                 PrintAvailableModules();
                 return 2;
             }
-
-            var module = (IModule) ActivatorUtilities.CreateInstance(provider, command.Item1);
-
+            
             try
             {
-                await module.RunAsync(command.Item2);
+                await Parallel.ForEachAsync(invocations, async (invocation, _) =>
+                {
+                    var module = (IModule) ActivatorUtilities.CreateInstance(provider, invocation.Type);
+                    
+                    using (LogContext.PushProperty("Invocation", invocation.Id))
+                    {
+                        await module.RunAsync(invocation.Arguments);
+                    }
+                });
             }
             catch (Exception e)
             {
@@ -75,43 +88,72 @@ namespace Estimmo.Runner
             {
                 var connectionString = configuration.GetConnectionString("Main");
                 options.UseNpgsql(connectionString);
-            });
+            }, ServiceLifetime.Transient);
 
             services.AddSingleton<AddressNormaliser>();
+            
+            // Fixtures
+            services.AddSingleton<TownIdsFixture>();
+            services.AddSingleton<SectionIdsFixture>();
         }
 
-        private static ValueTuple<Type, Dictionary<string, string>> ParseCommandLine(string[] args)
+        private static List<ModuleInvocation> ParseCommandLine(string[] args)
         {
             if (args.Length == 0)
             {
                 throw new ArgumentException("No arguments provided");
             }
-
+            
             var availableTypes = GetModuleTypes().ToList();
-            var type = availableTypes.FirstOrDefault(t => t.Name == args[0]);
+            var invocations = new List<ModuleInvocation>();
+            
+            var id = 1;
+            var invocation = new ModuleInvocation { Arguments = new Dictionary<string, string>(), Id = id };
 
-            if (type == null)
+            foreach (var arg in args)
             {
-                throw new ArgumentException("Module not found");
-            }
+                if (arg == ArgumentSkip)
+                {
+                    invocations.Add(invocation);
+                    invocation = new ModuleInvocation
+                    {
+                        Id = ++id,
+                        Arguments = new Dictionary<string, string>()
+                    };
+                    
+                    continue;
+                }
 
-            var parsedArgs = new Dictionary<string, string>();
+                if (invocation.Type == null)
+                {
+                    invocation.Type = availableTypes.FirstOrDefault(t => t.Name == arg);
 
-            foreach (var arg in args.Skip(1))
-            {
-                var match = Regex.Match(arg, @"^(.*?)=(.*?)$");
+                    if (invocation.Type == null)
+                    {
+                        throw new ArgumentException($"Module '{arg}' not found");
+                    }
+
+                    continue;
+                }
+
+                var match = ArgumentRegex().Match(arg);
 
                 if (match.Success)
                 {
-                    parsedArgs.Add(match.Groups[1].Value, match.Groups[2].Value);
+                    invocation.Arguments.Add(match.Groups[1].Value, match.Groups[2].Value);
                 }
                 else
                 {
-                    parsedArgs.Add(arg, null);
+                    invocation.Arguments.Add(arg, null);
                 }
             }
 
-            return new ValueTuple<Type, Dictionary<string, string>>(type, parsedArgs);
+            if (invocation.Type != null)
+            {
+                invocations.Add(invocation);
+            }
+            
+            return invocations;
         }
 
         private static IEnumerable<Type> GetModuleTypes()

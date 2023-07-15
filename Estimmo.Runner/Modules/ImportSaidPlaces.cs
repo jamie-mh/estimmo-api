@@ -5,13 +5,13 @@ using CsvHelper.Configuration;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Runner.Csv;
+using Estimmo.Runner.Fixtures;
 using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -20,11 +20,14 @@ namespace Estimmo.Runner.Modules
     {
         private readonly ILogger _log = Log.ForContext<ImportSaidPlaces>();
         private readonly EstimmoContext _context;
+        private readonly TownIdsFixture _townIdsFixture;
         private readonly AddressNormaliser _addressNormaliser;
 
-        public ImportSaidPlaces(EstimmoContext context, AddressNormaliser addressNormaliser)
+        public ImportSaidPlaces(EstimmoContext context, TownIdsFixture townIdsFixture,
+            AddressNormaliser addressNormaliser)
         {
             _context = context;
+            _townIdsFixture = townIdsFixture;
             _addressNormaliser = addressNormaliser;
         }
 
@@ -36,8 +39,7 @@ namespace Estimmo.Runner.Modules
                 return;
             }
 
-            _log.Information("Populating town ID lookup");
-            var townIds = new HashSet<string>(await _context.Towns.Select(t => t.Id).ToListAsync());
+            var townIds = await _townIdsFixture.LoadAndGetValueAsync();
 
             var processor = new BatchProcessor<SaidPlaceEntry, SaidPlace>(entry =>
             {

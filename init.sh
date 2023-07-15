@@ -113,6 +113,18 @@ function prepare {
     done
 }
 
+function run_parallel_import {
+    args=""
+    module=$1
+    shift
+    
+    for file in "$@"; do
+        args+="$module file=$file ; "
+    done
+   
+    dotnet run $DOTNET_ARGS $args
+}
+
 function import {
     dotnet run $DOTNET_ARGS MigrateDatabase
 
@@ -123,38 +135,28 @@ function import {
     dotnet run $DOTNET_ARGS ImportDepartments file="download/departments-simplified.geojson"
 
     echo "Importing towns"
-    for file in download/towns/simplified/*.geojson; do
-        dotnet run $DOTNET_ARGS ImportTowns file="$file"
-    done
+    run_parallel_import "ImportTowns" download/towns/simplified/*.geojson
 
     echo "Importing sections"
-    for file in download/sections/simplified/*.geojson; do
-        dotnet run $DOTNET_ARGS ImportSections file="$file"
-    done
+    run_parallel_import "ImportSections" download/sections/simplified/*.geojson
 
     echo "Importing addresses"
-    for file in download/addresses/*.csv; do
-        dotnet run $DOTNET_ARGS ImportAddresses file="$file"
-    done
+    run_parallel_import "ImportAddresses" download/addresses/*.csv
 
     echo "Calculating street coordinates"
     dotnet run $DOTNET_ARGS ExecuteSqlFile file=calculate_street_coordinates.sql
 
     echo "Importing said places"
-    for file in download/saidplaces/*.csv; do
-        dotnet run $DOTNET_ARGS ImportSaidPlaces file="$file"
-    done
+    run_parallel_import "ImportSaidPlaces" download/saidplaces/*.csv
 
     echo "Importing postcodes"
     dotnet run $DOTNET_ARGS ImportPostCodes file="download/postcodes.csv"
 
     echo "Importing property sales"
-    for file in download/sales/*.csv; do
-        dotnet run $DOTNET_ARGS ImportPropertySales file="$file"
-    done
-    
+    run_parallel_import "ImportPropertySales" download/sales/*.csv
+
     dotnet run $DOTNET_ARGS RefreshMaterialisedViews type=stats
-    
+
     echo "Removing outliers"
     dotnet run $DOTNET_ARGS ExecuteSqlFile file=delete_outliers.sql
 
