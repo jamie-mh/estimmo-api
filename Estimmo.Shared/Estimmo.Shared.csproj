@@ -9,8 +9,8 @@
 
     <ItemGroup>
       <PackageReference Include="MathNet.Numerics" Version="5.0.0" />
-      <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="3.0.0" />
-      <PackageReference Include="NetTopologySuite.IO.GeoJSON4STJ" Version="3.0.0" />
+      <PackageReference Include="NetTopologySuite.IO.GeoJSON" Version="4.0.0" />
+      <PackageReference Include="NetTopologySuite.IO.GeoJSON4STJ" Version="4.0.0" />
     </ItemGroup>
 
     <ItemGroup>
