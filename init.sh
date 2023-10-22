@@ -68,7 +68,7 @@ function download {
 
     if [[ ! -f download/postcodes.csv ]]; then
         echo "Downloading postcodes"
-        curl "https://datanova.legroupe.laposte.fr/explore/dataset/laposte_hexasmal/download/?format=csv&timezone=Europe/Berlin&use_labels_for_header=true" >download/postcodes.csv
+        curl "https://datanova.laposte.fr/data-fair/api/v1/datasets/laposte-hexasmal/data-files/019HexaSmal.csv" >download/postcodes.csv
     fi
 
     mkdir -p download/sales
