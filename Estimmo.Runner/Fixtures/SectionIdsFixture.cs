@@ -23,7 +23,7 @@ namespace Estimmo.Runner.Fixtures
         protected override async Task<HashSet<string>> ProvideValueAsync()
         {
             _log.Information("Populating section ID fixture");
-            return new HashSet<string>(await _context.Sections.Select(t => t.Id).ToListAsync());
+            return [..await _context.Sections.Select(t => t.Id).ToListAsync()];
         }
     }
 }

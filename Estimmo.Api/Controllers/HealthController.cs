@@ -25,7 +25,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Check API health",
             OperationId = "GetHealth",
-            Tags = new[] { "Health" }
+            Tags = ["Health"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "API is available")]
         [SwaggerResponse(StatusCodes.Status503ServiceUnavailable, "API is unavailable")]

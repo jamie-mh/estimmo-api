@@ -51,7 +51,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get list of places matching criteria",
             OperationId = "GetPlaces",
-            Tags = new[] { "Place" }
+            Tags = ["Place"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Place list", typeof(IEnumerable<SimplePlace>))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]
@@ -110,7 +110,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get single place an its hierarchy",
             OperationId = "GetPlace",
-            Tags = new[] { "Place" }
+            Tags = ["Place"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Place", typeof(RootPlace))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]

@@ -30,7 +30,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get an estimated value for a property",
             OperationId = "GetEstimate",
-            Tags = new[] { "Estimation" }
+            Tags = ["Estimation"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Estimation result", typeof(Estimate))]
         [SwaggerResponse(StatusCodes.Status400BadRequest, "Validation failed")]

@@ -33,7 +33,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get all regions",
             OperationId = "GetRegions",
-            Tags = new[] { "Cadastre" }
+            Tags = ["Cadastre"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         public async Task<FeaturesWithValues> GetRegions(short? salesYear = null)
@@ -83,7 +83,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get all departments belonging to region",
             OperationId = "GetDepartments",
-            Tags = new[] { "Cadastre" }
+            Tags = ["Cadastre"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Region not found")]
@@ -139,7 +139,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get all towns belonging to department",
             OperationId = "GetTowns",
-            Tags = new[] { "Cadastre" }
+            Tags = ["Cadastre"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Department not found")]
@@ -195,7 +195,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get all sections belonging to town",
             OperationId = "GetSections",
-            Tags = new[] { "Cadastre" }
+            Tags = ["Cadastre"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Town not found")]

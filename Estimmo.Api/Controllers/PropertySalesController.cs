@@ -33,7 +33,7 @@ namespace Estimmo.Api.Controllers
         [SwaggerOperation(
             Summary = "Get property sales that occurred in a section",
             OperationId = "GetPropertySales",
-            Tags = new[] { "PropertySale" }
+            Tags = ["PropertySale"]
         )]
         [SwaggerResponse(StatusCodes.Status200OK, "Features with values payload", typeof(FeaturesWithValues))]
         [SwaggerResponse(StatusCodes.Status404NotFound, "Section not found")]

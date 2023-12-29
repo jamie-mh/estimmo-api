@@ -13,7 +13,7 @@ No data is provided and must be downloaded and imported.
 
 ### Requirements
 
-- .NET 7
+- .NET 8
 - PostgreSQL 14+ database with PostGIS and tdigest extensions
 - cURL
 - gzip

@@ -25,9 +25,9 @@ namespace Estimmo.Shared.Utility
             { "Rpe", "Rampe" }
         };
 
-        private static readonly List<string> LowercaseWords = new(){ "de", "la", "du", "des", "les", "en" };
+        private static readonly List<string> LowercaseWords = ["de", "la", "du", "des", "les", "en"];
 
-        private static readonly List<string> UppercaseWords = new(){ "zi" };
+        private static readonly List<string> UppercaseWords = ["zi"];
 
         [GeneratedRegex(@"(?: |^)([ld]) ([\w]{2,})", RegexOptions.IgnoreCase)]
         private static partial Regex MissingApostropheRegex();
