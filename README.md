@@ -7,28 +7,6 @@ High-performance French real-estate estimation and history API built with ASP.NE
 
 [API Documentation](https://estimmo-api.jmh.me/swagger)
 
-## Running
-
-No data is provided and must be downloaded and imported.
-
-### Requirements
-
-- .NET 8
-- PostgreSQL 14+ database with PostGIS and tdigest extensions
-- cURL
-- gzip
-- Mapshaper
-
-### Generating the database
-
-Update the `appsettings.[env].json` files as required.
-
-The init script will download the required data and process it.
-
-```
-./init.sh
-```
-
 ## Data sources
 
 - [France GeoJSON](https://github.com/gregoiredavid/france-geojson)

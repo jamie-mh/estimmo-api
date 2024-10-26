@@ -1,18 +1,51 @@
-version: "3.1"
 services:
+  api:
+    container_name: estimmo-api
+    image: ghcr.io/jamie-mh/estimmo-api:latest
+    restart: always
+    ports:
+      - 8081:8080
+    environment:
+      - DOTNET_ENVIRONMENT=Production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - estimmo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_interval: 10s
+      start_period: 30s
+
   postgres:
-    build: docker/postgis
-    shm_size: 2g
     container_name: estimmo-postgres
+    image: ghcr.io/jamie-mh/estimmo-postgres:latest
+    restart: always
+    shm_size: 2g
     volumes:
       - db-data:/var/lib/postgresql/data
-    ports:
-      - "8082:5432"
+    networks:
+      - estimmo
     environment:
       - POSTGRES_USER=estimmo
-      - POSTGRES_PASSWORD=estimmo
+      - PG_USER=estimmo
       - POSTGRES_DB=estimmo
+      - POSTGRES_PASSWORD=estimmo
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 30s
+      timeout: 5s
+      retries: 10
+      start_interval: 5s
+      start_period: 30s
 
 volumes:
   db-data:
     driver: local
+
+networks:
+  estimmo:
+    driver: bridge

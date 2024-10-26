@@ -1,0 +1,17 @@
+services:
+  postgres:
+    build: docker/postgis
+    shm_size: 2g
+    container_name: estimmo-postgres
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=estimmo
+      - POSTGRES_PASSWORD=estimmo
+      - POSTGRES_DB=estimmo
+
+volumes:
+  db-data:
+    driver: local
