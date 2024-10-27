@@ -31,7 +31,7 @@ services:
       - estimmo
     environment:
       - POSTGRES_USER=estimmo
-      - PG_USER=estimmo
+      - PGUSER=estimmo
       - POSTGRES_DB=estimmo
       - POSTGRES_PASSWORD=estimmo
     healthcheck:
