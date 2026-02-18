@@ -50,7 +50,9 @@ namespace Estimmo.Runner.Modules
             foreach (var view in views)
             {
                 _log.Information("Refreshing view {View}", view);
+#pragma warning disable EF1002
                 await _context.Database.ExecuteSqlRawAsync($"REFRESH MATERIALIZED VIEW {view}");
+#pragma warning restore EF1002
             }
         }
     }
