@@ -96,8 +96,6 @@ namespace Estimmo.Api
             }
             else
             {
-                context.Database.Migrate();
-
                 app.UseForwardedHeaders(new ForwardedHeadersOptions
                 {
                     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
