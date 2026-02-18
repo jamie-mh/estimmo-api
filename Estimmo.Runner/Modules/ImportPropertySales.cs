@@ -10,8 +10,11 @@ using Estimmo.Shared.Utility;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Serilog;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Estimmo.Runner.Modules
@@ -79,7 +82,7 @@ namespace Estimmo.Runner.Modules
                     mutation.StreetNumberSuffix = null;
                 }
 
-                return new PropertySale
+                return WithComputedHash(new PropertySale
                 {
                     Date = mutation.Date,
                     StreetNumber = mutation.StreetNumber,
@@ -93,7 +96,7 @@ namespace Estimmo.Runner.Modules
                     Value = mutation.Value.Value,
                     SectionId = sectionId,
                     Coordinates = new Point(mutation.Longitude.Value, mutation.Latitude.Value)
-                };
+                });
             }, async (buffer, processedCount) =>
             {
                 await _context.PropertySales
@@ -106,6 +109,39 @@ namespace Estimmo.Runner.Modules
             });
 
             await ReadThenProcessFileAsync(filePath, new CsvConfiguration(CultureInfo.CurrentCulture), processor);
+        }
+
+        private static PropertySale WithComputedHash(PropertySale sale)
+        {
+            var builder = new StringBuilder();
+
+            builder.Append(sale.Date.ToString("yyyy-MM-dd"));
+            builder.Append('|');
+
+            if (sale.StreetNumber != null)
+            {
+                builder.Append(sale.StreetNumber);
+                builder.Append('|');
+            }
+
+            if (sale.StreetNumberSuffix != null)
+            {
+                builder.Append(sale.StreetNumberSuffix);
+                builder.Append('|');
+            }
+
+            builder.Append(sale.StreetName);
+            builder.Append('|');
+            builder.Append(sale.PostCode);
+            builder.Append('|');
+            builder.Append((int) sale.Type);
+            builder.Append('|');
+            builder.Append(sale.Value);
+
+            var input = Encoding.UTF8.GetBytes(builder.ToString());
+            sale.Hash = Convert.ToHexString(MD5.HashData(input));
+
+            return sale;
         }
     }
 }
