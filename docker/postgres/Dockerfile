@@ -1,4 +1,4 @@
-FROM postgis/postgis:17-3.5
+FROM postgis/postgis:18-3.6
 LABEL org.opencontainers.image.source=https://github.com/jamie-mh/estimmo-api
 
-RUN apt-get update && apt-get install -y postgresql-17-tdigest
+RUN apt-get update && apt-get install -y postgresql-18-tdigest

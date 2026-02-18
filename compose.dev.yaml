@@ -1,10 +1,10 @@
 services:
   postgres:
-    build: docker/postgis
+    build: docker/postgres
     shm_size: 2g
     container_name: estimmo-postgres
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     ports:
       - "5432:5432"
     environment:

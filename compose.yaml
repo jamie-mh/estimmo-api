@@ -26,7 +26,7 @@ services:
     restart: always
     shm_size: 2g
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     networks:
       - estimmo
     environment:
