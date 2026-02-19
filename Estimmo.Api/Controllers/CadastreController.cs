@@ -1,8 +1,8 @@
 // Copyright (C) 2023 jmh
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-using AutoMapper;
 using Estimmo.Api.Entities;
+using Estimmo.Api.Mappers;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +20,10 @@ namespace Estimmo.Api.Controllers
     public class CadastreController : ControllerBase
     {
         private readonly EstimmoContext _context;
-        private readonly IMapper _mapper;
 
-        public CadastreController(EstimmoContext context, IMapper mapper)
+        public CadastreController(EstimmoContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -53,7 +51,7 @@ namespace Estimmo.Api.Controllers
                     .ToListAsync();
             }
 
-            var featureCollection = _mapper.Map<FeatureCollection>(regions);
+            var featureCollection = FeatureCollectionMapper.MapToFeatureCollection(regions);
 
             IEnumerable<IValueStats> valueStats;
 
@@ -105,7 +103,7 @@ namespace Estimmo.Api.Controllers
                     .ToListAsync();
             }
 
-            var featureCollection = _mapper.Map<FeatureCollection>(departments);
+            var featureCollection = FeatureCollectionMapper.MapToFeatureCollection(departments);
 
             IEnumerable<IValueStats> valueStats;
 
@@ -161,7 +159,7 @@ namespace Estimmo.Api.Controllers
                     .ToListAsync();
             }
 
-            var featureCollection = _mapper.Map<FeatureCollection>(towns);
+            var featureCollection = FeatureCollectionMapper.MapToFeatureCollection(towns);
 
             IEnumerable<IValueStats> valueStats;
 
@@ -217,7 +215,7 @@ namespace Estimmo.Api.Controllers
                     .ToListAsync();
             }
 
-            var featureCollection = _mapper.Map<FeatureCollection>(sections);
+            var featureCollection = FeatureCollectionMapper.MapToFeatureCollection(sections);
 
             IEnumerable<IValueStats> valueStats;
 

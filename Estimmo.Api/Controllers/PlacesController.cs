@@ -1,9 +1,8 @@
 // Copyright (C) 2023 jmh
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-using AutoMapper;
-using AutoMapper.QueryableExtensions;
 using Estimmo.Api.Entities;
+using Estimmo.Api.Mappers;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Estimmo.Shared.Extension;
@@ -23,15 +22,13 @@ namespace Estimmo.Api.Controllers
     [ApiController]
     public partial class PlacesController : ControllerBase
     {
-        private const double DistanceMargin = 50d; 
-        
-        private readonly EstimmoContext _context;
-        private readonly IMapper _mapper;
+        private const double DistanceMargin = 50d;
 
-        public PlacesController(EstimmoContext context, IMapper mapper)
+        private readonly EstimmoContext _context;
+
+        public PlacesController(EstimmoContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         [GeneratedRegex("^(\\d{5})$")]
@@ -39,7 +36,7 @@ namespace Estimmo.Api.Controllers
 
         [GeneratedRegex("[(),]+")]
         private static partial Regex SimplifyRegex();
-        
+
         private static string SimplifyForSearch(string input)
         {
             input = input.ToLowerInvariant().Unaccent();
@@ -99,7 +96,7 @@ namespace Estimmo.Api.Controllers
 
             var places = await queryable
                 .Take(limit)
-                .ProjectTo<SimplePlace>(_mapper.ConfigurationProvider)
+                .ProjectToSimplePlaces()
                 .ToListAsync();
 
             return Ok(places);
@@ -128,8 +125,7 @@ namespace Estimmo.Api.Controllers
                 return NotFound();
             }
 
-            var detailed = _mapper.Map<RootPlace>(place);
-            return Ok(detailed);
+            return Ok(PlaceMapper.MapToRootPlace(place));
         }
     }
 }

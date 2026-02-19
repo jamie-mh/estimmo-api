@@ -1,14 +1,13 @@
 // Copyright (C) 2023 jmh
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-using AutoMapper;
 using Estimmo.Api.Entities;
+using Estimmo.Api.Mappers;
 using Estimmo.Data;
 using Estimmo.Data.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Features;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,12 +19,10 @@ namespace Estimmo.Api.Controllers
     public class PropertySalesController : ControllerBase
     {
         private readonly EstimmoContext _context;
-        private readonly IMapper _mapper;
 
-        public PropertySalesController(EstimmoContext context, IMapper mapper)
+        public PropertySalesController(EstimmoContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
 
         [HttpGet]
@@ -83,7 +80,7 @@ namespace Estimmo.Api.Controllers
                 .OrderByDescending(s => s.Date)
                 .ToListAsync();
 
-            var featureCollection = _mapper.Map<FeatureCollection>(sales);
+            var featureCollection = FeatureCollectionMapper.MapToFeatureCollection(sales);
             featureCollection.BoundingBox = section.Geometry.EnvelopeInternal;
 
             IEnumerable<IValueStats> valueStats;

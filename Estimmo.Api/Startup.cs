@@ -1,13 +1,7 @@
 // Copyright (C) 2023 jmh
 // SPDX-License-Identifier: AGPL-3.0-or-later
 
-using AutoMapper;
-using Estimmo.Api.Entities;
-using Estimmo.Api.Models;
-using Estimmo.Api.TypeConverters.FeatureCollection;
 using Estimmo.Data;
-using Estimmo.Data.Entities;
-using Estimmo.Shared.Entities;
 using Estimmo.Shared.Services;
 using Estimmo.Shared.Services.Impl;
 using Microsoft.AspNetCore.Builder;
@@ -18,10 +12,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi;
-using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using NetTopologySuite.IO.Converters;
-using System.Collections.Generic;
 
 namespace Estimmo.Api
 {
@@ -72,17 +64,8 @@ namespace Estimmo.Api
                 options.EnableAnnotations();
             });
 
-            services.AddAutoMapper(ConfigureMappers);
-
             // Services
             services.AddScoped<IEstimationService, EstimationService>();
-
-            // Type Converters
-            services.AddSingleton<RegionsTypeConverter>();
-            services.AddSingleton<DepartmentsTypeConverter>();
-            services.AddSingleton<TownsTypeConverter>();
-            services.AddSingleton<SectionsTypeConverter>();
-            services.AddSingleton<PropertySalesTypeConverter>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EstimmoContext context)
@@ -112,37 +95,6 @@ namespace Estimmo.Api
             {
                 endpoints.MapControllers().RequireCors(CorsPolicyName);
             });
-        }
-
-        private static void ConfigureMappers(IMapperConfigurationExpression config)
-        {
-            config.CreateMap<EstimateModel, EstimateRequest>()
-                .ForMember(d => d.Coordinates,
-                    o => o.MapFrom(v => new Point(v.PropertyCoordinates.Longitude, v.PropertyCoordinates.Latitude)));
-
-            config.CreateMap<IEnumerable<Region>, FeatureCollection>()
-                .ConvertUsing<RegionsTypeConverter>();
-
-            config.CreateMap<IEnumerable<Department>, FeatureCollection>()
-                .ConvertUsing<DepartmentsTypeConverter>();
-
-            config.CreateMap<IEnumerable<Town>, FeatureCollection>()
-                .ConvertUsing<TownsTypeConverter>();
-
-            config.CreateMap<IEnumerable<Section>, FeatureCollection>()
-                .ConvertUsing<SectionsTypeConverter>();
-
-            config.CreateMap<IEnumerable<PropertySale>, FeatureCollection>()
-                .ConvertUsing<PropertySalesTypeConverter>();
-
-            config.CreateMap<IValueStats, KeyValuePair<short, double>>()
-                .ConstructUsing(v => new KeyValuePair<short, double>((short) v.Type, v.Average));
-
-            config.CreateMap<Place, SimplePlace>();
-
-            config.CreateMap<Place, PlaceWithHierarchy>();
-
-            config.CreateMap<Place, RootPlace>();
         }
     }
 }
