@@ -74,7 +74,7 @@ jobs:
         with:
           account: user
           token: ${{ secrets.PAT }}
-          image-names: "estimmo-*"
+          image-names: "estimmo-api estimmo-postgres estimmo-runner"
           image-tags: "!latest v*"
           cut-off: 2d
           keep-n-most-recent: 3
